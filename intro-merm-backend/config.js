@@ -1,8 +1,6 @@
-const { config } = require("dotenv")
-
 const  config = {
-    app:{
-        port:process.env.APP_PORT
+    appConfig:{
+        port: process.env.APP_PORT
     }
 }
 

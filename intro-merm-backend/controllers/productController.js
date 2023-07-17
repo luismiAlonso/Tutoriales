@@ -17,16 +17,30 @@ const Product =require('../models/Product');
             unitaryPrice,
             description
         })
+                
+        if(req.file ){
+            //console.log(req.file.originalname);
+            const {filename} = req.file;
+            product.setImgUrl(filename);
+
+        }
 
         const productStored = await product.save();
         
         res.status(201).send({productStored});
 
     }catch(e){
+        
         res.status(500).send({message: e.message});
     }
  }
 
+ async function getProducts(req,res){
+    const products = await Product.find().lean().exec();
+    res.status(200).send({products});
+ }
+
  module.exports = {
-    addProduct
+    addProduct,
+    getProducts
  }

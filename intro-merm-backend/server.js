@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const app = require('./app')
+const app = require('./app');
+
 const connectDB = require('./DB/mongodb');
 const { appConfig, dbConfig } = require('./config');
 

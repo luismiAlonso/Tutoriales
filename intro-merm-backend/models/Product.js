@@ -13,6 +13,5 @@ const ProductSchema = Schema({
     timestamps: true
 })
 
-console.log(ProductSchema.name+" / "+ProductSchema.imgUrl)
 //exporta el modelo a la BD, primer parametro Nombre del modelo segundo esquema del modelo
 module.exports = mongoose.model('Products',ProductSchema)

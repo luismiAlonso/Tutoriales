@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react'
-import { Form as BulmaForm} from 'react-bulma-components'
+import { Form as BulmaForm, Button } from 'react-bulma-components'
 
-const {Field,Control,Label,Input,Button} = BulmaForm;
+const {Field,Control,Label,Input} = BulmaForm;
 
-const Form = () => {
+const Form = ({ handleSubmit }) => {
  
     const [formValues, setFormValues] = useState({
         name: '',
@@ -19,14 +19,13 @@ const Form = () => {
         setFormValues({...formValues, [name]: value});
     };
 
-    const handleSubmit = (e) =>{
+    const _handleSubmit = (e) =>{
         e.preventDefault();
-        console.log(formValues);
-        console.log(inputFileRef.current.files);
+        handleSubmit({...formValues,image: inputFileRef.current.files[0]})
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={_handleSubmit}>
             <Field>
                 <Label>Name</Label>
                 <Control>
@@ -75,9 +74,7 @@ const Form = () => {
                   <input type="file" ref={inputFileRef}></input>
                 </Control>
             </Field>
-            <Button type="submit" color="primary">
-                Save
-            </Button>
+            <Button type="submit" color="primary">Save</Button>
         </form>
     );
 }

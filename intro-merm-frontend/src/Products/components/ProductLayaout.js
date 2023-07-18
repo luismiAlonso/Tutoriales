@@ -4,12 +4,17 @@ import Header from './Header'
 import AddButton from './AddButton';
 import ListProducts from './ListProducts';
 import Form from './Form'
+import { saveProducts } from '../services';
 
 //https://couds.github.io/react-bulma-components/?path=/story/welcome--page
 
 const ProductLayoaut = () =>{
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleSubmit = (data) =>{
+        saveProducts(data);
+    }
 
     return (
         <>
@@ -24,7 +29,7 @@ const ProductLayoaut = () =>{
                         </Modal.Card.Title>
                     </Modal.Card.Header>
                     <Modal.Card.Body>
-                        <Form />
+                        <Form handleSubmit={handleSubmit} />
                     </Modal.Card.Body>
                 </Modal.Card>
             </Modal>

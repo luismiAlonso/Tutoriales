@@ -1,10 +1,17 @@
 import React from 'react';
-import { Loader } from 'react-bulma-components';
+import { Loader,Section} from 'react-bulma-components';
 
 const Loading = () =>{
-
+    
     return (
-        <Loader class="title has-text-centered" />
+        <Section>
+            <div class="columns is-centered">
+                <Loader style={{
+                    width:100,
+                    height:100
+                }} />
+            </div>
+        </Section>
     )
 }
 

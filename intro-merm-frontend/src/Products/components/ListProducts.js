@@ -1,23 +1,7 @@
 import React, { useState, useEffect} from 'react'
-import axios from 'axios'
+import { getProducts } from '../services';
 import Loading from './Loading'
 
-const baseUrl ='http://localhost:8081/V1';
-
-async function getProducts(){
-  try{
-    const response = await axios({
-        url: `${baseUrl}/products`,
-        method: 'GET'
-    });
-
-    return response;
-
-  }catch(e){
-
-    console.log(e);
-  }
-}
 
 const ListProducts = () => {
 
@@ -27,22 +11,31 @@ const ListProducts = () => {
     useEffect(() => {
 
         async function loadProducts(){
+            
             const response= await getProducts();
-
-            if(response.status === 200 ){
+            //console.log(response);
+            if(response !== undefined && response.status === 200 ){
                 setProducts(response.data.products);
             }
             
-            return response;
+            setIsLoading(false);
         }  
         
         loadProducts();
-    })
+
+    },[]);
+
+    if(isLoading){
+        return <Loading />
+    }
+
+    if(!products.length){
+
+       return <h2 className="title has-text-centered">return No hay productos </h2>
+    }
 
     return (
-        isLoading
-        ? <Loading />
-        : 'Mostrar resultado Listado'
+       'Mostrar resultado Listado'
     )
 }
 

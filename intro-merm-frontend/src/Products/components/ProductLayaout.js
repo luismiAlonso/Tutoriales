@@ -1,26 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal }  from 'react-bulma-components'
 import Header from './Header'
 import AddButton from './AddButton';
 import ListProducts from './ListProducts';
 import Form from './Form'
-import { saveProducts } from '../services';
+import { saveProducts, getProducts } from '../services';
+import Loading from './Loading';
 
 //https://couds.github.io/react-bulma-components/?path=/story/welcome--page
 
 const ProductLayoaut = () =>{
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [products,setProducts] = useState([]);
 
-    const handleSubmit = (data) =>{
-        saveProducts(data);
+    async function loadProducts(){
+            
+        const response= await getProducts();
+        //console.log(response);
+        if(response !== undefined && response.status === 200 ){
+            setProducts(response.data.products);
+        }
+        
+        setIsLoading(false);
+    }  
+
+    useEffect(() => {
+        loadProducts();
+    },[]);
+
+    const handleSubmit =async (data) =>{
+        await saveProducts(data);
+        loadProducts();
+        setIsModalOpen(false);
     }
 
     return (
         <>
             <Header title ="Products app" />
             <AddButton  onClick={() => setIsModalOpen(true)}/>
-            <ListProducts />
+            {
+                isLoading && <Loading />
+            }
+
+            {
+                !products.length && (
+                <h2 className="title has-text-centered">
+                     You don't have products 
+                </h2>
+                )
+            }
+
+            <ListProducts products={products} />
             <Modal show={ isModalOpen } onClose={() => setIsModalOpen(false)}>
                 <Modal.Card>
                     <Modal.Card.Header showClose={false}>

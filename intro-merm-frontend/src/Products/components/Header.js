@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from "prop-types"
 import {Container, Section} from 'react-bulma-components'
 
-
+// Definición del componente Header utilizando destructuring para obtener la prop title
 const Header = ({title}) =>{
     return (
         <Section>
@@ -10,6 +11,13 @@ const Header = ({title}) =>{
             </Container>
         </Section>
     )
+
+}
+
+// Definición de PropTypes para el componente Header
+Header.propTypes ={
+
+    title: PropTypes.string.isRequired
 }
 
 export default Header;

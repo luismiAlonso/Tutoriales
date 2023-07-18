@@ -6,14 +6,15 @@ const baseUrl ='http://localhost:8081/V1';
 
 async function getProducts(){
   try{
-    const reponse = await axios({
+    const response = await axios({
         url: `${baseUrl}/products`,
         method: 'GET'
     });
 
-    return Response;
+    return response;
 
   }catch(e){
+
     console.log(e);
   }
 }
@@ -24,11 +25,18 @@ const ListProducts = () => {
     const [products,setProducts] = useState([]);
 
     useEffect(() => {
+
         async function loadProducts(){
             const response= await getProducts();
-            console.log(response);
+
+            if(response.status === 200 ){
+                setProducts(response.data.products);
+            }
+            
             return response;
-        }    
+        }  
+        
+        loadProducts();
     })
 
     return (

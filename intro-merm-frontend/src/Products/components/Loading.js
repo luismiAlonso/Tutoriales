@@ -5,7 +5,7 @@ const Loading = () =>{
     
     return (
         <Section>
-            <div class="columns is-centered">
+            <div className="columns is-centered">
                 <Loader style={{
                     width:100,
                     height:100

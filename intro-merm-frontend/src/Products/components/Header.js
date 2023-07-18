@@ -7,7 +7,7 @@ const Header = ({title}) =>{
     return (
         <Section>
             <Container>
-                <h1 class="title has-text-centered">{title}</h1>
+                <h1 className="title has-text-centered">{title}</h1>
             </Container>
         </Section>
     )

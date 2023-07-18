@@ -31,11 +31,11 @@ const ListProducts = () => {
 
     if(!products.length){
 
-       return <h2 className="title has-text-centered">return No hay productos </h2>
+       return <h2 className="title has-text-centered"> No hay productos </h2>
     }
 
     return (
-       'Mostrar resultado Listado'
+         <h2 className="title has-text-centered">Mostrar  Listado</h2>
     )
 }
 

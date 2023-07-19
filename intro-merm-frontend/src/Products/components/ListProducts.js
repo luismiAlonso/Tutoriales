@@ -12,9 +12,9 @@ const ListProducts = ({ products }) => {
        return <h2 className="title has-text-centered"> No hay productos </h2>
     }*/
 
-    return (
+   /* return (
          <h2 className="title has-text-centered">Mostrar  Listado</h2>
-    )
+    )*/
 }
 
 export default ListProducts

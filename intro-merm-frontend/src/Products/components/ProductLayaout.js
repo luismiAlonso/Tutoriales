@@ -43,16 +43,19 @@ const ProductLayoaut = () =>{
             {
                 isLoading && <Loading />
             }
-
             {
-                !products.length && (
+                !isLoading && !products.length && (
                 <h2 className="title has-text-centered">
                      You don't have products 
                 </h2>
                 )
             }
+            {
 
-            <ListProducts products={products} />
+                !isLoading && !products.length && <ListProducts products={products} />
+
+            }
+            
             <Modal show={ isModalOpen } onClose={() => setIsModalOpen(false)}>
                 <Modal.Card>
                     <Modal.Card.Header showClose={false}>

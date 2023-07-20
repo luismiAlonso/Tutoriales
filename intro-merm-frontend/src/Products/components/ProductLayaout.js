@@ -35,7 +35,6 @@ const ProductLayoaut = () =>{
         loadProducts();
         setIsModalOpen(false);
     }
-
     return (
         <>
             <Header title ="Products app" />
@@ -51,9 +50,7 @@ const ProductLayoaut = () =>{
                 )
             }
             {
-
-                !isLoading && !products.length && <ListProducts products={products} />
-
+                !isLoading && products.length && <ListProducts products={products} />
             }
             
             <Modal show={ isModalOpen } onClose={() => setIsModalOpen(false)}>

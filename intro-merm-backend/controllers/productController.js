@@ -19,8 +19,8 @@ const Product =require('../models/Product');
         })
                 
         if(req.file ){
-            //console.log(req.file.originalname);
             const {filename} = req.file;
+            console.log(req.file.originalname);
             product.setImgUrl(filename);
 
         }

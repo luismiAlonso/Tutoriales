@@ -7,4 +7,4 @@ async function connectDB ({host,port,dbName}){
     await mongoose.connect(uri, {useNewUrlParser:true})
 }
 
-module.exports = connectDB;
+module.exports =connectDB;

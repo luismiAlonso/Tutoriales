@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../context/authContext'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useEffect } from 'react'
 
 function LoginPage() {
   const {
@@ -8,10 +9,18 @@ function LoginPage() {
     handleSubmit,
     formState: { errors }
   } = useForm()
-  const { singIn, errors: loginErrors } = useAuth()
+
+  const { singIn, errors: loginErrors, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
   const onSubmit = handleSubmit((data) => {
     singIn(data)
   })
+
+  useEffect(() => {
+    console.log(isAuthenticated)
+    if (isAuthenticated) navigate('/tasks')
+  }, [isAuthenticated])
 
   return (
     <div className="flex h-[calc(100vh-100px)] items-center justify-center">
@@ -41,7 +50,12 @@ function LoginPage() {
           {errors.password && (
             <p className="text-red-500">Password is required</p>
           )}
-          <button type="submit">Login</button>
+          <button
+            type="submit"
+            className="bg-sky-500 text-white px-4 py-2 rounded-md my-2"
+          >
+            Login
+          </button>
         </form>
         <p className="flex gap-x-2 justify-between">
           Don't have an account?{' '}

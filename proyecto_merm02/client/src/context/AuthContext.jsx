@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { registerRequest, loginRequest, verityTokenRequest } from '../api/auth'
 import Cookies from 'js-cookie'
+<<<<<<< HEAD
 
 // Create an authentication context
+=======
+>>>>>>> b153964 (error cookies)
 export const AuthContext = createContext()
 
 // Define a custom hook to access the authentication context
@@ -14,6 +17,7 @@ export const useAuth = () => {
   return context
 }
 
+<<<<<<< HEAD
 // Create the authentication context provider
 export const AuthProvider = ({ children }) => {
   // Define states to manage authentication information
@@ -41,16 +45,48 @@ export const AuthProvider = ({ children }) => {
       const response = await loginRequest(user)
       setIsAuthenticated(true) // Set authentication as true
       setUser(response.data) // Set user information
+=======
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [errors, setErrors] = useState([])
+  const [ loading, setLoading ] = useState(true)
+
+  const singUp = async (user) => {
+    try {
+      const response = await registerRequest(user)
+      setUser(response.data)
+      setIsAuthenticated(true)
+      console.log(response.data)
+    } catch (error) {
+      console.error(error)
+      setErrors(error.response.data)
+    }
+  }
+
+  const singIn = async (user) => {
+    try {
+      const response = await loginRequest(user)
+      setIsAuthenticated(true)
+      setUser(response.data)
+>>>>>>> b153964 (error cookies)
       console.log(response)
     } catch (error) {
       if (Array.isArray(error.response.data)) {
         return setErrors(error.response.data)
       }
       setErrors([error.response.data])
+<<<<<<< HEAD
     }
   }
 
   // Effect to clear errors after a certain time
+=======
+      // console.error(error)
+    }
+  }
+
+>>>>>>> b153964 (error cookies)
   useEffect(() => {
     if (errors.length > 0) {
       const timer = setTimeout(() => {
@@ -60,6 +96,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [errors])
 
+<<<<<<< HEAD
   // Effect to check authentication on app load
   useEffect(() => {
     async function checkLogin() {
@@ -81,6 +118,29 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true) // Set authentication as true
         setUser(res.data) // Set user information
         setLoading(false) // Initial loading complete
+=======
+  useEffect(() => {
+    async function checkLogin() {
+      const cookies = Cookies.get()
+
+      if (!cookies.token) {
+        setIsAuthenticated(false)
+        setLoading(false)
+        return setUser(null)
+      }
+
+      try {
+        const res = await verityTokenRequest(cookies.token)
+        if (!res.data){
+          setIsAuthenticated(false)
+          setLoading(false)
+          return 
+        } 
+        
+        setIsAuthenticated(true)
+        setUser(res.data)
+        setLoading(false)
+>>>>>>> b153964 (error cookies)
       } catch (error) {
         console.log(error)
         setIsAuthenticated(false)
@@ -89,6 +149,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
     checkLogin()
+<<<<<<< HEAD
   }, []) // This effect runs only on component mount
 
   // Function to log out the user
@@ -105,13 +166,26 @@ export const AuthProvider = ({ children }) => {
         signUp,
         singIn,
         logout,
+=======
+  }, [])
+
+  return (
+    <AuthContext.Provider
+      value={{
+        singUp,
+        singIn,
+>>>>>>> b153964 (error cookies)
         user,
         isAuthenticated,
         loading,
         errors
       }}
     >
+<<<<<<< HEAD
       {children} {/* Render child components */}
+=======
+      {children}
+>>>>>>> b153964 (error cookies)
     </AuthContext.Provider>
   )
 }

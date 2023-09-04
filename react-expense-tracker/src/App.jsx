@@ -1,7 +1,6 @@
 import { GlobalProvider } from './context/GlobalState'
 
 import Balance from './components/Balance'
-import Header from './components/Header'
 import TransactionsList from './components/transactions/TransactionsList'
 import TransactionForm from './components/transactions/TransactionForm'
 import IncomExpenses from './components/IncomExpenses'

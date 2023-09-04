@@ -1,9 +1,5 @@
 import { useForm } from 'react-hook-form'
-<<<<<<< HEAD
 import { useAuth } from '../context/AuthContext'
-=======
-import { useAuth } from '../context/authContext'
->>>>>>> b153964 (error cookies)
 import { useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
@@ -13,7 +9,6 @@ function RegisterPage() {
     handleSubmit,
     formState: { errors }
   } = useForm()
-<<<<<<< HEAD
   const { signUp, isAuthenticated, errors: registerErrors } = useAuth()
   const navigate = useNavigate()
 
@@ -23,17 +18,6 @@ function RegisterPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     signUp(values)
-=======
-  const { singUp, isAuthenticated, errors: registerErrors } = useAuth()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isAuthenticated) navigate('/task')
-  }, [isAuthenticated])
-
-  const onSubmit = handleSubmit(async (values) => {
-    singUp(values)
->>>>>>> b153964 (error cookies)
   })
 
   return (
@@ -74,13 +58,9 @@ function RegisterPage() {
           {errors.password && (
             <p className="text-red-500">Password is required</p>
           )}
-<<<<<<< HEAD
           <button type="submit"
           className="bg-sky-500 text-white px-4 py-2 rounded-md my-2"
           >Register</button>
-=======
-          <button type="submit">Register</button>
->>>>>>> b153964 (error cookies)
         </form>
         <p className="flex gap-x-2 justify-between">
           Already have an account?{' '}

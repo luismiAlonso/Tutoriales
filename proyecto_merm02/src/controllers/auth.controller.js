@@ -1,12 +1,7 @@
 import User from '../models/user.model.js'
 import bcryp from 'bcryptjs'
-<<<<<<< HEAD
 import { createAccesToken } from '../libs/jwt.js'
 import jwt from 'jsonwebtoken'
-=======
-import { createAccesToken} from '../libs/jwt.js'
-import jwt from 'jsonwebtoken';
->>>>>>> b153964 (error cookies)
 import { TOKEN_SECRET } from '../config.js'
 
 export const register = async (req, res) => {
@@ -71,10 +66,6 @@ export const login = async (req, res) => {
       createdAt: userFound.createdAt,
       updatedAt: userFound.updatedAt
     })
-<<<<<<< HEAD
-=======
-
->>>>>>> b153964 (error cookies)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -102,10 +93,6 @@ export const profile = async (req, res) => {
 }
 
 export const verifyToken = async (req, res) => {
-<<<<<<< HEAD
-=======
-
->>>>>>> b153964 (error cookies)
   const { token } = req.cookies
 
   if (!token) return res.status(401).json({ message: 'Unauthorized' })

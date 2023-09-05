@@ -26,6 +26,15 @@ function NavBar() {
             </li>
             <li>
               <Link
+                className="bg-green-500 px-4 py-1 rounded-sm"
+                to="/transactions"
+              >
+                Add Transaction
+              </Link>
+            </li>
+
+            <li>
+              <Link
                 to="/"
                 onClick={() => {
                   logout()

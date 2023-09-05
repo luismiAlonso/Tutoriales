@@ -20,4 +20,4 @@ transactionRouter.delete('/transactions/:id',authRequire,deleteTransaction)
 transactionRouter.put('/transactions/:id',authRequire,validateSchema(transactionSchema),updateTransaction)
 
 
-export default taskRouter
+export default transactionRouter

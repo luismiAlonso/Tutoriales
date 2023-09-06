@@ -1,11 +1,12 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useReducer } from "react"
 import {
-  createTaskRequest,
-  deleteTaskRequest,
-  getTasksRequest,
+  getTasksAPI,
+  deleteTaskAPI,
+  createTasksAPI,
   getTaskRequest,
-  updateTaskRequest
+  updateTaskAPI
 } from "../api/tasks"
+import { taskReducerContext } from "./reducers/TaskReducerContext"
 
 const TaskContext = createContext()
 
@@ -18,50 +19,38 @@ export const useTasks = () => {
 
   return context
 }
+const initialState = {
+  tasks: []
+}
 
 export function TaskProvider({ children }) {
-  const [tasks, setTasks] = useState([])
-
-  const getTasks = async () => {
-    try {
-      const res = await getTasksRequest()
-      setTasks(res.data)
-    } catch (error) {
-      console.log(error)
-    }
+  // const [tasks, setTasks] = useState([])
+  const [state, dispatch] = useReducer(taskReducerContext, initialState)
+  
+  const getTasks = () => {
+    getTasksAPI(dispatch)
   }
 
   const createTask = async (task) => {
-    try {
-      const res = await createTaskRequest(task)
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
+    createTasksAPI(task,dispatch)
   }
 
-  const deleteTask = async (id) => {
-    try {
-      const res = await deleteTaskRequest(id)
-      if (res.status === 204) setTasks(tasks.filter((task) => task._id !== id))
-    } catch (error) {
-      console.log(error)
-    }
+  const deleteTask = (id) => {
+    deleteTaskAPI(id,dispatch)
   }
 
   const getTask = async (id) => {
     try {
       const res = await getTaskRequest(id)
-      console.log(res.data)
       return res.data
     } catch (error) {
       console.log(error)
     }
   }
 
-  const updateTask = async (id, task) => {
+  const updateTask = async (id,task) => {
     try {
-      await updateTaskRequest(id, task)
+      await updateTaskAPI(id,task,dispatch)
     } catch (error) {
       console.log(error)
     }
@@ -69,7 +58,14 @@ export function TaskProvider({ children }) {
 
   return (
     <TaskContext.Provider
-      value={{ tasks, createTask, getTasks, getTask, deleteTask, updateTask }}
+      value={{
+        tasks:state.tasks,
+        createTask,
+        getTasks,
+        getTask,
+        deleteTask,
+        updateTask
+      }}
     >
       {children}
     </TaskContext.Provider>

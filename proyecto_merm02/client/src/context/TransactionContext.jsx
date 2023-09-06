@@ -1,11 +1,9 @@
-import { createContext, useContext, useReducer, useEffect } from "react"
+import { createContext, useContext, useReducer } from "react"
 import { TransactionReducerContext } from "../context/reducers/TransactionReducerContext"
 import {
-  createTransactionRequest,
-  deleteTransactionRequest,
-  getTransactionsRequest,
-  getTransactionRequest,
-  updateTransactionRequest
+  getTransactionsAPI,
+  addTransactionAPI,
+  removeTransactionAPI,
 } from "../api/transactions"
 
 const initialState = {
@@ -21,59 +19,28 @@ export const useTransactionState = () => {
 
 export const TransactionProvider = ({ children }) => {
   const [state, dispatch] = useReducer(TransactionReducerContext, initialState)
-
-  useEffect(() => {
+  /*useEffect(() => {
     //localStorage.setItem("transactions", JSON.stringify(state))
-    async function fetchTransactions() {
-      try {
-        const res = await getTransactionsRequest()
-        const transactionsData = Array.isArray(res.data) ? res.data : [] // Si no es un array, asignamos un array vacío
-        dispatch({ type: "SET_TRANSACTIONS", payload: transactionsData })
-      } catch (error) {
-        console.error("Error fectching transactions:", error)
-      }
-    }
-    fetchTransactions()
-  }, [state])
-
-  const addTransaction = (transaction) => {
-    async function addTransaction(transaction) {
-      try {
-        console.log(transaction)
-        await createTransactionRequest(transaction)
-        dispatch({
-          type: "ADD_TRANSACTION",
-          payload: transaction
-        })
-      } catch (error) {
-        console.error("Error adding transactions:", error)
-      }
-    }
-    addTransaction(transaction)
+    setTransactionAPI(dispatch)
+  }, [state])*/
+  
+  const getTransaction = () => {
+    getTransactionsAPI(dispatch)
   }
-
+  const addTransaction = (transaction) => {
+    
+    addTransactionAPI(transaction,dispatch)
+  }
   const deleteTransaction = (id) => {
-    async function deleteTransaction(id) {
-      try {
-
-        await deleteTransactionRequest(id)
-
-        dispatch({
-          type: "DELETE_TRANSACTION",
-          payload: id
-        })
-      } catch (error) {
-        console.error("Error adding transactions:", error)
-      }
-    }
-
-    deleteTransaction(id)
+    
+    removeTransactionAPI(id,dispatch)
   }
 
   return (
     <TransactionContext.Provider
       value={{
         transactions: state.transactions,
+        getTransaction,
         addTransaction,
         deleteTransaction
       }}

@@ -1,3 +1,5 @@
+import { useEffect } from "react"
+import { useTransactionState } from "../context/TransactionContext"
 import IncomExpenses from "../components/transaction/IncomExpenses"
 import Balance from "../components/transaction/Balance"
 import TransactionForm from "../components/transaction/TransactionForm"
@@ -5,6 +7,12 @@ import ExpenseChart from "../components/transaction/ExpenseChart"
 import TransactionsList from "../components/transaction/TransactionsList"
 
 function TransactionPage() {
+  const { transactions , getTransaction } = useTransactionState()
+
+  useEffect(() => {
+    getTransaction()
+  }, [transactions])
+
   return (
     <div className="bg-zinc-950 text-white h-screen flex justify-center items-center">
         <div className="container mx-auto w-4/6">

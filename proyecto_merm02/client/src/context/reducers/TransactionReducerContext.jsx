@@ -12,7 +12,7 @@ export const  TransactionReducerContext = (state, action) => {
             (transaction) => transaction.id !== action.payload
           )
         }
-        case 'SET_TRANSACTIONS':
+        case 'GET_TRANSACTIONS':
           return {
             ...state,
             transactions: action.payload

@@ -22,12 +22,20 @@ export function calculateIncomeAndExpense(transactions) {
       .filter((transaction) => transaction.amount > 0)
       .reduce((acc, transaction) => (acc += transaction.amount), 0)
   
-    const extotalExpenses = transactions
+    const totalExpenses = transactions
       .filter((transaction) => transaction.amount < 0)
       .reduce((acc, transaction) => (acc += transaction.amount), 0) * -1
   
-    const totalExpensesPercentage = Math.round((extotalExpenses / totalIncome) * 100)
-    const totalIncomePercentage = 100 - totalExpensesPercentage
+    let totalExpensesPercentage, totalIncomePercentage;
+
+    if (totalIncome !== 0) {
+      totalExpensesPercentage = Math.round((totalExpenses / totalIncome) * 100);
+      totalIncomePercentage = 100 - totalExpensesPercentage;
+    } else {
+      // En este caso, totalIncome es 0, por lo que asignamos 0 a ambos porcentajes.
+      totalExpensesPercentage = 0;
+      totalIncomePercentage = 100;
+    }
     return { totalExpensesPercentage, totalIncomePercentage }
   }
   

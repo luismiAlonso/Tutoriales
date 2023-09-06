@@ -1,11 +1,11 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from "react"
 import {
   createTaskRequest,
   deleteTaskRequest,
   getTasksRequest,
   getTaskRequest,
   updateTaskRequest
-} from '../api/tasks'
+} from "../api/tasks"
 
 const TaskContext = createContext()
 
@@ -13,7 +13,7 @@ export const useTasks = () => {
   const context = useContext(TaskContext)
 
   if (!context) {
-    throw new Error('useTask meust be used within a taskProvider')
+    throw new Error("useTask meust be used within a taskProvider")
   }
 
   return context
@@ -66,7 +66,7 @@ export function TaskProvider({ children }) {
       console.log(error)
     }
   }
-  
+
   return (
     <TaskContext.Provider
       value={{ tasks, createTask, getTasks, getTask, deleteTask, updateTask }}

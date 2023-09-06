@@ -1,5 +1,12 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { TransactionReducerContext } from "../context/reducers/TransactionReducerContext"
+import {
+  createTransactionRequest,
+  deleteTransactionRequest,
+  getTransactionsRequest,
+  getTransactionRequest,
+  updateTransactionRequest
+} from "../api/transactions"
 
 const initialState = {
   transactions: []
@@ -13,31 +20,55 @@ export const useTransactionState = () => {
 }
 
 export const TransactionProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(
-    TransactionReducerContext,
-    initialState,
-    () => {
-      const localData = localStorage.getItem("transactions")
-      return localData ? JSON.parse(localData) : initialState
-    }
-  )
+  const [state, dispatch] = useReducer(TransactionReducerContext, initialState)
 
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(state))
-  }, [state])
+    //localStorage.setItem("transactions", JSON.stringify(state))
+    async function fetchTransactions() {
+      try {
+        const res = await getTransactionsRequest()
+        const transactionsData = Array.isArray(res.data) ? res.data : [] // Si no es un array, asignamos un array vacío
+        dispatch({ type: "SET_TRANSACTIONS", payload: transactionsData })
+      } catch (error) {
+        console.error("Error fectching transactions:", error)
+      }
+    }
+    fetchTransactions()
+  }, [state.transaction])
 
   const addTransaction = (transaction) => {
-    dispatch({
-      type: "ADD_TRANSACTION",
-      payload: transaction
-    })
+    async function addTransaction(transaction) {
+      try {
+        console.log(transaction)
+        await createTransactionRequest(transaction)
+        dispatch({
+          type: "ADD_TRANSACTION",
+          payload: transaction
+        })
+      } catch (error) {
+        console.error("Error adding transactions:", error)
+      }
+    }
+    addTransaction(transaction)
   }
 
   const deleteTransaction = (id) => {
-    dispatch({
-      type: "DELETE_TRANSACTION",
-      payload: id
-    })
+    console.log(id)
+    async function deleteTransaction(id) {
+      try {
+
+        await deleteTransactionRequest(id)
+
+        dispatch({
+          type: "DELETE_TRANSACTION",
+          payload: id
+        })
+      } catch (error) {
+        console.error("Error adding transactions:", error)
+      }
+    }
+
+    deleteTransaction(id)
   }
 
   return (

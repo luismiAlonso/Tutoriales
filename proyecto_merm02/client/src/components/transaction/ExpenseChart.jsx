@@ -9,7 +9,6 @@ function ExpenseChart() {
     () => calculatePercentIncomeAndExpense(transactions),
     [transactions]
   )
-
   return (
     <VictoryPie
       colorScale={["#FF5233", "#33C7FF"]}

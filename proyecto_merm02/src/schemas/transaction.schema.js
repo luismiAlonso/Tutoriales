@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const transactionSchema = z.object({
-    amoiunt: z.number({
+    amount: z.number({
         required_error: 'Amount is required'
     }),
     description: z.string({

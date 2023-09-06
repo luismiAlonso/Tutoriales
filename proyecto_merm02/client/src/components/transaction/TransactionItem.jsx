@@ -8,11 +8,13 @@ function TransactionItem({ transaction }) {
       <div>
         <span>${transaction.amount}</span>
         <button
+          className="w-6 h-6 ml-3 rounded-full bg-slate-500 hover:bg-slate-600 text-white"
           onClick={() => {
-            deleteTransaction(transaction.id)
+            deleteTransaction(transaction._id)
           }}
         >
-          x
+          <label className="text-orange-800 ">x</label>
+          
         </button>
       </div>
     </li>

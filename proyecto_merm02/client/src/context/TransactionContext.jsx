@@ -34,7 +34,7 @@ export const TransactionProvider = ({ children }) => {
       }
     }
     fetchTransactions()
-  }, [state.transaction])
+  }, [state])
 
   const addTransaction = (transaction) => {
     async function addTransaction(transaction) {
@@ -53,7 +53,6 @@ export const TransactionProvider = ({ children }) => {
   }
 
   const deleteTransaction = (id) => {
-    console.log(id)
     async function deleteTransaction(id) {
       try {
 

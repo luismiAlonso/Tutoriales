@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false) // Initial loading complete
         return setUser(null) // Clear user information
       }
-
+ 
       try {
         const res = await verityTokenRequest(cookies.token) // Verify token on the backend
         if (!res.data) {

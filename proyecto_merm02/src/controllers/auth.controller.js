@@ -42,10 +42,10 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-  const { email, password, level } = req.body
+  const { email, username, password, level } = req.body
 
   try {
-    const userFound = await User.findOne({ email })
+    const userFound = await User.findOne({ username })
     //no encuentra usuario
     if (!userFound) return res.status(400).json(['User not found'])
     //comparo contraseñas o mail en este caso

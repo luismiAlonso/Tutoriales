@@ -12,7 +12,7 @@ import NavBar from "./components/NavBar"
 import TransactionPage from "./pages/TransactionPage"
 
 function App() {
-  
+
   return (
     <AuthProvider>
       <TaskProvider>

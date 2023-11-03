@@ -12,25 +12,36 @@ const CustomTextInput: React.FC<Itext> = ({
   additionalStyles = "" // Inicializar con un valor por defecto vacío
   // ...otros props que desees incluir
 }) => {
-  
-  const [inputValue, setInputValue] = useState(value)
+  const isControlled = value !== undefined
+
+  const [inputValue, setInputValue] = useState(
+    isControlled ? value : defaultValue
+  )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
-      setInputValue(e.target.value)
-      onChange(e.target.value, idInput)
+      const newValue = e.target.value
+      if (!isControlled) {
+        // Solo actualizar el estado si es un componente no controlado
+        setInputValue(newValue)
+      }
+      onChange(newValue, idInput)
     }
   }
 
   useEffect(() => {
-    setInputValue(value)
-  }, [value])
+    if (isControlled && value !== inputValue) {
+      // Si es un componente controlado y el valor de la prop ha cambiado,
+      // actualizar el estado
+      setInputValue(value)
+    }
+  }, [value, isControlled, inputValue])
 
   return (
     <input
       type={type}
-      value={inputValue}
-      defaultValue={defaultValue}
+      value={isControlled ? inputValue : undefined}
+      defaultValue={!isControlled ? inputValue : undefined}
       onChange={handleInputChange}
       placeholder={placeholder}
       readOnly={readOnly}

@@ -3,12 +3,12 @@ import SelectComponent from "../components/selectComponent/SelectComponent"
 import HybridSelect from "./hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "./button/ButtonComponent"
 import InputTextComponent from "../components/inputTextComponent/InputTextComponent"
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { InputDescriptorProducto } from "../interfaces/InputDescriptorProducto"
 import { InputProps } from "../interfaces/InputProps"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 
 export interface CustomCardProps {
-  columns: ColumnDescriptor[]
+  columns: InputDescriptorProducto[]
   onInputChange: (id: string | number, value: any) => void
   onButtonClick: (id: string) => void
 }

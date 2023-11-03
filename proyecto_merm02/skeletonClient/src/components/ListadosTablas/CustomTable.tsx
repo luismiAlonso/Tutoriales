@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { ColumnDescriptor } from "./Itabla"
+import { InputDescriptorProducto } from "../../interfaces/InputDescriptorProducto"
 import { Producto } from "../../interfaces/OrdenProduccion"
 import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
@@ -30,7 +30,7 @@ interface CustomTableProps {
 
 // Props para CustomTable
 interface TableProps {
-  columns: ColumnDescriptor[]
+  columns: InputDescriptorProducto[]
   data: Producto[]
   onInputChange: (
     value: any,
@@ -128,6 +128,12 @@ const TableCellComponent: React.FC<CustomTableProps> = (props) => {
           />
         </td>
       )
+      case "noInput":
+        return (
+          <td>
+            {props.value}
+          </td>
+        )
     default:
       return <td>{props.content}</td>
   }
@@ -142,14 +148,14 @@ const CustomTable: React.FC<TableProps> = ({
 
   const { mapearProductoAColumnasRead } = useOrdenProduccionData()
   
-  const columnsData: ColumnDescriptor[][]= []
+  const columnsData: InputDescriptorProducto[][]= []
 
   data.map((producto: Producto)=>{
-     ///console.log(producto)
      const mapedProduct =  mapearProductoAColumnasRead(parteProducto,producto)
      columnsData.push(mapedProduct)
   })
-  
+
+  //console.log(columnsData)
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

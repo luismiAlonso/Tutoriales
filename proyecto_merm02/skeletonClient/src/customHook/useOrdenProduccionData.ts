@@ -142,7 +142,7 @@ export const useOrdenProduccionData = () => {
 
     // Convierte el array de ColumnDescriptor a un objeto Producto
     const producto = mapColumnDescriptorsToProducto(columnas, idParte)
-
+    console.log(producto)
     // Encuentra el índice del producto que deseas modificar dentro de esa orden de producción
     const productos = ordenProduccion[0].ordenesProduccion
     if (productos.length === 0) {
@@ -215,6 +215,8 @@ export const useOrdenProduccionData = () => {
     producto: Producto
   ): ColumnDescriptor[] => {
     return columnasTemplate.map((column) => {
+      console.log(column)
+
       // Convertimos el título a lowercase y buscamos si ese valor existe en el objeto Producto
       const productoKey = Object.keys(producto).find(
         (key) => key.toLowerCase() === column.title.toLowerCase()
@@ -222,7 +224,11 @@ export const useOrdenProduccionData = () => {
 
       // Si existe, asignamos el valor a defaultValue, de lo contrario retornamos el column original
       return productoKey
-        ? { ...column, defaultValue: producto[productoKey] }
+        ? {
+            ...column,
+            defaultValue: producto[productoKey],
+            value: producto[productoKey]
+          }
         : column
     })
   }
@@ -336,6 +342,7 @@ export const useOrdenProduccionData = () => {
 
   const getCurrentOrderProduccion = () => {
     const ordenesProduccion = fetchOrdenesProduccionDB()
+
     if (ordenesProduccion && ordenesProduccion.length > 0) {
       //console.log(ordenesProduccion[ordenesProduccion.length - 1])
       return ordenesProduccion[ordenesProduccion.length - 1]
@@ -410,7 +417,6 @@ export const useOrdenProduccionData = () => {
         (col) => col.title.toLowerCase() === title.toLowerCase()
       )
     }
-
     return {
       idParte: (findValueByTitle("P")?.value as number) || 0,
       indiceProducto: obtenerUltimoProducto(idParte).indiceProducto,

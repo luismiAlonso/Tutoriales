@@ -13,8 +13,8 @@ import { HeadersProducto } from "../models/HeadersProducto"
 
 function OrdenProducionPage() {
   const {
-   // mapearProductoAColumnas,
-   // obtenerUltimoProducto,
+    // mapearProductoAColumnas,
+    // obtenerUltimoProducto,
     getCurrentOrderProduccion,
     mapColumnDescriptorsToProducto,
     agregarNuevoProductoOP,
@@ -27,8 +27,7 @@ function OrdenProducionPage() {
     OrdenProduccion | null | undefined
   >()
 
-  const { setColumns, columns, getOnChangeForInput, getOnClickForInput } =
-    useListProducts()
+  const { setColumns, columns } = useListProducts()
 
   //const { setColumnDescriptors, columnDescriptors } = useOrdenProductionStore()
 
@@ -43,13 +42,11 @@ function OrdenProducionPage() {
 
     if (id === "12") {
       //este ide corresponde al boton de añadir
-      console.log(columns)
       if (ordenProduccion) {
         const mappedProduct = mapColumnDescriptorsToProducto(
           columns,
           ordenProduccion?.idParte
         )
-
         // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
         const nuevoOrdenProduccion = { ...ordenProduccion }
         nuevoOrdenProduccion.ordenesProduccion = [
@@ -65,25 +62,29 @@ function OrdenProducionPage() {
   }
 
   useEffect(() => {
-    if (getCurrentOrderProduccion() !== null) {
-      setOrdenProduccion(getCurrentOrderProduccion())
-    }
 
     if (ordenProduccion) {
       const productoActual = recuperarDatosTemporales()
-
       if (productoActual) {
         productoActual[0].value = ordenProduccion.idParte
         setDatosColumna(productoActual)
         setColumns(productoActual)
-       // setColumnDescriptors(productoActual)
       }
     } else {
       setDatosColumna(ParteLaminacion)
       setColumns(ParteLaminacion)
-     // setColumnDescriptors(columns)
     }
   }, [ordenProduccion])
+
+  useEffect(() => {
+
+    const currentOrder = getCurrentOrderProduccion()
+
+    if (currentOrder !== null) {
+      setOrdenProduccion(currentOrder)
+    }
+
+  }, [])
 
   return (
     <form className="text-white">

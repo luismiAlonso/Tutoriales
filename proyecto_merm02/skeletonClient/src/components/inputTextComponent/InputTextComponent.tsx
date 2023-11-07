@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from "react"
 import { Itext } from "./Itext"
-import { useEffect, useState } from "react"
 
 const CustomTextInput: React.FC<Itext> = ({
   value,
@@ -9,39 +9,41 @@ const CustomTextInput: React.FC<Itext> = ({
   type,
   placeholder = "",
   readOnly,
-  additionalStyles = "" // Inicializar con un valor por defecto vacío
-  // ...otros props que desees incluir
+  additionalStyles = "",
+  shouldReset // Agrega una nueva prop para decidir cuándo resetear al defaultValue
 }) => {
-  const isControlled = value !== undefined
-
-  const [inputValue, setInputValue] = useState(
-    isControlled ? value : defaultValue
+  // Estado local que puede ser tanto string como number
+  const [inputValue, setInputValue] = useState<string | number>(
+    value ?? defaultValue
   )
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (onChange) {
-      const newValue = e.target.value
-      if (!isControlled) {
-        // Solo actualizar el estado si es un componente no controlado
-        setInputValue(newValue)
-      }
-      onChange(newValue, idInput)
-    }
-  }
-
+  // Asegúrate de que el tipo de value sea consistente con el estado
   useEffect(() => {
-    if (isControlled && value !== inputValue) {
-      // Si es un componente controlado y el valor de la prop ha cambiado,
-      // actualizar el estado
+    if (value !== undefined) {
       setInputValue(value)
     }
-  }, [value, isControlled, inputValue])
+  }, [value])
+
+  // Igual con defaultValue
+  useEffect(() => {
+    if (shouldReset) {
+      setInputValue(defaultValue ?? "")
+    }
+  }, [defaultValue, shouldReset])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Aquí debes asegurarte de convertir el valor a number si el tipo del input es 'number'
+    const newValue = e.target.value
+
+    const valueToEmit = type === "number" ? newValue.toString() : newValue
+    setInputValue(newValue) // Actualiza el estado local
+    onChange?.(valueToEmit, idInput) // Notifica al padre
+  }
 
   return (
     <input
       type={type}
-      value={isControlled ? inputValue : undefined}
-      defaultValue={!isControlled ? inputValue : undefined}
+      value={inputValue.toString()} // Convierte el valor a string para el input
       onChange={handleInputChange}
       placeholder={placeholder}
       readOnly={readOnly}

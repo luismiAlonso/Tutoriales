@@ -1,37 +1,16 @@
 import React, { useEffect } from "react"
-import { InputDescriptorProducto } from "../../interfaces/InputDescriptorProducto"
-import { Producto } from "../../interfaces/OrdenProduccion"
-import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
-import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
+import { ColumnDescriptor } from "../../interfaces/ColumnDescriptor"
 import SelectComponent from "../selectComponent/SelectComponent"
 import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "../button/ButtonComponent"
 import InputTextComponent from "../inputTextComponent/InputTextComponent"
-import { parteProducto } from "../../models/ParteProducto"
-
-// Props para TableCellComponent
-interface CustomTableProps {
-  idInput: string
-  type: string
-  value: string | number | boolean
-  defaultValue?: string | number
-  placeHolder?: string
-  editable?: boolean
-  additionalStyles?: string
-  options?: string[]
-  content?: string | JSX.Element
-  rowIndex: number
-  onChange?: (
-    value: string | number | boolean,
-    idInput: string | number
-  ) => void
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-}
+import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
 
 // Props para CustomTable
-interface TableProps {
-  columns: InputDescriptorProducto[]
-  data: Producto[]
+interface TableProps<T> {
+  columns: ColumnDescriptor[]
+  dataColumn: ColumnDescriptor[]
+  data: T[]
   onInputChange: (
     value: any,
     idInput: string | number,
@@ -40,57 +19,85 @@ interface TableProps {
   onButtonClick: (idInput: string | number) => void
 }
 
-const TableCellComponent: React.FC<CustomTableProps> = (props) => {
+interface CustomTableProps<T> {
+  data: T
+  column: ColumnDescriptor
+  dataColumn: ColumnDescriptor
+  rowIndex: number
+  onInputChange: (
+    value: any,
+    idInput: string | number,
+    rowIndex: number
+  ) => void
+  onButtonClick: (idInput: string | number) => void
+}
+
+const TableCellComponent: React.FC<CustomTableProps<any>> = ({
+  data,
+  column,
+  dataColumn,
+  rowIndex,
+  onInputChange,
+  onButtonClick
+}) => {
   //console.log(props)
-  const { setInputValue } = useOrdenProductionStore()
+  //const { setInputValue } = useOrdenProductionStore()
   const handleChange = (value: string | number | boolean) => {
-    setInputValue(props.idInput, value)
-    props.onChange && props.onChange(value, props.idInput)
+    //setInputValue(props.idInput, value)
+    // props.onChange && props.onChange(value, props.idInput)
+    onInputChange(value, column.idInput, rowIndex)
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    props.onClick && props.onClick(e)
+    onButtonClick(column.idInput)
+    //props.onClick && props.onClick(e)
   }
 
-  switch (props.type) {
+  /*console.log("Data Object:", data)
+  console.log("Column Object:", column)
+  console.log(column.idInput, data[column.idInput])*/
+
+  switch (dataColumn.type) {
     case "text":
       return (
-        <td>
+        <td className="text-center">
           <InputTextComponent
-            value={props.value as string}
-            defaultValue={props.defaultValue as string}
+            value={data[dataColumn.idInput] as string}
+            defaultValue={dataColumn.defaultValue as string}
             onChange={(value: string) => handleChange(value)}
-            placeholder={props.placeHolder}
-            readOnly={props.editable}
-            additionalStyles={props.additionalStyles}
-            type={props.type}
+            placeholder={dataColumn.placeHolder}
+            readOnly={!dataColumn.editable}
+            additionalStyles={dataColumn.additionalStyles}
+            type={dataColumn.type}
+            shouldReset={true}
           />
         </td>
       )
     case "number":
       return (
-        <td>
+        <td className="text-center">
           <InputTextComponent
-            value={props.value as string}
-            defaultValue={props.defaultValue as string}
+            value={data[dataColumn.idInput] as string}
+            defaultValue={dataColumn.defaultValue as string}
             onChange={(value: string) => handleChange(value)}
-            placeholder={props.placeHolder}
-            readOnly={props.editable}
-            additionalStyles={props.additionalStyles}
-            type={props.type}
+            placeholder={dataColumn.placeHolder}
+            readOnly={!dataColumn.editable}
+            additionalStyles={dataColumn.additionalStyles}
+            type={dataColumn.type}
+            shouldReset={true}
           />
         </td>
       )
     case "dropdown":
       return (
-        <td>
+        <td className="text-center">
           <SelectComponent
-            idSelected={props.idInput}
-            value={props.value as string}
-            defaultValue={props.defaultValue as string}
-            selectedValueRef={props.defaultValue as string}
-            optionsSelect={props.options as string[]}
+            idSelected={dataColumn.idInput}
+            value={data[dataColumn.idInput] as string}
+            defaultValue={dataColumn.defaultValue as string}
+            selectedValueRef={dataColumn.defaultValue as string}
+            optionsSelect={dataColumn.options}
             onSeleccion={() => {}}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               handleChange(e.target.value)
@@ -100,111 +107,92 @@ const TableCellComponent: React.FC<CustomTableProps> = (props) => {
       )
     case "hybridSelect":
       return (
-        <td>
+        <td className="text-center">
           <HybridSelect
-            options={props.options || []}
-            defaultValue={props.defaultValue as string}
-            value={props.value as string}
+            options={dataColumn.options || []}
+            defaultValue={dataColumn.defaultValue as string}
+            value={data[dataColumn.idInput] as string}
             onChange={(value: string) => handleChange(value)}
           />
         </td>
       )
     case "checkbox":
       return (
-        <td>
+        <td className="text-center">
           <input
             type="checkbox"
-            checked={props.value as boolean}
+            checked={data[dataColumn.idInput] as boolean}
             onChange={(e) => handleChange(e.target.checked)}
           />
         </td>
       )
     case "button":
       return (
-        <td>
+        <td className="text-center">
           <CustomButton
-            buttonText={props.content as string}
+            buttonText={dataColumn.content as string}
             onClick={handleClick}
           />
         </td>
       )
-      case "noInput":
-        return (
-          <td>
-            {props.value}
-          </td>
-        )
+    case "noInput":
+      return <td className="text-center">{data[dataColumn.idInput]}</td>
     default:
-      return <td>{props.content}</td>
+      return <td className="text-center">{dataColumn.content}</td>
   }
 }
 
-const CustomTable: React.FC<TableProps> = ({
+const CustomTable: React.FC<TableProps<any>> = ({
   columns,
+  dataColumn,
   onInputChange,
   onButtonClick,
   data
 }) => {
+  const { incrementarIndiceProductos } = useOrdenProduccionData()
+  const productosIndexados = incrementarIndiceProductos(data)
 
-  const { mapearProductoAColumnasRead } = useOrdenProduccionData()
-  
-  const columnsData: InputDescriptorProducto[][]= []
-
-  data.map((producto: Producto)=>{
-     const mapedProduct =  mapearProductoAColumnasRead(parteProducto,producto)
-     columnsData.push(mapedProduct)
-  })
-
-  //console.log(columnsData)
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            {columns.map((column, index) => (
-              <th key={index} className="px-6 py-3">
-                {column.title}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {columnsData.map((rowData, rowIndex) => (
-            <tr key={rowIndex} className={`${rowIndex % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'} border-b dark:border-gray-700`}>
-              {rowData.map((columnData, columnIndex) => (
-                <TableCellComponent
-                  key={columnIndex}
-                  idInput={columnData.idInput}
-                  type={columnData.type}
-                  value={columnData.value}
-                  defaultValue={columnData.defaultValue}
-                  placeHolder={columnData.placeHolder}
-                  editable={columnData.editable}
-                  additionalStyles={columnData.additionalStyles}
-                  options={columnData.options}
-                  content={columnData.content}
-                  rowIndex={rowIndex}
-                  onChange={(value) =>
-                    onInputChange(value, columnData.idInput, rowIndex)
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onButtonClick(columnData.idInput);
-                  }}
-                />
+    <>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              {columns.map((column, index) => (
+                <th key={index} className="px-6 py-3">
+                  {column.title}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {productosIndexados.map((rowData, rowIndex) => (
+              <tr
+                key={rowIndex}
+                className={`${
+                  rowIndex % 2 === 0
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-50 dark:bg-gray-800"
+                } border-b dark:border-gray-700`}
+              >
+                {dataColumn.map((column, columnIndex) => (
+                  <TableCellComponent
+                    key={columnIndex}
+                    dataColumn={column}
+                    data={rowData}
+                    column={column}
+                    rowIndex={rowIndex}
+                    onInputChange={onInputChange}
+                    onButtonClick={onButtonClick}
+                  />
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }
 
-export default CustomTable;
-
-
-
-
-
-
+export default CustomTable

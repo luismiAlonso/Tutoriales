@@ -32,6 +32,7 @@ export const updateOrdenByIdDB = (
   idParte: number,
   updatedOrden: Partial<OrdenProduccion>
 ) => {
+  
   try {
     const ordenes = fetchOrdenesProduccionDB()
     const index = ordenes.findIndex((orden) => orden.idParte === idParte)
@@ -42,6 +43,7 @@ export const updateOrdenByIdDB = (
   } catch (error) {
     console.error("Error updating orden by id:", error)
   }
+
 }
 
 // Aquí puedes agregar más funciones según lo necesites...

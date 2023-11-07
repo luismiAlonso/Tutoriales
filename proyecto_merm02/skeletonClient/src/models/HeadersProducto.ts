@@ -1,10 +1,10 @@
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
 export const HeadersProducto: ColumnDescriptor[] = [
 
     {
       title: "P",
-      idInput: "1",
+      idInput: "P",
       value: "1",
       content: "",
       type: "noInput",
@@ -16,7 +16,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "Index Producto",
-      idInput: "2",
+      idInput: "Index Producto",
       value: "0",
       content: "",
       type: "noInput",
@@ -27,8 +27,8 @@ export const HeadersProducto: ColumnDescriptor[] = [
       placeHolder: ""
     },
     {
-      title: "OP",
-      idInput: "3",
+      title: "OPERARIO",
+      idInput: "operario",
       value: "1",
       content: "",
       type: "noInput",
@@ -40,7 +40,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "PASADA",
-      idInput: "4",
+      idInput: "PASADA",
       value: "1",
       content: "",
       type: "noInput",
@@ -52,7 +52,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "TIPO",
-      idInput: "5",
+      idInput: "TIPO",
       value: "",
       content: "",
       type: "noInput",
@@ -64,7 +64,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "COLOR",
-      idInput: "6",
+      idInput: "COLOR",
       value: "",
       content: "",
       type: "noInput",
@@ -76,7 +76,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "MOLDE",
-      idInput: "7",
+      idInput: "MOLDE",
       content: "",
       value: "",
       type: "noInput",
@@ -88,7 +88,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "PLANCH OB.",
-      idInput: "8",
+      idInput: "PLANCH OB.",
       content: "",
       value: "",
       type: "noInput",
@@ -100,7 +100,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "PESO",
-      idInput: "9",
+      idInput: "PESO",
       type: "noInput",
       content: "",
       value: "",
@@ -112,7 +112,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "FORMULAS",
-      idInput: "10",
+      idInput: "FORMULAS",
       type: "noInput",
       content: "",
       value: "",
@@ -124,7 +124,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "PLANCHAS",
-      idInput: "11",
+      idInput: "PLANCHAS",
       type: "noInput",
       content: "",
       value: "",
@@ -136,7 +136,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "ACELERANTES",
-      idInput: "12",
+      idInput: "ACELERANTES",
       type: "noInput",
       content: "",
       value: "",

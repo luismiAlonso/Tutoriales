@@ -142,7 +142,7 @@ export const useOrdenProduccionData = () => {
 
     // Convierte el array de ColumnDescriptor a un objeto Producto
     const producto = mapColumnDescriptorsToProducto(columnas, idParte)
-    console.log(producto)
+    //console.log(producto)
     // Encuentra el índice del producto que deseas modificar dentro de esa orden de producción
     const productos = ordenProduccion[0].ordenesProduccion
     if (productos.length === 0) {
@@ -160,63 +160,18 @@ export const useOrdenProduccionData = () => {
     updateOrdenProduccion(ordenProduccion[0])
   }
 
-  /*
-  const setDatosProducto = (atributo: string, valor: string) => {
-    // Obtener el objeto actual de localStorage (o un objeto vacío si no existe)
-    const producto = JSON.parse(localStorage.getItem("productoData") || "{}")
-
-    switch (atributo) {
-      case "P":
-        producto.idParte = valor
-        break
-      case "OP":
-        producto.indiceProducto = valor
-        break
-      case "PASADA":
-        producto.Pasada = valor
-        break
-      case "TIPO":
-        producto.Tipo = valor
-        break
-      case "COLOR":
-        producto.Color = valor
-        break
-      case "MOLDE":
-        producto.Molde = valor
-        break
-      case "PLANCH OB.":
-        producto.PlanchaObtenidas = valor
-        break
-      case "PESO":
-        producto.Peso = valor
-        break
-      case "FORMULAS":
-        producto.Formulas = valor
-        break
-      case "PLANCHAS":
-        producto.Planchas = valor
-        break
-      case "ACELERANTES":
-        producto.Acelerantes = valor
-        break
-      default:
-        // No hacer nada si el atributo no coincide
-        break
-    }
-
-    // Almacenar el objeto actualizado en localStorage
-    localStorage.setItem("productoData", JSON.stringify(producto))
-  }*/
-
-  const setDatosProducto = () => {}
+  const incrementarIndiceProductos = (productos: Producto[]): Producto[] => {
+    return productos.map((producto, index) => ({
+      ...producto,
+      indiceProducto: index + 1
+    }))
+  }
 
   const mapearProductoAColumnasRead = (
     columnasTemplate: ColumnDescriptor[],
     producto: Producto
   ): ColumnDescriptor[] => {
     return columnasTemplate.map((column) => {
-      console.log(column)
-
       // Convertimos el título a lowercase y buscamos si ese valor existe en el objeto Producto
       const productoKey = Object.keys(producto).find(
         (key) => key.toLowerCase() === column.title.toLowerCase()
@@ -230,6 +185,36 @@ export const useOrdenProduccionData = () => {
             value: producto[productoKey]
           }
         : column
+    })
+  }
+
+  const mapColumnDescriptors = (
+    template: ColumnDescriptor[],
+    data: ColumnDescriptor[],
+    fieldsToExclude: string[] = []
+  ): ColumnDescriptor[] => {
+    return template.map((templateColumn) => {
+      // Encontrar la columna correspondiente en data
+      const dataColumn = data.find((dc) => dc.title === templateColumn.title)
+
+      // Si existe una columna correspondiente y no está en la lista de exclusión
+      if (dataColumn) {
+        return Object.keys(templateColumn).reduce((newColumn, key) => {
+          // Si la clave no está en la lista de exclusión, usar el valor de dataColumn
+          if (!fieldsToExclude.includes(key)) {
+            newColumn[key as keyof ColumnDescriptor] =
+              templateColumn[key as keyof ColumnDescriptor]
+          }
+          // Si la clave está en la lista de exclusión, usar el valor de templateColumn
+          else {
+            newColumn[key as keyof ColumnDescriptor] =
+              dataColumn[key as keyof ColumnDescriptor]
+          }
+          return newColumn
+        }, {} as ColumnDescriptor)
+      }
+      // Si no hay una columna correspondiente, devolver la columna del template
+      return templateColumn
     })
   }
 
@@ -350,12 +335,18 @@ export const useOrdenProduccionData = () => {
     return null
   }
 
-  const updateColumnProduct = (id: string | number, valor: string | number) => {
+  const updateColumnProduct = (
+    id: string | number,
+    valor: string | number,
+    plantilla: ColumnDescriptor[]
+  ) => {
     // Primero, intenta recuperar los datos actuales desde localStorage
     const datosActuales = recuperarDatosTemporales()
 
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
+      //console.log(datosActuales, id)
+
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
 
       if (index !== -1) {
@@ -373,26 +364,20 @@ export const useOrdenProduccionData = () => {
         )
       }
     } else {
+      // Luego guarda los datos actualizados de vuelta en localStorage
+      plantilla[1] = {
+        ...plantilla[1],
+        value: valor
+      }
+
+      guardarDatosTemporales(plantilla)
       console.error("No hay datos en localStorage para actualizar.")
     }
   }
 
-  /*const getOrdenProduccionById = (idParte: number) => {
-    const ordenesProduccion = fetchOrdenesProduccionDB()
-
-    const parteProduccion = ordenesProduccion.filter(
-      (op) => op.idParte === idParte
-    )
-    console.log(parteProduccion)
-    if (parteProduccion) {
-      return parteProduccion
-    }
-    return
-  }*/
-
   const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
-    setIsLoading(true)
 
+    setIsLoading(true)
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
     const ordenIndex = ordenesProduccion.findIndex(
@@ -418,7 +403,7 @@ export const useOrdenProduccionData = () => {
       )
     }
     return {
-      idParte: (findValueByTitle("P")?.value as number) || 0,
+      idParte: idParte,
       indiceProducto: obtenerUltimoProducto(idParte).indiceProducto,
       operario: "", // Tendrás que llenar esto de alguna manera
       Pasada: (findValueByTitle("PASADA")?.value as number) || 0,
@@ -436,9 +421,10 @@ export const useOrdenProduccionData = () => {
   return {
     isLoading,
     getDatosProducto,
+    incrementarIndiceProductos,
     mapearProductoAColumnasRead,
     mapColumnDescriptorsToProducto,
-    setDatosProducto,
+    mapColumnDescriptors,
     agregarNuevoProductoOP,
     cargarDatosOrdenProduccion,
     updateOrdenProduccion,

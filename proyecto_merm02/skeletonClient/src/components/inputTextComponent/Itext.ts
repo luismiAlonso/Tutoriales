@@ -7,5 +7,6 @@ export interface Itext {
   readOnly?: boolean
   additionalStyles?: string // Nueva propiedad para estilos adicionales
   type?: "text" | "number" // Añadir prop de tipo
+  shouldReset:boolean
   // Puedes agregar más props aquí si lo deseas...
 }

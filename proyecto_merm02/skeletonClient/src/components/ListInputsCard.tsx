@@ -1,20 +1,21 @@
-import React from "react"
+import React, { useEffect } from "react"
 import SelectComponent from "../components/selectComponent/SelectComponent"
 import HybridSelect from "./hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "./button/ButtonComponent"
 import InputTextComponent from "../components/inputTextComponent/InputTextComponent"
-import { InputDescriptorProducto } from "../interfaces/InputDescriptorProducto"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { InputProps } from "../interfaces/InputProps"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 
+
 export interface CustomCardProps {
-  columns: InputDescriptorProducto[]
+  columns: ColumnDescriptor[]
   onInputChange: (id: string | number, value: any) => void
   onButtonClick: (id: string) => void
 }
 
 const InputComponent: React.FC<InputProps> = (props) => {
-  //console.log(props)
+
   const { setInputValue } = useOrdenProductionStore()
 
   const handleChange = (value: string | number) => {
@@ -28,6 +29,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
   }
 
   switch (props.type) {
+
     case "text":
       return (
         <InputTextComponent
@@ -38,6 +40,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
           readOnly={props.editable}
           additionalStyles={props.additionalStyles}
           type="text"
+          shouldReset={true}
         />
       )
     case "number":
@@ -47,9 +50,10 @@ const InputComponent: React.FC<InputProps> = (props) => {
           defaultValue={props.defaultValue as string | number}
           onChange={(value) => handleChange(value)}
           placeholder={props.placeHolder}
-          readOnly={!props.editable}
+          readOnly={props.editable}
           additionalStyles={props.additionalStyles}
           type="number"
+          shouldReset={true}
         />
       )
     case "dropdown":

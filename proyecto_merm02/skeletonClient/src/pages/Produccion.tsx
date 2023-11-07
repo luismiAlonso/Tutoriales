@@ -36,8 +36,6 @@ function Produccion() {
     navigate("/OrdenProducionPage")
   }
 
-  useEffect(() => {}, [])
-
   return (
     <div className="flex flex-col h-screen items-center">
       <div className="flex-screem justify-center items-start">

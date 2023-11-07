@@ -1,4 +1,4 @@
-export interface InputDescriptor {
+export interface ColumnDescriptor {
     idInput:string,
     title: string,
     content: string,
@@ -13,8 +13,3 @@ export interface InputDescriptor {
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-export interface InputDescriptorProducto {
-    idParte:string,
-    indexProduct: string
-    descriptor: InputDescriptor
-}

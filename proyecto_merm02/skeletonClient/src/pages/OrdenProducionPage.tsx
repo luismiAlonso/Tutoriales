@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import ListInputsCard from "../components/ListInputsCard"
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import CustomTable from "../components/ListadosTablas/CustomTable"
 import { useListProducts } from "../contextStore/useListProduct"
-import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
+import { parteProducto } from "../models/ParteProducto"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { Producto, OrdenProduccion } from "../interfaces/OrdenProduccion"
 import { ParteLaminacion } from "../models/ParteLaminacion"
@@ -19,7 +19,9 @@ function OrdenProducionPage() {
     mapColumnDescriptorsToProducto,
     agregarNuevoProductoOP,
     recuperarDatosTemporales,
-    updateColumnProduct
+    mapColumnDescriptors,
+    updateColumnProduct,
+    updateOrdenProduccion
   } = useOrdenProduccionData() // Usar el hook personalizado
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
@@ -29,24 +31,22 @@ function OrdenProducionPage() {
 
   const { setColumns, columns } = useListProducts()
 
-  //const { setColumnDescriptors, columnDescriptors } = useOrdenProductionStore()
-
-  // 1. Manejadores
   const handleInputChange = (value: string | number, id: any) => {
-    console.log(`Input con id ${id} ha cambiado su valor a ${value}`)
-    updateColumnProduct(id, value)
+    updateColumnProduct(id, value, ParteLaminacion)
   }
 
   const handleButtonClick = (idInput: string | number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
 
-    if (id === "12") {
+    if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
-      if (ordenProduccion) {
+      const productoActual = recuperarDatosTemporales()
+      if (ordenProduccion && productoActual) {
         const mappedProduct = mapColumnDescriptorsToProducto(
-          columns,
+          productoActual,
           ordenProduccion?.idParte
         )
+        console.log(mappedProduct)
         // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
         const nuevoOrdenProduccion = { ...ordenProduccion }
         nuevoOrdenProduccion.ordenesProduccion = [
@@ -54,7 +54,6 @@ function OrdenProducionPage() {
           mappedProduct
         ]
         setOrdenProduccion(nuevoOrdenProduccion)
-
         // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
         agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
       }
@@ -64,22 +63,35 @@ function OrdenProducionPage() {
   useEffect(() => {
 
     if (ordenProduccion) {
+      
       const productoActual = recuperarDatosTemporales()
+
       if (productoActual) {
         productoActual[0].value = ordenProduccion.idParte
-        setDatosColumna(productoActual)
-        setColumns(productoActual)
+        productoActual[0].defaultValue = ordenProduccion.idParte
+        //console.log(productoActual)
+        const mappedProductoActual = mapColumnDescriptors(
+          ParteLaminacion,
+          productoActual,
+          ["value", "defaultValue"]
+        )
+        setDatosColumna(mappedProductoActual)
+        setColumns(mappedProductoActual)
+        updateOrdenProduccion(ordenProduccion)
       }
     } else {
+
       setDatosColumna(ParteLaminacion)
       setColumns(ParteLaminacion)
+
     }
+
+
   }, [ordenProduccion])
 
   useEffect(() => {
 
     const currentOrder = getCurrentOrderProduccion()
-
     if (currentOrder !== null) {
       setOrdenProduccion(currentOrder)
     }
@@ -87,49 +99,48 @@ function OrdenProducionPage() {
   }, [])
 
   return (
+   
     <form className="text-white">
-      <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
-        <div className="flex-grow text-left">
-          <h2>PARTE DE LAMINACION</h2>
+        <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
+          <div className="flex-grow text-left">
+            <h2>PARTE DE LAMINACION</h2>
+          </div>
+          <div className="flex-grow text-right">
+            <span>{ordenProduccion?.fecha}</span>
+          </div>
         </div>
-        <div className="flex-grow text-right">
-          <span>{ordenProduccion?.fecha}</span>
+        <div className="flex items-center p-4 border-b border-gray-200">
+          <div className="flex-1">
+            <span className="font-bold">
+              OP nº {ordenProduccion ? ordenProduccion.idParte : "1"}
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center p-4 border-b border-gray-200">
-        <div className="flex-1">
-          {/* Ajustado para referenciar ordenReciente.idParte */}
-          <span className="font-bold">
-            OP nº {ordenProduccion ? ordenProduccion.idParte : "1"}
-          </span>
-        </div>
-        <span className="font-bold text-xl mr-2">PASADA</span>{" "}
-        {/* Aumenta el tamaño de la fuente */}
-        <input
-          type="number"
-          defaultValue={1}
-          className="w-24 p-1 h-10 text-black text-lg"
-        />
-      </div>
-      <div className="mt-3">
-        <ListInputsCard
-          columns={datosColumna}
-          onInputChange={handleInputChange}
-          onButtonClick={handleButtonClick}
-        />
-      </div>{" "}
-      <div className="mb-10 mt-4">
-        {ordenProduccion && (
-          <CustomTable
-            columns={HeadersProducto}
-            data={ordenProduccion?.ordenesProduccion}
+        <div className="mt-3">
+          <ListInputsCard
+            columns={datosColumna}
             onInputChange={handleInputChange}
             onButtonClick={handleButtonClick}
           />
-        )}
-      </div>
-    </form>
-  )
+        </div>
+        {ordenProduccion?.ordenesProduccion &&
+          ordenProduccion?.ordenesProduccion.length > 0 && (
+            <div className="mb-10 mt-4">
+              {
+              ordenProduccion && (
+                <CustomTable
+                  columns={HeadersProducto}
+                  dataColumn={parteProducto}
+                  data={ordenProduccion?.ordenesProduccion}
+                  onInputChange={handleInputChange}
+                  onButtonClick={handleButtonClick}
+                />
+              )
+              }
+            </div>
+              )}
+        </form>
+    )
 }
 
 export default OrdenProducionPage

@@ -34,7 +34,6 @@ const CustomTextInput: React.FC<Itext> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Aquí debes asegurarte de convertir el valor a number si el tipo del input es 'number'
     const newValue = e.target.value
-
     const valueToEmit = type === "number" ? newValue.toString() : newValue
     setInputValue(newValue) // Actualiza el estado local
     onChange?.(valueToEmit, idInput) // Notifica al padre

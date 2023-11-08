@@ -8,7 +8,7 @@ export interface OrdenProduccion {
 export interface Producto {
   idParte: number
   indiceProducto: number
-  operario: string
+  operario: number
   Pasada: number
   Tipo: string
   Color: string

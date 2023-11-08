@@ -196,7 +196,6 @@ export const useOrdenProduccionData = () => {
     return template.map((templateColumn) => {
       // Encontrar la columna correspondiente en data
       const dataColumn = data.find((dc) => dc.title === templateColumn.title)
-
       // Si existe una columna correspondiente y no está en la lista de exclusión
       if (dataColumn) {
         return Object.keys(templateColumn).reduce((newColumn, key) => {
@@ -345,17 +344,15 @@ export const useOrdenProduccionData = () => {
 
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
-      //console.log(datosActuales, id)
 
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
-
+      
       if (index !== -1) {
         // Si se encontró el descriptor de columna, actualiza su valor
         datosActuales[index] = {
           ...datosActuales[index],
           value: valor
         }
-
         // Luego guarda los datos actualizados de vuelta en localStorage
         guardarDatosTemporales(datosActuales)
       } else {
@@ -402,10 +399,26 @@ export const useOrdenProduccionData = () => {
         (col) => col.title.toLowerCase() === title.toLowerCase()
       )
     }
+
+    const operarioValue = findValueByTitle("PASADA");
+    console.log(operarioValue.va)
+    if (operarioValue === undefined || operarioValue === null || operarioValue === "") {
+      // Aquí manejas el caso de que no se encuentre el valor o no sea válido
+      console.error("El valor de OPERARIO no está definido o es inválido");
+      // Puedes lanzar un error, devolver un valor por defecto o manejarlo como prefieras
+    }
+  
+    // Asegúrate de que el valor es del tipo esperado, en este caso parece que esperas un número
+    const operarioNumber = Number(operarioValue);
+    if (isNaN(operarioNumber)) {
+      // Maneja el caso de que el valor no sea un número
+      console.error("El valor de OPERARIO no es un número");
+    }
+
     return {
       idParte: idParte,
       indiceProducto: obtenerUltimoProducto(idParte).indiceProducto,
-      operario: "", // Tendrás que llenar esto de alguna manera
+      operario: (findValueByTitle("OPERARIO")?.value as number) || 0, // Tendrás que llenar esto de alguna manera
       Pasada: (findValueByTitle("PASADA")?.value as number) || 0,
       Tipo: (findValueByTitle("TIPO")?.value as string) || "",
       Color: (findValueByTitle("COLOR")?.value as string) || "",

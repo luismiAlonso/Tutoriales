@@ -43,20 +43,17 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   //console.log(props)
   //const { setInputValue } = useOrdenProductionStore()
   const handleChange = (value: string | number | boolean) => {
-    //setInputValue(props.idInput, value)
-    // props.onChange && props.onChange(value, props.idInput)
     onInputChange(value, column.idInput, rowIndex)
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     onButtonClick(column.idInput)
-    //props.onClick && props.onClick(e)
   }
 
-  /*console.log("Data Object:", data)
-  console.log("Column Object:", column)
-  console.log(column.idInput, data[column.idInput])*/
+  //console.log("Data Object:", data)
+  //console.log("Column Object:", column)
+  //console.log(column.idInput, data[column.idInput])
 
   switch (dataColumn.type) {
     case "text":
@@ -149,9 +146,10 @@ const CustomTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
+
   const { incrementarIndiceProductos } = useOrdenProduccionData()
   const productosIndexados = incrementarIndiceProductos(data)
-
+  
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">

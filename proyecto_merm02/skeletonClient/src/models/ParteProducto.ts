@@ -28,7 +28,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "OPERARIO",
-      idInput: "operario",
+      idInput: "OPERARIO",
       value: "1",
       content: "",
       type: "noInput",

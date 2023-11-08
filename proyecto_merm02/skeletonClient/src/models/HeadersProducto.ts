@@ -15,8 +15,8 @@ export const HeadersProducto: ColumnDescriptor[] = [
       placeHolder: ""
     },
     {
-      title: "Index Producto",
-      idInput: "Index Producto",
+      title: "INDEX PRODUCT",
+      idInput: "INDEX PRODUCT",
       value: "0",
       content: "",
       type: "noInput",

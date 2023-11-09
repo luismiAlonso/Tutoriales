@@ -167,6 +167,56 @@ export const useOrdenProduccionData = () => {
     }))
   }
 
+  const mapearPropiedadesProductoLaminacion = (
+    headers: ColumnDescriptor[]
+  ): string[] => {
+    type ClaveMapeo =
+      | "idParte"
+      | "indiceProducto"
+      | "operario"
+      | "pasada"
+      | "tipo"
+      | "color"
+      | "molde"
+      | "planchaObtenidas"
+      | "peso"
+      | "formulas"
+      | "planchas"
+      | "acelerantes"
+
+    const mapeoPropiedades: Record<string, ClaveMapeo> = {
+      IDPARTE: "idParte",
+      "INDEX PRODUCT": "indiceProducto",
+      OPERARIO: "operario",
+      PASADA: "pasada",
+      TIPO: "tipo",
+      COLOR: "color",
+      MOLDE: "molde",
+      "PLANCHAS OB.": "planchaObtenidas",
+      PESO: "peso",
+      FORMULAS: "formulas",
+      PLANCHAS: "planchas",
+      ACELERANTES: "acelerantes"
+    }
+
+    const propiedadesMapeadas: string[] = []
+
+    headers.forEach((header) => {
+      if (
+        header &&
+        typeof header.idInput === "string" &&
+        header.type !== "button"
+      ) {
+        const claveMapeada = mapeoPropiedades[header.idInput.toUpperCase()]
+        if (claveMapeada) {
+          propiedadesMapeadas.push(claveMapeada)
+        }
+      }
+    })
+
+    return propiedadesMapeadas
+  }
+
   const mapearProductoAColumnasRead = (
     columnasTemplate: ColumnDescriptor[],
     producto: Producto
@@ -225,10 +275,10 @@ export const useOrdenProduccionData = () => {
     return columnas.map((column) => {
       let updatedColumn = column // Variable para almacenar la columna actualizada.
       switch (column.title) {
-        case "P":
+        case "IDPARTE":
           updatedColumn = { ...column, defaultValue: idParte, value: idParte }
           break // Agregada instrucción break.
-        case "OP":
+        case "OPERARIO":
           updatedColumn = {
             ...column,
             defaultValue: producto.indiceProducto,
@@ -238,64 +288,64 @@ export const useOrdenProduccionData = () => {
         case "PASADA":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Pasada,
-            value: producto.Pasada
+            defaultValue: producto.pasada,
+            value: producto.pasada
           }
           break // Agregada instrucción break.
         case "TIPO":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Tipo,
-            value: producto.Tipo
+            defaultValue: producto.tipo,
+            value: producto.tipo
           }
           break // Agregada instrucción break.
         case "COLOR":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Color,
-            value: producto.Color
+            defaultValue: producto.color,
+            value: producto.color
           }
           break // Agregada instrucción break.
         case "MOLDE":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Molde,
-            value: producto.Molde
+            defaultValue: producto.molde,
+            value: producto.molde
           }
           break // Agregada instrucción break.
         case "PLANCH OB.":
           updatedColumn = {
             ...column,
-            defaultValue: producto.PlanchaObtenidas,
-            value: producto.PlanchaObtenidas
+            defaultValue: producto.planchaObtenidas,
+            value: producto.planchaObtenidas
           }
           break // Agregada instrucción break.
         case "PESO":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Peso,
-            value: producto.Peso
+            defaultValue: producto.peso,
+            value: producto.peso
           }
           break // Agregada instrucción break.
         case "FORMULAS":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Formulas,
-            value: producto.Formulas
+            defaultValue: producto.formulas,
+            value: producto.formulas
           }
           break // Agregada instrucción break.
         case "PLANCHAS":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Planchas,
-            value: producto.Planchas
+            defaultValue: producto.planchas,
+            value: producto.planchas
           }
           break // Agregada instrucción break.
         case "ACELERANTES":
           updatedColumn = {
             ...column,
-            defaultValue: producto.Acelerantes,
-            value: producto.Acelerantes
+            defaultValue: producto.acelerantes,
+            value: producto.acelerantes
           }
           break // Agregada instrucción break.
         default:
@@ -339,14 +389,14 @@ export const useOrdenProduccionData = () => {
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
+
     // Primero, intenta recuperar los datos actuales desde localStorage
     const datosActuales = recuperarDatosTemporales()
 
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
-
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
-      
+
       if (index !== -1) {
         // Si se encontró el descriptor de columna, actualiza su valor
         datosActuales[index] = {
@@ -355,25 +405,37 @@ export const useOrdenProduccionData = () => {
         }
         // Luego guarda los datos actualizados de vuelta en localStorage
         guardarDatosTemporales(datosActuales)
+
       } else {
         console.error(
           `No se encontró el descriptor de columna con idInput: ${id}`
         )
       }
     } else {
-      // Luego guarda los datos actualizados de vuelta en localStorage
-      plantilla[1] = {
-        ...plantilla[1],
-        value: valor
-      }
+      
+      console.log(plantilla)
+      // Si no hay datos en localStorage, busca en la plantilla
+      const index = plantilla.findIndex((columna) => columna.idInput === id)
 
-      guardarDatosTemporales(plantilla)
-      console.error("No hay datos en localStorage para actualizar.")
+      if (index !== -1) {
+        // Si se encontró el descriptor de columna en la plantilla, actualiza su valor
+        plantilla[index] = {
+          ...plantilla[index],
+          value: valor
+        }
+        // Guarda los datos actualizados de vuelta en localStorage
+        guardarDatosTemporales(plantilla)
+      } else {
+        console.error(
+          `No se encontró el descriptor de columna con idInput: ${id}`
+        )
+        // Puedes descomentar la siguiente línea si deseas mostrar este mensaje
+        // console.error("No hay datos en localStorage para actualizar.");
+      }
     }
   }
 
   const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
-
     setIsLoading(true)
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
@@ -400,34 +462,19 @@ export const useOrdenProduccionData = () => {
       )
     }
 
-    const operarioValue = findValueByTitle("PASADA");
-    console.log(operarioValue.va)
-    if (operarioValue === undefined || operarioValue === null || operarioValue === "") {
-      // Aquí manejas el caso de que no se encuentre el valor o no sea válido
-      console.error("El valor de OPERARIO no está definido o es inválido");
-      // Puedes lanzar un error, devolver un valor por defecto o manejarlo como prefieras
-    }
-  
-    // Asegúrate de que el valor es del tipo esperado, en este caso parece que esperas un número
-    const operarioNumber = Number(operarioValue);
-    if (isNaN(operarioNumber)) {
-      // Maneja el caso de que el valor no sea un número
-      console.error("El valor de OPERARIO no es un número");
-    }
-
     return {
       idParte: idParte,
       indiceProducto: obtenerUltimoProducto(idParte).indiceProducto,
       operario: (findValueByTitle("OPERARIO")?.value as number) || 0, // Tendrás que llenar esto de alguna manera
-      Pasada: (findValueByTitle("PASADA")?.value as number) || 0,
-      Tipo: (findValueByTitle("TIPO")?.value as string) || "",
-      Color: (findValueByTitle("COLOR")?.value as string) || "",
-      Molde: (findValueByTitle("MOLDE")?.value as string) || "",
-      PlanchaObtenidas: (findValueByTitle("PLANCH OB.")?.value as number) || 0,
-      Peso: (findValueByTitle("PESO")?.value as number) || 0,
-      Formulas: (findValueByTitle("FORMULAS")?.value as number) || 0,
-      Planchas: (findValueByTitle("PLANCHAS")?.value as number) || 0,
-      Acelerantes: (findValueByTitle("ACELERANTES")?.value as string) || ""
+      pasada: (findValueByTitle("PASADA")?.value as number) || 0,
+      tipo: (findValueByTitle("TIPO")?.value as string) || "",
+      color: (findValueByTitle("COLOR")?.value as string) || "",
+      molde: (findValueByTitle("MOLDE")?.value as string) || "",
+      planchaObtenidas: (findValueByTitle("PLANCH OB.")?.value as number) || 0,
+      peso: (findValueByTitle("PESO")?.value as number) || 0,
+      formulas: (findValueByTitle("FORMULAS")?.value as number) || 0,
+      planchas: (findValueByTitle("PLANCHAS")?.value as number) || 0,
+      acelerantes: (findValueByTitle("ACELERANTES")?.value as string) || ""
     }
   }
 
@@ -449,6 +496,7 @@ export const useOrdenProduccionData = () => {
     saveParteLaminadoActual,
     recuperarDatosTemporales,
     guardarDatosTemporales,
+    mapearPropiedadesProductoLaminacion,
     updateColumnProduct
   }
 }

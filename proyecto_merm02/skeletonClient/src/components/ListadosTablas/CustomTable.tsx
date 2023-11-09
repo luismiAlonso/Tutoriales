@@ -51,9 +51,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     onButtonClick(column.idInput)
   }
 
-  //console.log("Data Object:", data)
-  //console.log("Column Object:", column)
-  //console.log(column.idInput, data[column.idInput])
+  //console.log(dataColumn.idInput)
 
   switch (dataColumn.type) {
     case "text":
@@ -90,10 +88,10 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       return (
         <td className="text-center">
           <SelectComponent
+            selectClassName=""
             idSelected={dataColumn.idInput}
             value={data[dataColumn.idInput] as string}
             defaultValue={dataColumn.defaultValue as string}
-            selectedValueRef={dataColumn.defaultValue as string}
             optionsSelect={dataColumn.options}
             onSeleccion={() => {}}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -146,10 +144,6 @@ const CustomTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
-
-  const { incrementarIndiceProductos } = useOrdenProduccionData()
-  const productosIndexados = incrementarIndiceProductos(data)
-  
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -164,7 +158,7 @@ const CustomTable: React.FC<TableProps<any>> = ({
             </tr>
           </thead>
           <tbody>
-            {productosIndexados.map((rowData, rowIndex) => (
+            {data.map((rowData, rowIndex) => (
               <tr
                 key={rowIndex}
                 className={`${

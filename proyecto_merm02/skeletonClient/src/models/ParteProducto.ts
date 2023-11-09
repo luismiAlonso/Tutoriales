@@ -3,7 +3,7 @@ import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 export const parteProducto: ColumnDescriptor[] = [
 
     {
-      title: "P",
+      title: "IDPARTE",
       idInput: "idParte",
       value: "1",
       content: "",
@@ -15,7 +15,7 @@ export const parteProducto: ColumnDescriptor[] = [
       placeHolder: ""
     },
     {
-      title: "Index Producto",
+      title: "INDICE PRODUCTO",
       idInput: "indiceProducto",
       value: "1",
       content: "",
@@ -28,7 +28,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "OPERARIO",
-      idInput: "OPERARIO",
+      idInput: "operario",
       value: "1",
       content: "",
       type: "noInput",
@@ -40,7 +40,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "PASADA",
-      idInput: "Pasada",
+      idInput: "pasada",
       value: "1",
       content: "",
       type: "noInput",
@@ -52,7 +52,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "TIPO",
-      idInput: "Tipo",
+      idInput: "tipo",
       value: "",
       content: "",
       type: "noInput",
@@ -64,7 +64,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "COLOR",
-      idInput: "Color",
+      idInput: "color",
       value: "",
       content: "",
       type: "noInput",
@@ -76,7 +76,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "MOLDE",
-      idInput: "Molde",
+      idInput: "molde",
       content: "",
       value: "",
       type: "noInput",
@@ -88,7 +88,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "PLANCH OB.",
-      idInput: "PlanchaObtenidas",
+      idInput: "planchaObtenidas",
       content: "",
       value: "",
       type: "noInput",
@@ -100,7 +100,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "PESO",
-      idInput: "Peso",
+      idInput: "peso",
       type: "noInput",
       content: "",
       value: "",
@@ -112,7 +112,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "FORMULAS",
-      idInput: "Formulas",
+      idInput: "formulas",
       type: "noInput",
       content: "",
       value: "",
@@ -124,7 +124,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "PLANCHAS",
-      idInput: "Planchas",
+      idInput: "planchas",
       type: "noInput",
       content: "",
       value: "",
@@ -136,7 +136,7 @@ export const parteProducto: ColumnDescriptor[] = [
     },
     {
       title: "ACELERANTES",
-      idInput: "Acelerantes",
+      idInput: "acelerantes",
       type: "noInput",
       content: "",
       value: "",

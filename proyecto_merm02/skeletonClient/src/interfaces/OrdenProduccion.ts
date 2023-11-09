@@ -9,13 +9,13 @@ export interface Producto {
   idParte: number
   indiceProducto: number
   operario: number
-  Pasada: number
-  Tipo: string
-  Color: string
-  Molde: string
-  PlanchaObtenidas: number
-  Peso: number
-  Formulas: number
-  Planchas: number
-  Acelerantes: string
+  pasada: number
+  tipo: string
+  color: string
+  molde: string
+  planchaObtenidas: number
+  peso: number
+  formulas: number
+  planchas: number
+  acelerantes: string
 }

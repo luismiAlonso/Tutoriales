@@ -24,7 +24,9 @@ function OrdenProducionPage() {
     recuperarDatosTemporales,
     mapColumnDescriptors,
     updateColumnProduct,
-    updateOrdenProduccion
+    updateOrdenProduccion,
+    mapearPropiedadesProductoLaminacion,
+    incrementarIndiceProductos
   } = useOrdenProduccionData() // Usar el hook personalizado
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
@@ -36,18 +38,12 @@ function OrdenProducionPage() {
   const { setListaProductosOrdenReciente, listaProductosOrdenReciente } =
     useOrdenProductionStore()
 
-  const { filterByWords,filterData } = useFilterData()
+  const { filterByWords, filterData } = useFilterData()
 
   const getAtributeList = (listado: any[]) => {
-    const newListAtributte: string[] = []
+    const mappedList = mapearPropiedadesProductoLaminacion(listado)
 
-    listado.map((obj: any, key) => {
-      if(key!=0){
-        newListAtributte.push(obj.title)
-      }
-    })
-
-    return newListAtributte
+    return mappedList
   }
 
   const listadoTitulosProducto: string[] = getAtributeList(HeadersProducto)
@@ -66,23 +62,46 @@ function OrdenProducionPage() {
     if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
-      
-      if (ordenProduccion && productoActual) {
-        const mappedProduct = mapColumnDescriptorsToProducto(
-          productoActual,
-          ordenProduccion?.idParte
-        )
 
-        // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
-        const nuevoOrdenProduccion = { ...ordenProduccion }
-        nuevoOrdenProduccion.ordenesProduccion = [
-          ...nuevoOrdenProduccion.ordenesProduccion,
-          mappedProduct
-        ]
+      if (ordenProduccion) {
+        if (productoActual) {
+          const mappedProduct = mapColumnDescriptorsToProducto(
+            productoActual,
+            ordenProduccion?.idParte
+          )
 
-        setOrdenProduccion(nuevoOrdenProduccion)
-        // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
-        agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+          console.log(productoActual)
+
+          // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
+          const nuevoOrdenProduccion = { ...ordenProduccion }
+          nuevoOrdenProduccion.ordenesProduccion = [
+            ...nuevoOrdenProduccion.ordenesProduccion,
+            mappedProduct
+          ]
+
+          setOrdenProduccion(nuevoOrdenProduccion)
+          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
+          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+        } else {
+          const mappedProduct = mapColumnDescriptorsToProducto(
+            ParteLaminacion,
+            1
+          )
+
+          const nuevoOrdenProduccion = { ...ordenProduccion }
+
+          nuevoOrdenProduccion.ordenesProduccion = [
+            ...nuevoOrdenProduccion.ordenesProduccion,
+            mappedProduct
+          ]
+
+          setOrdenProduccion(nuevoOrdenProduccion)
+          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
+          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+
+        }
+      } else {
+        console.log("entro sin orden")
       }
     }
   }
@@ -95,20 +114,27 @@ function OrdenProducionPage() {
 
   // Opcional: Maneja el filtro si es necesario
   const handleFilter = (filterValue: string) => {
-   // console.log("Filtrar valores por:", filterValue)
+    console.log("Filtrar valores por:", filterValue)
     // Implementar lógica de filtrado aquí si es necesario
+    if (ordenProduccion?.ordenesProduccion) {
+      filterData(
+        ordenProduccion?.ordenesProduccion,
+        selectPropiedades,
+        "asc"
+      ).then((result) => {
+        console.log(result)
+      })
+    }
   }
 
   const handleInputTextChange = () => {}
 
   const handleInputTextClick = (valueInput: string) => {
-    console.log("inputText",valueInput)
+    console.log("inputText", valueInput)
   }
 
   const handleFilterChange = (id: string, value: string) => {
-
     if (id === "byWords") {
-
       if (ordenProduccion?.ordenesProduccion) {
         filterByWords(
           ordenProduccion?.ordenesProduccion,
@@ -120,36 +146,34 @@ function OrdenProducionPage() {
         })
       }
     }
-    
   }
 
   useEffect(() => {
-
     if (ordenProduccion) {
-
       const productoActual = recuperarDatosTemporales()
 
       if (productoActual) {
+
         productoActual[0].value = ordenProduccion.idParte
         productoActual[0].defaultValue = ordenProduccion.idParte
-
         const mappedProductoActual = mapColumnDescriptors(
           ParteLaminacion,
           productoActual,
           ["value", "defaultValue"]
         )
-        
+
         setDatosColumna(mappedProductoActual)
         updateOrdenProduccion(ordenProduccion)
-        setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
+        const indexedProduct = incrementarIndiceProductos(
+          ordenProduccion.ordenesProduccion
+        )
 
+        setListaProductosOrdenReciente(indexedProduct)
       }
     } else {
       setDatosColumna(ParteLaminacion)
     }
-
   }, [ordenProduccion])
-
 
   useEffect(() => {
     const currentOrder = getCurrentOrderProduccion()
@@ -163,7 +187,7 @@ function OrdenProducionPage() {
   }, [])
 
   useEffect(() => {
-    //console.log(listaProductosOrdenReciente)
+    console.log(listaProductosOrdenReciente)
   }, [listaProductosOrdenReciente])
 
   return (
@@ -209,10 +233,10 @@ function OrdenProducionPage() {
       <div>
         <SelectComponent
           optionsSelect={listadoTitulosProducto}
-          selectedValueRef={listadoTitulosProducto[0]} // referencia al valor seleccionado actualmente
           value={selectPropiedades} // valor actual seleccionado
-          defaultValue="Selecciona una opción" // valor por defecto mostrado
-          idSelected="selectPropiedades" // identificador para el select, útil si manejas múltiples selects
+          defaultValue={listadoTitulosProducto[0]} // valor por defecto mostrado
+          selectClassName={"mt-4 mb-4 w-1/4"}
+          idSelected={"selectPropiedades"} // identificador para el select, útil si manejas múltiples selects
           onSeleccion={handleSelection} // callback para manejar la selección
           onFilter={handleFilter} // opcional: callback para manejar el filtrado
         />

@@ -49,7 +49,7 @@ function Produccion() {
           <SelectComponent
             optionsSelect={opcionesProduccion}
             value={"GOMA"}
-            selectedValueRef={"GOMA"}
+            selectClassName=""
             defaultValue={"GOMA"}
             idSelected={"filtroGoma"}
             onSeleccion={() => {

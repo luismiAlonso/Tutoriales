@@ -19,6 +19,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
   const { setInputValue } = useOrdenProductionStore()
 
   const handleChange = (value: string | number) => {
+    //console.log(props.idInput, value)
     setInputValue(props.idInput, value) // Actualizamos el valor en la tienda
     props.onChange && props.onChange(value, props.idInput)
   }
@@ -60,10 +61,10 @@ const InputComponent: React.FC<InputProps> = (props) => {
       //console.log(options, idInput)
       return (
         <SelectComponent
+          selectClassName=""
           idSelected={props.idInput}
           value={props.value as string}
           defaultValue={props.defaultValue as string}
-          selectedValueRef={props.defaultValue as string}
           optionsSelect={props.options}
           onSeleccion={() => {}}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange(e.target.value)}

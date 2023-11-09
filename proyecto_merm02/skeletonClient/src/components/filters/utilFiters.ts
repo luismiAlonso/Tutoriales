@@ -18,6 +18,7 @@ export function sortData(
     } else if (isDate(primerElemento[propiedad])) {
       tipoDato = "date"
     } else {
+
       const resultParse = parseSpecialNumber(primerElemento[propiedad])
       if (
         resultParse &&
@@ -26,6 +27,7 @@ export function sortData(
       ) {
         tipoDato = "especial"
       }
+
     }
 
     switch (tipoDato) {
@@ -186,7 +188,7 @@ function ordenarCadenas(
     sortedData.sort((a, b) => {
       const valorA = a[propiedad]
       const valorB = b[propiedad]
-
+      console.log(valorA)
       // Verificar si los valores son strings válidos
       if (typeof valorA === "string" && typeof valorB === "string") {
         if (orden === "asc") {

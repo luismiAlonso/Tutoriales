@@ -43,6 +43,7 @@ export function sortData(
       default:
         copiaOrdenada = ordenarCadenas(data, propiedad, orden)
     }
+    
   } catch (error) {
     console.error(error)
     return data
@@ -102,6 +103,7 @@ export function sortDataByInputFill(
   propiedad: string,
   orden: "asc" | "desc"
 ): string[] {
+
   // Llamar al método de ordenación correspondiente según el tipo de dato
   let copiaOrdenada: string[] = []
   try {
@@ -126,7 +128,6 @@ export function sortDataByInputFill(
         copiaOrdenada = filtrarYOrdenarNumeros(data, palabra, propiedad, orden)
         break
       case "date":
-        console.log("estoy ordenando date")
         //copiaOrdenada = filtrarYOrdenarFechas(data, palabra, propiedad, orden)
         copiaOrdenada = filtrarYOrdenarCadenas(data, palabra, propiedad, orden)
         break
@@ -186,9 +187,11 @@ function ordenarCadenas(
   try {
     const sortedData = [...data]
     sortedData.sort((a, b) => {
+
+      console.log(a[propiedad],propiedad)
       const valorA = a[propiedad]
       const valorB = b[propiedad]
-      console.log(valorA)
+     
       // Verificar si los valores son strings válidos
       if (typeof valorA === "string" && typeof valorB === "string") {
         if (orden === "asc") {
@@ -282,7 +285,7 @@ function filtrarYOrdenarCadenas(
   orden: "asc" | "desc"
 ): string[] {
   try {
-    
+
     const filteredData = data
       .filter((item) => {
         const itemProperty = String(item[propiedad]).toLowerCase()

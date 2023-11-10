@@ -9,6 +9,7 @@ import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { Producto, OrdenProduccion } from "../interfaces/OrdenProduccion"
 import { ParteLaminacion } from "../models/ParteLaminacion"
 import { HeadersProducto } from "../models/HeadersProducto"
+import  ToggleComponent  from "../components/toggle/ToggleComponent"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
 import useFilterData from "../components/filters/useFilterData"
 
@@ -62,15 +63,12 @@ function OrdenProducionPage() {
     if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
-
-      if (ordenProduccion) {
+      if (ordenProduccion && ordenProduccion !== null) {
         if (productoActual) {
           const mappedProduct = mapColumnDescriptorsToProducto(
             productoActual,
             ordenProduccion?.idParte
           )
-
-          console.log(productoActual)
 
           // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
           const nuevoOrdenProduccion = { ...ordenProduccion }
@@ -98,7 +96,6 @@ function OrdenProducionPage() {
           setOrdenProduccion(nuevoOrdenProduccion)
           // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-
         }
       } else {
         console.log("entro sin orden")
@@ -117,13 +114,11 @@ function OrdenProducionPage() {
     console.log("Filtrar valores por:", filterValue)
     // Implementar lógica de filtrado aquí si es necesario
     if (ordenProduccion?.ordenesProduccion) {
-      filterData(
-        ordenProduccion?.ordenesProduccion,
-        selectPropiedades,
-        "asc"
-      ).then((result) => {
-        console.log(result)
-      })
+      filterData(ordenProduccion?.ordenesProduccion, filterValue, "asc").then(
+        (result) => {
+          setListaProductosOrdenReciente(result)
+        }
+      )
     }
   }
 
@@ -148,12 +143,26 @@ function OrdenProducionPage() {
     }
   }
 
+  //manejador del toogle
+  const handleToggleChange = (idToggle:string,toggleState: {
+    value: boolean
+    sortDirection: "asc" | "desc"
+  }) => {
+
+    if(idToggle==="orden01"){
+        // Aquí manejas lo que sucede cuando el estado del toggle cambia
+      console.log("Toggle State: ", toggleState)
+      // Puedes realizar acciones adicionales basadas en el estado del toggle 
+    }
+   
+  }
+
   useEffect(() => {
     if (ordenProduccion) {
       const productoActual = recuperarDatosTemporales()
+      //console.log(productoActual)
 
       if (productoActual) {
-
         productoActual[0].value = ordenProduccion.idParte
         productoActual[0].defaultValue = ordenProduccion.idParte
         const mappedProductoActual = mapColumnDescriptors(
@@ -162,21 +171,34 @@ function OrdenProducionPage() {
           ["value", "defaultValue"]
         )
 
-        setDatosColumna(mappedProductoActual)
-        updateOrdenProduccion(ordenProduccion)
         const indexedProduct = incrementarIndiceProductos(
           ordenProduccion.ordenesProduccion
         )
+        setDatosColumna(mappedProductoActual)
+        updateOrdenProduccion(ordenProduccion)
+        setListaProductosOrdenReciente(indexedProduct)
+      } else {
+        ParteLaminacion[0].value = ordenProduccion.idParte
+        ParteLaminacion[0].defaultValue = ordenProduccion.idParte
+        const mappedProductoActual = mapColumnDescriptors(
+          ParteLaminacion,
+          ParteLaminacion,
+          ["value", "defaultValue"]
+        )
 
+        const indexedProduct = incrementarIndiceProductos(
+          ordenProduccion.ordenesProduccion
+        )
+        setDatosColumna(mappedProductoActual)
+        updateOrdenProduccion(ordenProduccion)
         setListaProductosOrdenReciente(indexedProduct)
       }
-    } else {
-      setDatosColumna(ParteLaminacion)
     }
   }, [ordenProduccion])
 
   useEffect(() => {
     const currentOrder = getCurrentOrderProduccion()
+
     if (currentOrder !== null) {
       setOrdenProduccion(currentOrder)
       ParteLaminacion[0].value = currentOrder.idParte
@@ -207,6 +229,7 @@ function OrdenProducionPage() {
           </span>
         </div>
       </div>
+
       <div className="mt-3">
         <ListInputsCard
           columns={datosColumna}
@@ -214,32 +237,52 @@ function OrdenProducionPage() {
           onButtonClick={handleButtonClick}
         />
       </div>
-      <div>
-        {/*<InputTextFilterComponent
-          idInput={"byWords"}
-          activeButton={false}
-          activeSearchIcon={true}
-          isLabelVisible={true}
-          typeFill={"search"}
-          style={
-            "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      <div className="flex items-center gap-2">
+        <div className="w-1/7">
+          {
+            <InputTextFilterComponent
+              idInput={"byWords"}
+              activeButton={false}
+              activeSearchIcon={true}
+              isLabelVisible={true}
+              typeFill={"search"}
+              style={
+                "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              }
+              placeHolder={"write to search..."}
+              onChange={handleInputTextChange}
+              onClick={handleInputTextClick}
+              onFilter={handleFilterChange}
+            />
           }
-          placeHolder={"write to search..."}
-          onChange={handleInputTextChange}
-          onClick={handleInputTextClick}
-          onFilter={handleFilterChange}
-        />*/}
-      </div>
-      <div>
-        <SelectComponent
-          optionsSelect={listadoTitulosProducto}
-          value={selectPropiedades} // valor actual seleccionado
-          defaultValue={listadoTitulosProducto[0]} // valor por defecto mostrado
-          selectClassName={"mt-4 mb-4 w-1/4"}
-          idSelected={"selectPropiedades"} // identificador para el select, útil si manejas múltiples selects
-          onSeleccion={handleSelection} // callback para manejar la selección
-          onFilter={handleFilter} // opcional: callback para manejar el filtrado
-        />
+        </div>
+        <div className="w-1/3">
+          <div>
+            <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Propiedad
+            </label>
+            <div className="relative">
+              <SelectComponent
+                optionsSelect={listadoTitulosProducto}
+                value={selectPropiedades} // valor actual seleccionado
+                defaultValue={listadoTitulosProducto[0]} // valor por defecto mostrado
+                selectClassName={"mt-4 mb-4 w-1/4"}
+                idSelected={"selectPropiedades"} // identificador para el select, útil si manejas múltiples selects
+                onSeleccion={handleSelection} // callback para manejar la selección
+                onFilter={handleFilter} // opcional: callback para manejar el filtrado
+              />
+            </div>
+          </div>
+        </div>
+        <div className="w-1/3">
+            <ToggleComponent
+              idToggle={"orden01"}
+              valueProp={true}
+              onChange={handleToggleChange}
+              trueText="Activado"
+              falseText="Desactivado"
+            />
+         </div>
       </div>
       {listaProductosOrdenReciente &&
         listaProductosOrdenReciente.length > 0 && (

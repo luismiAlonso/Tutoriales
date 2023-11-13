@@ -393,6 +393,8 @@ export const useOrdenProduccionData = () => {
     // Primero, intenta recuperar los datos actuales desde localStorage
     const datosActuales = recuperarDatosTemporales()
 
+    console.log( datosActuales,id)
+
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
@@ -411,6 +413,7 @@ export const useOrdenProduccionData = () => {
           `No se encontró el descriptor de columna con idInput: ${id}`
         )
       }
+      
     } else {
       
       console.log(plantilla)

@@ -2,7 +2,7 @@ export interface ColumnDescriptor {
     idInput:string,
     title: string,
     content: string,
-    type: "text" | "number" | "dropdown" | "hybridSelect" | "checkbox" | "button" | "noInput" | "void"
+    type: "text" | "number" | "dropdown" | "hybridSelect" | "checkbox" | "button" | "noInput" | "void"  | "svg"
     value?: string | number
     editable: boolean
     options: string[]

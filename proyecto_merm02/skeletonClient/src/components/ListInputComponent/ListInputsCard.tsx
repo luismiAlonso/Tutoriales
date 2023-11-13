@@ -1,21 +1,22 @@
 import React, { useEffect } from "react"
-import SelectComponent from "../components/selectComponent/SelectComponent"
-import HybridSelect from "./hybridSelectComponent/hybridSelectComponent"
-import CustomButton from "./button/ButtonComponent"
-import InputTextComponent from "../components/inputTextComponent/InputTextComponent"
-import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
-import { InputProps } from "../interfaces/InputProps"
-import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
-
+import SelectComponent from "../selectComponent/SelectComponent"
+import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
+import CustomButton from "../button/ButtonComponent"
+import InputTextComponent from "../inputTextComponent/InputTextComponent"
+import { ColumnDescriptor } from "../../interfaces/ColumnDescriptor"
+import { InputProps } from "./InputProps"
+import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
+import IconComponent from "../IconComponent/IconComponent"
+import IconEditSvg from "../IconComponent/IconEditSvg"
 
 export interface CustomCardProps {
   columns: ColumnDescriptor[]
+  rowIndex: number
   onInputChange: (id: string | number, value: any) => void
-  onButtonClick: (id: string) => void
+  onButtonClick: (id: string, rowIndex: number) => void
 }
 
 const InputComponent: React.FC<InputProps> = (props) => {
-
   const { setInputValue } = useOrdenProductionStore()
 
   const handleChange = (value: string | number) => {
@@ -24,9 +25,9 @@ const InputComponent: React.FC<InputProps> = (props) => {
     props.onChange && props.onChange(value, props.idInput)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    props.onClick && props.onClick(e)
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>,idInput: string,rowIndex: number) => {
+    //console.log(props.rowIndex)
+    props.onClick && props.onClick(e,idInput,rowIndex)
   }
 
   switch (props.type) {
@@ -67,7 +68,9 @@ const InputComponent: React.FC<InputProps> = (props) => {
           defaultValue={props.defaultValue as string}
           optionsSelect={props.options}
           onSeleccion={() => {}}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            handleChange(e.target.value)
+          }
         />
       )
     case "hybridSelect":
@@ -87,9 +90,43 @@ const InputComponent: React.FC<InputProps> = (props) => {
         <CustomButton
           buttonText={props.content} // Aquí puedes cambiar "Mi Botón" por el texto que desees
           className="clase-personalizada" // Aquí puedes cambiar o agregar más clases
-          onClick={handleClick}
+          onClick={(e) =>{
+            e.preventDefault()
+            console.log(props.rowIndex)
+            if(props.value && props.idInput && props.rowIndex){
+              handleClick(e,props.idInput,props.rowIndex)
+            }
+          }}
         />
       )
+    case "svg":
+      if (props.idInput === "Editar") {
+        return (
+          <IconComponent
+            onClick={(e) => {
+              e.preventDefault()
+              if(props.value && props.idInput && props.rowIndex){
+                handleClick(e,props.idInput,props.rowIndex)
+              }
+            }} // Asegúrate de que `props.value` sea el valor correcto
+            iconType="svg"
+            iconContent={<IconEditSvg />}
+          />
+        )
+      } else if (props.idInput === "Borrar") {
+        return (
+          <IconComponent
+            onClick={(e) => {
+              if(props.value && props.idInput && props.rowIndex){
+                handleClick(e,props.idInput,props.rowIndex)
+              }
+            }} // Asegúrate de que `props.value` sea el valor correcto
+            iconType="svg"
+            iconContent={<IconEditSvg />}
+          />
+        )
+      }
+      return <></>
     default:
       return null
   }
@@ -97,10 +134,10 @@ const InputComponent: React.FC<InputProps> = (props) => {
 
 const CustomCard: React.FC<CustomCardProps> = ({
   columns,
+  rowIndex,
   onInputChange,
   onButtonClick
 }) => {
-
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">
       {columns.map((column, index) => (
@@ -114,6 +151,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
             value={column.value}
             content={column.content}
             type={column.type}
+            rowIndex={rowIndex}
             editable={column.editable}
             options={column.options}
             defaultValue={column.defaultValue}
@@ -122,7 +160,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
             onChange={(value) => onInputChange(value, column.idInput)}
             onClick={(e) => {
               e.preventDefault()
-              onButtonClick(column.idInput)
+              onButtonClick(column.idInput,rowIndex)
             }}
           />
         </div>

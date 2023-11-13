@@ -5,8 +5,10 @@ import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "../button/ButtonComponent"
 import InputTextComponent from "../inputTextComponent/InputTextComponent"
 import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
+import IconComponent from "../IconComponent/IconComponent"
+import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
+import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
 
-// Props para CustomTable
 interface TableProps<T> {
   columns: ColumnDescriptor[]
   dataColumn: ColumnDescriptor[]
@@ -16,7 +18,7 @@ interface TableProps<T> {
     idInput: string | number,
     rowIndex: number
   ) => void
-  onButtonClick: (idInput: string | number) => void
+  onButtonClick: (idInput: string | number, rowIndex: number) => void // Actualizado para aceptar rowIndex
 }
 
 interface CustomTableProps<T> {
@@ -29,7 +31,7 @@ interface CustomTableProps<T> {
     idInput: string | number,
     rowIndex: number
   ) => void
-  onButtonClick: (idInput: string | number) => void
+  onButtonClick: (idInput: string | number, rowIndex: number) => void // Actualizado para aceptar rowIndex
 }
 
 const TableCellComponent: React.FC<CustomTableProps<any>> = ({
@@ -40,18 +42,19 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   onInputChange,
   onButtonClick
 }) => {
-  //console.log(props)
-  //const { setInputValue } = useOrdenProductionStore()
   const handleChange = (value: string | number | boolean) => {
     onInputChange(value, column.idInput, rowIndex)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    columnId: string,
+    rowIndex: number
+  ) => {
     e.preventDefault()
-    onButtonClick(column.idInput)
+    console.log(columnId)
+    onButtonClick(column.idInput, rowIndex)
   }
-
-  //console.log(dataColumn.idInput)
 
   switch (dataColumn.type) {
     case "text":
@@ -126,10 +129,48 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
         <td className="text-center">
           <CustomButton
             buttonText={dataColumn.content as string}
-            onClick={handleClick}
+            onClick={(e) => {
+              // Llama a handleClick solo si dataColumn.value está definido
+              if (dataColumn.value !== undefined) {
+                handleClick(e, dataColumn.idInput, rowIndex)
+              }
+            }}
           />
         </td>
       )
+    case "svg":
+      if (dataColumn.idInput === "Editar") {
+        return (
+          <td className="text-center">
+            <IconComponent
+              onClick={(e) => {
+                if (dataColumn.value != undefined) {
+                  handleClick(e, dataColumn.idInput, rowIndex)
+                }
+              }} // Asegúrate de que `props.value` sea el valor correcto
+              iconType="svg"
+              iconContent={<IconEditSvg />}
+            />
+          </td>
+        )
+      } else if (dataColumn.idInput === "Borrar") {
+        {
+          return (
+            <td>
+              <IconComponent
+                onClick={(e) => {
+                  if (dataColumn.value != undefined) {
+                    handleClick(e, dataColumn.idInput, rowIndex)
+                  }
+                }}
+                iconType="svg"
+                iconContent={<IconDeleteSvg />}
+              />
+            </td>
+          )
+        }
+      }
+      return <td></td>
     case "noInput":
       return <td className="text-center">{data[dataColumn.idInput]}</td>
     default:

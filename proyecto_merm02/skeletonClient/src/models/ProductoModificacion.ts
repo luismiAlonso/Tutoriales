@@ -1,27 +1,14 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
-export const parteProducto: ColumnDescriptor[] = [
-
+export  const ProductoModificacion: ColumnDescriptor[] = [
     {
       title: "IDPARTE",
       idInput: "idParte",
-      value: "1",
+      value: 1,
       content: "",
-      type: "noInput",
+      type: "number",
       editable: true,
-      defaultValue: "1",
-      additionalStyles: "",
-      options: [""],
-      placeHolder: ""
-    },
-    {
-      title: "INDICE PRODUCTO",
-      idInput: "indiceProducto",
-      value: "1",
-      content: "",
-      type: "noInput",
-      editable: false,
-      defaultValue: "1",
+      defaultValue: 1,
       additionalStyles: "",
       options: [""],
       placeHolder: ""
@@ -29,11 +16,11 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "OPERARIO",
       idInput: "operario",
-      value: "1",
+      value: 1,
       content: "",
-      type: "noInput",
+      type: "number",
       editable: false,
-      defaultValue: "1",
+      defaultValue: 1,
       additionalStyles: "",
       options: [""],
       placeHolder: ""
@@ -41,11 +28,11 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "PASADA",
       idInput: "pasada",
-      value: "1",
+      value: 1,
       content: "",
-      type: "noInput",
+      type: "number",
       editable: false,
-      defaultValue: "1",
+      defaultValue: 1,
       additionalStyles: "",
       options: [""],
       placeHolder: ""
@@ -53,59 +40,59 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "TIPO",
       idInput: "tipo",
-      value: "",
+      value: "R1",
       content: "",
-      type: "noInput",
+      type: "hybridSelect",
       editable: false,
       additionalStyles: "",
-      defaultValue: "",
-      options: [],
+      defaultValue: "R1",
+      options: ["R1", "BK-Fx", "BK-10"],
       placeHolder: ""
     },
     {
       title: "COLOR",
       idInput: "color",
-      value: "",
+      value: "NEGRO",
       content: "",
-      type: "noInput",
+      type: "hybridSelect",
       editable: false,
-      defaultValue: "",
+      defaultValue: "NEGRO",
       additionalStyles: "",
-      options: [],
+      options: ["NEGRO", "BEIG", "ANGORA"],
       placeHolder: ""
     },
     {
       title: "MOLDE",
       idInput: "molde",
       content: "",
-      value: "",
-      type: "noInput",
+      value: "BIRK",
+      type: "hybridSelect",
       editable: false,
       additionalStyles: "",
-      defaultValue: "",
-      options: [],
+      defaultValue: "BIRK",
+      options: ["BIRK", "R063/R063"],
       placeHolder: ""
     },
     {
       title: "PLANCH OB.",
       idInput: "planchaObtenidas",
       content: "",
-      value: "",
-      type: "noInput",
+      value: "2x6",
+      type: "hybridSelect",
       editable: false,
       additionalStyles: "",
-      defaultValue: "",
-      options: [],
+      defaultValue: "2x6",
+      options: ["2x6", "2x7"],
       placeHolder: ""
     },
     {
       title: "PESO",
       idInput: "peso",
-      type: "noInput",
+      type: "number",
       content: "",
-      value: "",
+      value:  6.0,
       editable: false,
-      defaultValue: "",
+      defaultValue: 6.0,
       options: [""],
       additionalStyles: "",
       placeHolder: ""
@@ -113,11 +100,11 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "FORMULAS",
       idInput: "formulas",
-      type: "noInput",
+      type: "number",
       content: "",
-      value: "",
+      value: 1,
       editable: false,
-      defaultValue: "",
+      defaultValue: 1,
       options: [""],
       additionalStyles: "",
       placeHolder: ""
@@ -125,11 +112,11 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "PLANCHAS",
       idInput: "planchas",
-      type: "noInput",
+      type: "number",
       content: "",
-      value: "",
+      value: 1,
       editable: false,
-      defaultValue: "",
+      defaultValue: 1,
       options: [""],
       additionalStyles: "",
       placeHolder: ""
@@ -137,35 +124,25 @@ export const parteProducto: ColumnDescriptor[] = [
     {
       title: "ACELERANTES",
       idInput: "acelerantes",
-      type: "noInput",
+      type: "hybridSelect",
       content: "",
-      value: "",
+      value: "1550-2970",
       editable: false,
-      defaultValue: "",
+      defaultValue: "1550-2970",
       additionalStyles: "",
-      options: [""],
+      options: ["1550-2970", "136-276", "1400-2500", "1380-2780"],
       placeHolder: ""
     },
     {
-      title: "Editar",
-      idInput: "Editar",
-      content: "",
+      title: "boton",
+      idInput: "aceptarEdicion",
+      content: "aceptarEdicion",
       value: "",
-      type: "svg",
+      type: "button",
       editable: false,
       additionalStyles: "",
       options: [],
       placeHolder: ""
-    },
-    {
-        title: "Borrar",
-        idInput: "Borrar",
-        content: "borrar",
-        value: "",
-        type: "svg",
-        editable: false,
-        additionalStyles: "",
-        options: [],
-        placeHolder: ""
-      }
+      //agregarNuevoProductoOP(ordenReciente?.idParte,)
+    }
   ]

@@ -46,4 +46,32 @@ export const updateOrdenByIdDB = (
 
 }
 
+export const updateProductInOrdenProduccionDB = (
+  idParte: number,
+  idProducto: number, // Identificador único del producto dentro de la orden de producción
+  updatedProductData: Partial<Producto> // Datos actualizados del producto
+) => {
+  try {
+    const ordenes = fetchOrdenesProduccionDB()
+    const ordenIndex = ordenes.findIndex((orden) => orden.idParte === idParte)
+
+    if (ordenIndex !== -1) {
+      const orden = ordenes[ordenIndex]
+      const productoIndex = orden.ordenesProduccion.findIndex((producto) => producto.id === idProducto)
+
+      if (productoIndex !== -1) {
+        orden.ordenesProduccion[productoIndex] = { ...orden.ordenesProduccion[productoIndex], ...updatedProductData }
+        saveOrdenesProduccionDB(ordenes)
+      } else {
+        console.error("Producto no encontrado en la orden de producción")
+      }
+    } else {
+      console.error("Orden de producción no encontrada")
+    }
+  } catch (error) {
+    console.error("Error updating producto in orden de producción:", error)
+  }
+}
+
+
 // Aquí puedes agregar más funciones según lo necesites...

@@ -14,6 +14,18 @@ export  const ProductoModificacion: ColumnDescriptor[] = [
       placeHolder: ""
     },
     {
+      title: "INDICE PRODUCTO",
+      idInput: "indiceProducto",
+      value: 1,
+      content: "",
+      type: "number",
+      editable: true,
+      defaultValue: 1,
+      additionalStyles: "",
+      options: [""],
+      placeHolder: ""
+    },
+    {
       title: "OPERARIO",
       idInput: "operario",
       value: 1,

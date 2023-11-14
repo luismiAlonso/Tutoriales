@@ -5,7 +5,8 @@ import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
 import {
   fetchOrdenesProduccionDB,
   addOrdenProduccionDB,
-  updateOrdenByIdDB
+  updateOrdenByIdDB,
+  updateProductInOrdenProduccionDB
 } from "../api/ordenProduccionApi"
 
 export const useOrdenProduccionData = () => {
@@ -281,6 +282,13 @@ export const useOrdenProduccionData = () => {
         case "OPERARIO":
           updatedColumn = {
             ...column,
+            defaultValue: producto.operario,
+            value: producto.operario
+          }
+          break // Agregada instrucción break.
+        case "INDICE PRODUCTO":
+          updatedColumn = {
+            ...column,
             defaultValue: producto.indiceProducto,
             value: producto.indiceProducto
           }
@@ -360,6 +368,10 @@ export const useOrdenProduccionData = () => {
     updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
+  const updateProductInOrden =(producto:Producto,idParte:number) => {
+    updateProductInOrdenProduccionDB(idParte,producto.indiceProducto,producto)
+  }
+
   //const saveProductInOrder = () => {}
 
   const getAllProductAndAllOrder = () => {
@@ -384,6 +396,64 @@ export const useOrdenProduccionData = () => {
     return null
   }
 
+  
+  const updateColumnProduct = (
+    datosActuales: ColumnDescriptor[],
+    id: string | number,
+    valor: string | number,
+    plantilla: ColumnDescriptor[]
+  ) => {
+
+    if (datosActuales !== null) {
+      // Si los datos existen, busca el descriptor de columna específico por idInput
+      const index = datosActuales.findIndex((columna) => columna.idInput === id)
+
+      if (index !== -1) {
+        // Si se encontró el descriptor de columna, actualiza su valor
+        datosActuales[index] = {
+          ...datosActuales[index],
+          value: valor
+        }
+        // Luego guarda los datos actualizados de vuelta en localStorage
+        //guardarDatosTemporales(datosActuales)
+        return datosActuales
+
+      } else {
+        console.error(
+          `No se encontró el descriptor de columna con idInput: ${id}`
+        )
+      }
+      
+    } else {
+      
+      console.log(plantilla)
+      // Si no hay datos en localStorage, busca en la plantilla
+      const index = plantilla.findIndex((columna) => columna.idInput === id)
+
+      if (index !== -1) {
+        // Si se encontró el descriptor de columna en la plantilla, actualiza su valor
+        plantilla[index] = {
+          ...plantilla[index],
+          value: valor
+        }
+
+        // Guarda los datos actualizados de vuelta en localStorage
+       // guardarDatosTemporales(plantilla)
+       return plantilla
+
+      } else {
+
+        console.error(
+          `No se encontró el descriptor de columna con idInput: ${id}`
+        )
+        // Puedes descomentar la siguiente línea si deseas mostrar este mensaje
+        // console.error("No hay datos en localStorage para actualizar.");
+      }
+    }
+  }
+  
+
+  /*
   const updateColumnProduct = (
     id: string | number,
     valor: string | number,
@@ -393,7 +463,7 @@ export const useOrdenProduccionData = () => {
     // Primero, intenta recuperar los datos actuales desde localStorage
     const datosActuales = recuperarDatosTemporales()
 
-    console.log( datosActuales,id)
+    //console.log(datosActuales,id)
 
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
@@ -429,6 +499,7 @@ export const useOrdenProduccionData = () => {
         // Guarda los datos actualizados de vuelta en localStorage
         guardarDatosTemporales(plantilla)
       } else {
+
         console.error(
           `No se encontró el descriptor de columna con idInput: ${id}`
         )
@@ -436,10 +507,11 @@ export const useOrdenProduccionData = () => {
         // console.error("No hay datos en localStorage para actualizar.");
       }
     }
-  }
-
+  }*/
+  
   const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
     setIsLoading(true)
+
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
     const ordenIndex = ordenesProduccion.findIndex(
@@ -500,6 +572,7 @@ export const useOrdenProduccionData = () => {
     recuperarDatosTemporales,
     guardarDatosTemporales,
     mapearPropiedadesProductoLaminacion,
-    updateColumnProduct
+    updateColumnProduct,
+    updateProductInOrden
   }
 }

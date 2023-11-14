@@ -32,35 +32,41 @@ export const updateOrdenByIdDB = (
   idParte: number,
   updatedOrden: Partial<OrdenProduccion>
 ) => {
-  
   try {
     const ordenes = fetchOrdenesProduccionDB()
     const index = ordenes.findIndex((orden) => orden.idParte === idParte)
     if (index !== -1) {
+      //console.log(ordenes[index])
       ordenes[index] = { ...ordenes[index], ...updatedOrden }
       saveOrdenesProduccionDB(ordenes)
     }
   } catch (error) {
     console.error("Error updating orden by id:", error)
   }
-
 }
 
 export const updateProductInOrdenProduccionDB = (
-  idParte: number,
-  idProducto: number, // Identificador único del producto dentro de la orden de producción
-  updatedProductData: Partial<Producto> // Datos actualizados del producto
+  idParte: number, // idParte ahora es de tipo number
+  idProducto: number,
+  updatedProductData: Partial<Producto>
 ) => {
   try {
     const ordenes = fetchOrdenesProduccionDB()
-    const ordenIndex = ordenes.findIndex((orden) => orden.idParte === idParte)
+    const ordenIndex = ordenes.findIndex(
+      (orden) => orden.idParte === idParte // Comparamos directamente sin convertir a string
+    )
 
     if (ordenIndex !== -1) {
       const orden = ordenes[ordenIndex]
-      const productoIndex = orden.ordenesProduccion.findIndex((producto) => producto.id === idProducto)
+      const productoIndex = orden.ordenesProduccion.findIndex(
+        (producto) => producto.indiceProducto === idProducto
+      )
 
       if (productoIndex !== -1) {
-        orden.ordenesProduccion[productoIndex] = { ...orden.ordenesProduccion[productoIndex], ...updatedProductData }
+        orden.ordenesProduccion[productoIndex] = {
+          ...orden.ordenesProduccion[productoIndex],
+          ...updatedProductData
+        }
         saveOrdenesProduccionDB(ordenes)
       } else {
         console.error("Producto no encontrado en la orden de producción")

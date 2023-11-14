@@ -10,6 +10,7 @@ import { Producto, OrdenProduccion } from "../interfaces/OrdenProduccion"
 import { ParteLaminacion } from "../models/ParteLaminacion"
 import { HeadersProducto } from "../models/HeadersProducto"
 import { ProductoModificacion } from "../models/ProductoModificacion"
+import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 
 import ToggleComponent from "../components/toggle/ToggleComponent"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
@@ -30,10 +31,12 @@ function OrdenProducionPage() {
     updateOrdenProduccion,
     mapearPropiedadesProductoLaminacion,
     mapearProductoAColumnas,
-    incrementarIndiceProductos
+    incrementarIndiceProductos,
+    updateProductInOrden
   } = useOrdenProduccionData() // Usar el hook personalizado
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
+  const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
   const [ordenProduccion, setOrdenProduccion] = useState<
     OrdenProduccion | null | undefined
   >()
@@ -59,12 +62,45 @@ function OrdenProducionPage() {
   )
 
   const handleInputChange = (value: string | number, id: any) => {
-    updateColumnProduct(id, value, ParteLaminacion)
+    if (editMode) {
+      //console.log(id,value)
+      const dataUpdated = updateColumnProduct(
+        datosLineaMod,
+        id,
+        value,
+        ProductoModificacion
+      )
+
+      if (dataUpdated) {
+        setDatosLineaMod(dataUpdated)
+      }
+    } else {
+      const currentData = recuperarDatosTemporales()
+
+      if (currentData) {
+        const dataUpdated = updateColumnProduct(
+          currentData,
+          id,
+          value,
+          ParteLaminacion
+        )
+
+        if (dataUpdated) {
+          //console.log("actualizamos")
+          const serializeObj = JSON.stringify(dataUpdated)
+          setDatosLocalStorage("datosTemporales", serializeObj)
+          setDatosColumna(dataUpdated)
+        }
+      }
+    }
+
+    //updateColumnProduct(id,value,ParteLaminacion)
+    //console.log(id,value)
   }
 
   const handleButtonClick = (idInput: string | number, rowIndex: number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
-
+    //console.log(id)
     if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
@@ -106,18 +142,31 @@ function OrdenProducionPage() {
         //console.log("entro sin orden")
       }
     } else if (id.toLowerCase() === "editar") {
-     // console.log("Editar", rowIndex)
       setEditMode(true)
       const productoEditar = mapearProductoAColumnas(
         ProductoModificacion,
         listaProductosOrdenReciente[rowIndex].idParte,
         listaProductosOrdenReciente[rowIndex]
       )
-      
-    console.log(productoEditar)
-    } else if (id.toLowerCase() === "aceptarEdicion") {
-      
-      setEditMode(false)
+
+      //console.log(productoEditar)
+      setDatosLineaMod(productoEditar)
+      const serializeObj = JSON.stringify(productoEditar)
+      setDatosLocalStorage("lineaProductoMod", serializeObj)
+    } else if (id.toLowerCase() === "aceptaredicion") {
+      // console.log(datosLineaMod)
+      if (datosLineaMod) {
+        if(ordenProduccion){
+          const convertProduct = mapColumnDescriptorsToProducto(datosLineaMod,ordenProduccion.idParte)
+          updateProductInOrden(convertProduct,ordenProduccion.idParte)
+          const ordenproducionActualizada = getCurrentOrderProduccion()
+          setOrdenProduccion(ordenproducionActualizada)
+          
+        }
+      }
+
+      //setDatosLineaMod(productoEditar)
+      //setEditMode(false)
     }
   }
 
@@ -140,7 +189,9 @@ function OrdenProducionPage() {
     }
   }
 
-  const handleInputTextChange = () => {}
+  const handleInputTextChange = (idInput: string, value: string) => {
+    console.log(idInput, value)
+  }
 
   const handleInputTextClick = (valueInput: string) => {
     console.log("inputText", valueInput)
@@ -223,7 +274,6 @@ function OrdenProducionPage() {
         setListaProductosOrdenReciente(indexedProduct)
       }
     }
-    
   }, [ordenProduccion])
 
   useEffect(() => {
@@ -261,7 +311,7 @@ function OrdenProducionPage() {
       </div>
       {editMode ? (
         <ListInputsCard
-          columns={datosColumna}
+          columns={datosLineaMod}
           rowIndex={0}
           onInputChange={handleInputChange}
           onButtonClick={handleButtonClick}

@@ -92,8 +92,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
           className="clase-personalizada" // Aquí puedes cambiar o agregar más clases
           onClick={(e) =>{
             e.preventDefault()
-            console.log(props.rowIndex)
-            if(props.value && props.idInput && props.rowIndex){
+            if(props.idInput && (props.rowIndex || props.rowIndex==0)){
               handleClick(e,props.idInput,props.rowIndex)
             }
           }}
@@ -105,7 +104,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
           <IconComponent
             onClick={(e) => {
               e.preventDefault()
-              if(props.value && props.idInput && props.rowIndex){
+              if(props.value && (props.rowIndex || props.rowIndex==0)){
                 handleClick(e,props.idInput,props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto
@@ -117,7 +116,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
         return (
           <IconComponent
             onClick={(e) => {
-              if(props.value && props.idInput && props.rowIndex){
+              if(props.value && (props.rowIndex || props.rowIndex==0)){
                 handleClick(e,props.idInput,props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto

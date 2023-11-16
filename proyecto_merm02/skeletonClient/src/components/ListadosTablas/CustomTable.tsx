@@ -8,6 +8,7 @@ import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
 import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
 import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
+import { number } from "zod"
 
 interface TableProps<T> {
   columns: ColumnDescriptor[]
@@ -37,13 +38,13 @@ interface CustomTableProps<T> {
 const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   data,
   column,
-  dataColumn,
   rowIndex,
+  dataColumn,
   onInputChange,
   onButtonClick
 }) => {
-  const handleChange = (value: string | number | boolean) => {
-    onInputChange(value, column.idInput, rowIndex)
+  const handleChange = (value: string | number | boolean,rowIndex:number) => {
+    onInputChange(value, column.idInput,rowIndex)
   }
 
   const handleClick = (
@@ -63,7 +64,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <InputTextComponent
             value={data[dataColumn.idInput] as string}
             defaultValue={dataColumn.defaultValue as string}
-            onChange={(value: string) => handleChange(value)}
+            onChange={(value: string) => handleChange(value,rowIndex)}
             placeholder={dataColumn.placeHolder}
             readOnly={!dataColumn.editable}
             additionalStyles={dataColumn.additionalStyles}
@@ -78,7 +79,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <InputTextComponent
             value={data[dataColumn.idInput] as string}
             defaultValue={dataColumn.defaultValue as string}
-            onChange={(value: string) => handleChange(value)}
+            onChange={(value: string) => handleChange(value,rowIndex)}
             placeholder={dataColumn.placeHolder}
             readOnly={!dataColumn.editable}
             additionalStyles={dataColumn.additionalStyles}
@@ -98,7 +99,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             optionsSelect={dataColumn.options}
             onSeleccion={() => {}}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleChange(e.target.value)
+              handleChange(e.target.value,rowIndex)
             }
           />
         </td>
@@ -110,7 +111,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             options={dataColumn.options || []}
             defaultValue={dataColumn.defaultValue as string}
             value={data[dataColumn.idInput] as string}
-            onChange={(value: string) => handleChange(value)}
+            onChange={(value: string) => handleChange(value,rowIndex)}
           />
         </td>
       )
@@ -120,7 +121,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <input
             type="checkbox"
             checked={data[dataColumn.idInput] as boolean}
-            onChange={(e) => handleChange(e.target.checked)}
+            onChange={(e) => handleChange(e.target.checked,rowIndex)}
           />
         </td>
       )
@@ -132,7 +133,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             onClick={(e) => {
               // Llama a handleClick solo si dataColumn.value está definido
               if (dataColumn.value !== undefined) {
-                handleClick(e, dataColumn.idInput, rowIndex)
+                handleClick(e, dataColumn.idInput,rowIndex)
               }
             }}
           />
@@ -145,7 +146,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             <IconComponent
               onClick={(e) => {
                 if (dataColumn.value != undefined) {
-                  handleClick(e, dataColumn.idInput, rowIndex)
+                  handleClick(e, dataColumn.idInput,rowIndex)
                 }
               }} // Asegúrate de que `props.value` sea el valor correcto
               iconType="svg"
@@ -160,7 +161,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
               <IconComponent
                 onClick={(e) => {
                   if (dataColumn.value != undefined) {
-                    handleClick(e, dataColumn.idInput, rowIndex)
+                    handleClick(e, dataColumn.idInput,rowIndex)
                   }
                 }}
                 iconType="svg"

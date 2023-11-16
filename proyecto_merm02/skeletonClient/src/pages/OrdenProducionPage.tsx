@@ -1,296 +1,57 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
-import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import CustomTable from "../components/ListadosTablas/CustomTable"
 import SelectComponent from "../components/selectComponent/SelectComponent"
-import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import { parteProducto } from "../models/ParteProducto"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
-import { Producto, OrdenProduccion } from "../interfaces/OrdenProduccion"
-import { ParteLaminacion } from "../models/ParteLaminacion"
+import useOrdenProduccionManager from "../customHook/useOrdenProduccionManager"
 import { HeadersProducto } from "../models/HeadersProducto"
-import { ProductoModificacion } from "../models/ProductoModificacion"
-import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
-
 import ToggleComponent from "../components/toggle/ToggleComponent"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
-import useFilterData from "../components/filters/useFilterData"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
-
 function OrdenProducionPage() {
+
   const {
-    // mapearProductoAColumnas,
-    // obtenerUltimoProducto,
-    getCurrentOrderProduccion,
-    mapColumnDescriptorsToProducto,
-    agregarNuevoProductoOP,
-    recuperarDatosTemporales,
-    mapColumnDescriptors,
-    updateColumnProduct,
-    updateOrdenProduccion,
-    mapearPropiedadesProductoLaminacion,
-    mapearProductoAColumnas,
-    incrementarIndiceProductos,
-    updateProductInOrden
-  } = useOrdenProduccionData() // Usar el hook personalizado
+    datosColumna,
+    datosLineaMod,
+    ordenProduccion,
+    ordenData,
+    editMode,
+    listaProductosOrdenReciente,
+    listadoTitulosProducto,
+    selectPropiedades,
+    configurarOrdenProduccion,
+    actualizarDatos,
+    handleSelection,
+    handleFilter,
+    handleInputTextChange,
+    handleInputTextClick,
+    handleFilterChange,
+    handleToggleChange,
+    handleInputChange,
+    handleButtonClick
+  } = useOrdenProduccionManager()
 
-  const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
-  const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
-  const [ordenProduccion, setOrdenProduccion] = useState<
-    OrdenProduccion | null | undefined
-  >()
+  const { getCurrentOrderProduccion, recuperarDatosTemporales } =
+    useOrdenProduccionData()
 
-  const [ordenData, setOrdenData] = useState<boolean>()
-  const [editMode, setEditMode] = useState<boolean>(false)
-
-  //console.log(listadoTitulosProducto)
-  const { setListaProductosOrdenReciente, listaProductosOrdenReciente } =
-    useOrdenProductionStore()
-
-  const { filterByWords, filterData } = useFilterData()
-
-  const getAtributeList = (listado: any[]) => {
-    const mappedList = mapearPropiedadesProductoLaminacion(listado)
-    return mappedList
-  }
-
-  const listadoTitulosProducto: string[] = getAtributeList(HeadersProducto)
-
-  const [selectPropiedades, setSelectedPropiedades] = useState(
-    listadoTitulosProducto[0]
-  )
-
-  const handleInputChange = (value: string | number, id: any) => {
-    if (editMode) {
-      //console.log(id,value)
-      const dataUpdated = updateColumnProduct(
-        datosLineaMod,
-        id,
-        value,
-        ProductoModificacion
-      )
-
-      if (dataUpdated) {
-        setDatosLineaMod(dataUpdated)
-      }
-    } else {
-      const currentData = recuperarDatosTemporales()
-
-      if (currentData) {
-        const dataUpdated = updateColumnProduct(
-          currentData,
-          id,
-          value,
-          ParteLaminacion
-        )
-
-        if (dataUpdated) {
-          //console.log("actualizamos")
-          const serializeObj = JSON.stringify(dataUpdated)
-          setDatosLocalStorage("datosTemporales", serializeObj)
-          setDatosColumna(dataUpdated)
-        }
-      }
-    }
-
-    //updateColumnProduct(id,value,ParteLaminacion)
-    //console.log(id,value)
-  }
-
-  const handleButtonClick = (idInput: string | number, rowIndex: number) => {
-    const id = typeof idInput === "number" ? idInput.toString() : idInput
-    //console.log(id)
-    if (id.toLowerCase() === "agregar") {
-      //este ide corresponde al boton de añadir
-      const productoActual = recuperarDatosTemporales()
-      if (ordenProduccion && ordenProduccion !== null) {
-        if (productoActual) {
-          const mappedProduct = mapColumnDescriptorsToProducto(
-            productoActual,
-            ordenProduccion?.idParte
-          )
-
-          // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
-          const nuevoOrdenProduccion = { ...ordenProduccion }
-          nuevoOrdenProduccion.ordenesProduccion = [
-            ...nuevoOrdenProduccion.ordenesProduccion,
-            mappedProduct
-          ]
-
-          setOrdenProduccion(nuevoOrdenProduccion)
-          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
-          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-        } else {
-          const mappedProduct = mapColumnDescriptorsToProducto(
-            ParteLaminacion,
-            1
-          )
-
-          const nuevoOrdenProduccion = { ...ordenProduccion }
-
-          nuevoOrdenProduccion.ordenesProduccion = [
-            ...nuevoOrdenProduccion.ordenesProduccion,
-            mappedProduct
-          ]
-
-          setOrdenProduccion(nuevoOrdenProduccion)
-          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
-          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-        }
-      } else {
-        //console.log("entro sin orden")
-      }
-    } else if (id.toLowerCase() === "editar") {
-      setEditMode(true)
-      const productoEditar = mapearProductoAColumnas(
-        ProductoModificacion,
-        listaProductosOrdenReciente[rowIndex].idParte,
-        listaProductosOrdenReciente[rowIndex]
-      )
-
-      //console.log(productoEditar)
-      setDatosLineaMod(productoEditar)
-      const serializeObj = JSON.stringify(productoEditar)
-      setDatosLocalStorage("lineaProductoMod", serializeObj)
-    } else if (id.toLowerCase() === "aceptaredicion") {
-      // console.log(datosLineaMod)
-      if (datosLineaMod) {
-        if(ordenProduccion){
-          const convertProduct = mapColumnDescriptorsToProducto(datosLineaMod,ordenProduccion.idParte)
-          updateProductInOrden(convertProduct,ordenProduccion.idParte)
-          const ordenproducionActualizada = getCurrentOrderProduccion()
-          setOrdenProduccion(ordenproducionActualizada)
-          
-        }
-      }
-
-      //setDatosLineaMod(productoEditar)
-      //setEditMode(false)
-    }
-  }
-
-  // Maneja la selección del usuario
-  const handleSelection = (value: string) => {
-    //console.log("Valor seleccionado:", value)
-    setSelectedPropiedades(value) // Actualiza el estado con el valor seleccionado
-  }
-
-  // Opcional: Maneja el filtro si es necesario
-  const handleFilter = (filterValue: string) => {
-    console.log("Filtrar valores por:", filterValue)
-    // Implementar lógica de filtrado aquí si es necesario
-    if (ordenProduccion?.ordenesProduccion) {
-      filterData(ordenProduccion?.ordenesProduccion, filterValue, "asc").then(
-        (result) => {
-          setListaProductosOrdenReciente(result)
-        }
-      )
-    }
-  }
-
-  const handleInputTextChange = (idInput: string, value: string) => {
-    console.log(idInput, value)
-  }
-
-  const handleInputTextClick = (valueInput: string) => {
-    console.log("inputText", valueInput)
-  }
-
-  const handleFilterChange = (id: string, value: string) => {
-    if (id === "byWords") {
-      if (ordenProduccion?.ordenesProduccion) {
-        filterByWords(
-          ordenProduccion?.ordenesProduccion,
-          value,
-          selectPropiedades,
-          "asc"
-        ).then((result) => {
-          setListaProductosOrdenReciente(result)
-        })
-      }
-    }
-  }
-
-  //manejador del toogle
-  const handleToggleChange = (
-    idToggle: string,
-    toggleState: {
-      value: boolean
-      sortDirection: "asc" | "desc"
-    }
-  ) => {
-    if (idToggle === "orden01") {
-      setOrdenData(toggleState.value)
-
-      if (listaProductosOrdenReciente) {
-        filterData(
-          listaProductosOrdenReciente,
-          selectPropiedades,
-          toggleState.sortDirection
-        ).then((result) => {
-          console.log(result)
-          setListaProductosOrdenReciente(result)
-        })
-      }
-      // Puedes realizar acciones adicionales basadas en el estado del toggle
-    }
-  }
 
   useEffect(() => {
-    if (ordenProduccion) {
-      const productoActual = recuperarDatosTemporales()
-      //console.log(productoActual)
-
-      if (productoActual) {
-        productoActual[0].value = ordenProduccion.idParte
-        productoActual[0].defaultValue = ordenProduccion.idParte
-        const mappedProductoActual = mapColumnDescriptors(
-          ParteLaminacion,
-          productoActual,
-          ["value", "defaultValue"]
-        )
-
-        const indexedProduct = incrementarIndiceProductos(
-          ordenProduccion.ordenesProduccion
-        )
-        setDatosColumna(mappedProductoActual)
-        updateOrdenProduccion(ordenProduccion)
-        setListaProductosOrdenReciente(indexedProduct)
-      } else {
-        ParteLaminacion[0].value = ordenProduccion.idParte
-        ParteLaminacion[0].defaultValue = ordenProduccion.idParte
-        const mappedProductoActual = mapColumnDescriptors(
-          ParteLaminacion,
-          ParteLaminacion,
-          ["value", "defaultValue"]
-        )
-
-        const indexedProduct = incrementarIndiceProductos(
-          ordenProduccion.ordenesProduccion
-        )
-        setDatosColumna(mappedProductoActual)
-        updateOrdenProduccion(ordenProduccion)
-        setListaProductosOrdenReciente(indexedProduct)
-      }
+    if (!ordenProduccion) return
+    const productoActual = recuperarDatosTemporales()
+    if (productoActual) {
+      actualizarDatos(productoActual, ordenProduccion)
     }
   }, [ordenProduccion])
 
   useEffect(() => {
     const currentOrder = getCurrentOrderProduccion()
-
-    if (currentOrder !== null) {
-      setOrdenProduccion(currentOrder)
-      ParteLaminacion[0].value = currentOrder.idParte
-      ParteLaminacion[0].defaultValue = currentOrder.idParte
-      setDatosColumna(ParteLaminacion)
-      updateOrdenProduccion(currentOrder)
+    if (currentOrder) {
+      configurarOrdenProduccion(currentOrder)
     }
   }, [])
 
-  useEffect(() => {
-    //console.log(listaProductosOrdenReciente)
-  }, [listaProductosOrdenReciente])
 
   return (
     <form className="text-white">

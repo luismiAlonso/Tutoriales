@@ -13,7 +13,7 @@ export interface Producto {
   tipo: string
   color: string
   molde: string
-  planchaObtenidas: number
+  planchaobtenidas: number
   peso: number
   formulas: number
   planchas: number

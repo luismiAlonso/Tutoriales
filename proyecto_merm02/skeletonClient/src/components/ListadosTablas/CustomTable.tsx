@@ -4,11 +4,10 @@ import SelectComponent from "../selectComponent/SelectComponent"
 import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "../button/ButtonComponent"
 import InputTextComponent from "../inputTextComponent/InputTextComponent"
-import { useOrdenProduccionData } from "../../customHook/useOrdenProduccionData"
 import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
 import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
-import { number } from "zod"
+import { getPropertyValue } from "../../utilidades/util.ts"
 
 interface TableProps<T> {
   columns: ColumnDescriptor[]
@@ -43,8 +42,8 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   onInputChange,
   onButtonClick
 }) => {
-  const handleChange = (value: string | number | boolean,rowIndex:number) => {
-    onInputChange(value, column.idInput,rowIndex)
+  const handleChange = (value: string | number | boolean, rowIndex: number) => {
+    onInputChange(value, column.idInput, rowIndex)
   }
 
   const handleClick = (
@@ -64,7 +63,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <InputTextComponent
             value={data[dataColumn.idInput] as string}
             defaultValue={dataColumn.defaultValue as string}
-            onChange={(value: string) => handleChange(value,rowIndex)}
+            onChange={(value: string) => handleChange(value, rowIndex)}
             placeholder={dataColumn.placeHolder}
             readOnly={!dataColumn.editable}
             additionalStyles={dataColumn.additionalStyles}
@@ -79,7 +78,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <InputTextComponent
             value={data[dataColumn.idInput] as string}
             defaultValue={dataColumn.defaultValue as string}
-            onChange={(value: string) => handleChange(value,rowIndex)}
+            onChange={(value: string) => handleChange(value, rowIndex)}
             placeholder={dataColumn.placeHolder}
             readOnly={!dataColumn.editable}
             additionalStyles={dataColumn.additionalStyles}
@@ -99,7 +98,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             optionsSelect={dataColumn.options}
             onSeleccion={() => {}}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleChange(e.target.value,rowIndex)
+              handleChange(e.target.value, rowIndex)
             }
           />
         </td>
@@ -111,7 +110,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             options={dataColumn.options || []}
             defaultValue={dataColumn.defaultValue as string}
             value={data[dataColumn.idInput] as string}
-            onChange={(value: string) => handleChange(value,rowIndex)}
+            onChange={(value: string) => handleChange(value, rowIndex)}
           />
         </td>
       )
@@ -121,7 +120,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
           <input
             type="checkbox"
             checked={data[dataColumn.idInput] as boolean}
-            onChange={(e) => handleChange(e.target.checked,rowIndex)}
+            onChange={(e) => handleChange(e.target.checked, rowIndex)}
           />
         </td>
       )
@@ -133,7 +132,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             onClick={(e) => {
               // Llama a handleClick solo si dataColumn.value está definido
               if (dataColumn.value !== undefined) {
-                handleClick(e, dataColumn.idInput,rowIndex)
+                handleClick(e, dataColumn.idInput, rowIndex)
               }
             }}
           />
@@ -146,7 +145,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
             <IconComponent
               onClick={(e) => {
                 if (dataColumn.value != undefined) {
-                  handleClick(e, dataColumn.idInput,rowIndex)
+                  handleClick(e, dataColumn.idInput, rowIndex)
                 }
               }} // Asegúrate de que `props.value` sea el valor correcto
               iconType="svg"
@@ -161,7 +160,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
               <IconComponent
                 onClick={(e) => {
                   if (dataColumn.value != undefined) {
-                    handleClick(e, dataColumn.idInput,rowIndex)
+                    handleClick(e, dataColumn.idInput, rowIndex)
                   }
                 }}
                 iconType="svg"
@@ -173,7 +172,9 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       }
       return <td></td>
     case "noInput":
-      return <td className="text-center">{data[dataColumn.idInput]}</td>
+      return (
+        <td className="text-center">{data[dataColumn.idInput] as string}</td>
+      )
     default:
       return <td className="text-center">{dataColumn.content}</td>
   }
@@ -186,6 +187,7 @@ const CustomTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
+
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -200,28 +202,33 @@ const CustomTable: React.FC<TableProps<any>> = ({
             </tr>
           </thead>
           <tbody>
-            {data.map((rowData, rowIndex) => (
-              <tr
-                key={rowIndex}
-                className={`${
-                  rowIndex % 2 === 0
-                    ? "bg-white dark:bg-gray-900"
-                    : "bg-gray-50 dark:bg-gray-800"
-                } border-b dark:border-gray-700`}
-              >
-                {dataColumn.map((column, columnIndex) => (
-                  <TableCellComponent
-                    key={columnIndex}
-                    dataColumn={column}
-                    data={rowData}
-                    column={column}
-                    rowIndex={rowIndex}
-                    onInputChange={onInputChange}
-                    onButtonClick={onButtonClick}
-                  />
-                ))}
-              </tr>
-            ))}
+            {data.map((rowData, rowIndex) => {
+              return (
+                <tr
+                  key={rowIndex}
+                  className={`${
+                    rowIndex % 2 === 0
+                      ? "bg-white dark:bg-gray-900"
+                      : "bg-gray-50 dark:bg-gray-800"
+                  } border-b dark:border-gray-700`}
+                >
+                  {dataColumn.map((column, columnIndex) => {
+                    //const value = getPropertyValue(rowData, column.idInput);
+                    return (
+                      <TableCellComponent
+                        key={columnIndex}
+                        dataColumn={column}
+                        data={rowData}
+                        column={column}
+                        rowIndex={rowIndex}
+                        onInputChange={onInputChange}
+                        onButtonClick={onButtonClick}
+                      />
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

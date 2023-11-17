@@ -87,7 +87,7 @@ export  const ProductoModificacion: ColumnDescriptor[] = [
     },
     {
       title: "PLANCH OB.",
-      idInput: "planchaObtenidas",
+      idInput: "planchaobtenidas",
       content: "",
       value: "2x6",
       type: "hybridSelect",

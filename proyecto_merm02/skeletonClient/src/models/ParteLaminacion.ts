@@ -75,7 +75,7 @@ export  const ParteLaminacion: ColumnDescriptor[] = [
     },
     {
       title: "PLANCH OB.",
-      idInput: "planchaObtenidas",
+      idInput: "planchaobtenidas",
       content: "",
       value: "2x6",
       type: "hybridSelect",

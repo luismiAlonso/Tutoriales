@@ -182,6 +182,8 @@ const useOrdenProduccionManager = () => {
           setOrdenProduccion(nuevoOrdenProduccion)
           // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+
+          setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
         }
       } else {
         //console.log("entro sin orden")
@@ -190,32 +192,35 @@ const useOrdenProduccionManager = () => {
       setEditMode(true)
 
       if (listaProductosOrdenReciente) {
+
         const productoEditar = mapearProductoAColumnas(
           ProductoModificacion,
           listaProductosOrdenReciente[rowIndex].idParte,
           listaProductosOrdenReciente[rowIndex]
         )
-
         setDatosLineaMod(productoEditar)
         const serializeObj = JSON.stringify(productoEditar)
         setDatosLocalStorage("lineaProductoMod", serializeObj)
+
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
 
       if (datosLineaMod) {
-
         if (ordenProduccion) {
 
+          console.log(datosLineaMod)
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenProduccion.idParte
           )
           console.log(convertProduct)
+          
           updateProductInOrden(convertProduct, ordenProduccion.idParte)
-          const ordenproducionActualizada = getCurrentOrderProduccion()
+          /*const ordenproducionActualizada = getCurrentOrderProduccion()
           //console.log(ordenproducionActualizada)
           setOrdenProduccion(ordenproducionActualizada)
-          setEditMode(false)
+          setEditMode(false)*/
+
         }
       }
     }

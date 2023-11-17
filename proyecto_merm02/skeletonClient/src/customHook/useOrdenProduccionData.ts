@@ -367,6 +367,7 @@ export const useOrdenProduccionData = () => {
   }
 
   const updateProductInOrden = (producto: Producto, idParte: number) => {
+
     updateProductInOrdenProduccionDB(idParte, producto.indiceProducto, producto)
   }
 
@@ -500,6 +501,7 @@ export const useOrdenProduccionData = () => {
   }*/
 
   const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
+
     setIsLoading(true)
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
@@ -551,8 +553,9 @@ export const useOrdenProduccionData = () => {
     const producto: any = {}
 
     columns.forEach((col) => {
-      if (col.title && col.value !== undefined) {
-        const key = col.title.toLowerCase()
+      if (col.idInput && col.value !== undefined) {
+    
+        const key = col.idInput
         producto[key] = col.value
       }
     })

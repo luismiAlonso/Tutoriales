@@ -51,7 +51,9 @@ export const updateProductInOrdenProduccionDB = (
   updatedProductData: Partial<Producto>
 ) => {
   try {
+
     const ordenes = fetchOrdenesProduccionDB()
+
     const ordenIndex = ordenes.findIndex(
       (orden) => orden.idParte === idParte // Comparamos directamente sin convertir a string
     )
@@ -61,13 +63,15 @@ export const updateProductInOrdenProduccionDB = (
       const productoIndex = orden.ordenesProduccion.findIndex(
         (producto) => producto.indiceProducto === idProducto
       )
-
+      
       if (productoIndex !== -1) {
         orden.ordenesProduccion[productoIndex] = {
           ...orden.ordenesProduccion[productoIndex],
           ...updatedProductData
         }
+
         saveOrdenesProduccionDB(ordenes)
+
       } else {
         console.error("Producto no encontrado en la orden de producción")
       }

@@ -89,7 +89,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
     },
     {
       title: "PLANCH OB.",
-      idInput: "planchaObtenidas",
+      idInput: "planchaobtenidas",
       content: "",
       value: "",
       type: "noInput",

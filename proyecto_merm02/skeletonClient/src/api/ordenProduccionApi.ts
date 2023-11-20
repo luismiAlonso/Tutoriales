@@ -57,19 +57,18 @@ export const updateProductInOrdenProduccionDB = (
     const ordenIndex = ordenes.findIndex(
       (orden) => orden.idParte === idParte // Comparamos directamente sin convertir a string
     )
-
     if (ordenIndex !== -1) {
       const orden = ordenes[ordenIndex]
       const productoIndex = orden.ordenesProduccion.findIndex(
         (producto) => producto.indiceProducto === idProducto
       )
-      
+
       if (productoIndex !== -1) {
         orden.ordenesProduccion[productoIndex] = {
           ...orden.ordenesProduccion[productoIndex],
           ...updatedProductData
         }
-
+        
         saveOrdenesProduccionDB(ordenes)
 
       } else {

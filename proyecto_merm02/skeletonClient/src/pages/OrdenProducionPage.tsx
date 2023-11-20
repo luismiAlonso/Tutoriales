@@ -38,11 +38,13 @@ function OrdenProducionPage() {
 
 
   useEffect(() => {
+
     if (!ordenProduccion) return
     const productoActual = recuperarDatosTemporales()
     if (productoActual) {
       actualizarDatos(productoActual, ordenProduccion)
     }
+
   }, [ordenProduccion])
 
   useEffect(() => {
@@ -52,8 +54,16 @@ function OrdenProducionPage() {
     }
   }, [])
 
+  useEffect(()=>{
+
+    if(listaProductosOrdenReciente){
+      console.log(listaProductosOrdenReciente)
+    }
+    
+  },[listaProductosOrdenReciente])
 
   return (
+
     <form className="text-white">
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
         <div className="flex-grow text-left">

@@ -7,6 +7,7 @@ import { ProductoModificacion } from "../models/ProductoModificacion"
 import { HeadersProducto } from "../models/HeadersProducto"
 import useFilterData from "../components/filters/useFilterData"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
+import { parteProducto } from "../models/ParteProducto"
 
 const useOrdenProduccionManager = () => {
   const {
@@ -63,6 +64,7 @@ const useOrdenProduccionManager = () => {
     datos: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
+
     if (ordenProduccion) {
       const producto = datos || ParteLaminacion
       producto[0].value = ordenProduccion.idParte
@@ -146,15 +148,19 @@ const useOrdenProduccionManager = () => {
   const handleButtonClick = (idInput: string | number, rowIndex: number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
     //console.log(id)
+
     if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
+
       if (ordenProduccion && ordenProduccion !== null) {
+
         if (productoActual) {
           const mappedProduct = mapColumnDescriptorsToProducto(
             productoActual,
             ordenProduccion?.idParte
           )
+          
           mappedProduct.indiceProducto = rowIndex
           // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
           const nuevoOrdenProduccion = { ...ordenProduccion }
@@ -164,13 +170,20 @@ const useOrdenProduccionManager = () => {
           ]
 
           setOrdenProduccion(nuevoOrdenProduccion)
-          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
+          //Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
+          const serializeObj = JSON.stringify(productoActual)
+          setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+          setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
+
         } else {
+
           const mappedProduct = mapColumnDescriptorsToProducto(
-            ParteLaminacion,
+            ProductoModificacion,
             1
           )
+
+          mappedProduct.indiceProducto = 1
 
           const nuevoOrdenProduccion = { ...ordenProduccion }
 
@@ -182,9 +195,11 @@ const useOrdenProduccionManager = () => {
           setOrdenProduccion(nuevoOrdenProduccion)
           // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-
+          const serializeObj = JSON.stringify(ParteLaminacion)
+          setDatosLocalStorage("datosTemporales", serializeObj)
           setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
         }
+        
       } else {
         //console.log("entro sin orden")
       }
@@ -198,28 +213,31 @@ const useOrdenProduccionManager = () => {
           listaProductosOrdenReciente[rowIndex].idParte,
           listaProductosOrdenReciente[rowIndex]
         )
+
         setDatosLineaMod(productoEditar)
         const serializeObj = JSON.stringify(productoEditar)
-        setDatosLocalStorage("lineaProductoMod", serializeObj)
-
+        setDatosLocalStorage("datosTemporales", serializeObj)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
 
       if (datosLineaMod) {
+
         if (ordenProduccion) {
 
-          console.log(datosLineaMod)
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenProduccion.idParte
           )
-          console.log(convertProduct)
-          
+
+          //console.log(convertProduct)
+
           updateProductInOrden(convertProduct, ordenProduccion.idParte)
-          /*const ordenproducionActualizada = getCurrentOrderProduccion()
-          //console.log(ordenproducionActualizada)
-          setOrdenProduccion(ordenproducionActualizada)
-          setEditMode(false)*/
+          const ordenproducionActualizada = getCurrentOrderProduccion()
+          if(ordenproducionActualizada){
+            setOrdenProduccion(ordenproducionActualizada)
+            setListaProductosOrdenReciente(ordenproducionActualizada.ordenesProduccion)
+          }
+          setEditMode(false)
 
         }
       }

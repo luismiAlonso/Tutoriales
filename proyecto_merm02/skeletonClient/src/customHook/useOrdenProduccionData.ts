@@ -322,8 +322,8 @@ export const useOrdenProduccionData = () => {
         case "PLANCH OB.":
           updatedColumn = {
             ...column,
-            defaultValue: producto.planchaObtenidas,
-            value: producto.planchaObtenidas
+            defaultValue: producto.planchaobtenidas,
+            value: producto.planchaobtenidas
           }
           break // Agregada instrucción break.
         case "PESO":
@@ -367,7 +367,6 @@ export const useOrdenProduccionData = () => {
   }
 
   const updateProductInOrden = (producto: Producto, idParte: number) => {
-
     updateProductInOrdenProduccionDB(idParte, producto.indiceProducto, producto)
   }
 

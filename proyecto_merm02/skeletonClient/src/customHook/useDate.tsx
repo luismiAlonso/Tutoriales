@@ -10,6 +10,7 @@ export function useDate(initialDate: string) {
   const handleDateChange = (newDate:string) => {
     setDate(newDate)
   }
+  
 
   return { date, handleDateChange }
 }

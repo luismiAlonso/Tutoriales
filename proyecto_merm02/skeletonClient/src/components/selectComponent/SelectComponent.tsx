@@ -8,6 +8,7 @@ const SelectComponent: React.FC<IcustomSelectProp> = ({
   value,
   defaultValue,
   idSelected,
+  onChange,
   onSeleccion,
   onFilter // Incluye onFilter en la desestructuración de props
 }) => {
@@ -21,6 +22,10 @@ const SelectComponent: React.FC<IcustomSelectProp> = ({
     setSelectedValue(newValue) // Actualiza el estado local
     onSeleccion(newValue, idSelected)
 
+    if(onChange){
+      onChange(e)
+    }
+    
     if (onFilter) {
       onFilter(newValue, idSelected)
     }

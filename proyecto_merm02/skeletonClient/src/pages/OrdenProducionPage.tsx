@@ -19,7 +19,7 @@ function OrdenProducionPage() {
     ordenData,
     editMode,
     listaProductosOrdenReciente,
-    listadoTitulosProducto,
+    listadoTitulosPropiedades,
     selectPropiedades,
     configurarOrdenProduccion,
     actualizarDatos,
@@ -54,13 +54,9 @@ function OrdenProducionPage() {
     }
   }, [])
 
-  useEffect(()=>{
-
-    if(listaProductosOrdenReciente){
-      console.log(listaProductosOrdenReciente)
-    }
-    
-  },[listaProductosOrdenReciente])
+  /*useEffect(()=>{
+    //console.log(datosColumna)
+  },[handleInputChange])*/
 
   return (
 
@@ -123,9 +119,9 @@ function OrdenProducionPage() {
                 </label>
                 <div className="relative">
                   <SelectComponent
-                    optionsSelect={listadoTitulosProducto}
+                    optionsSelect={listadoTitulosPropiedades}
                     value={selectPropiedades} // valor actual seleccionado
-                    defaultValue={listadoTitulosProducto[0]} // valor por defecto mostrado
+                    defaultValue={listadoTitulosPropiedades[0]} // valor por defecto mostrado
                     selectClassName={"mt-4 mb-4 w-1/4"}
                     idSelected={"selectPropiedades"} // identificador para el select, útil si manejas múltiples selects
                     onSeleccion={handleSelection} // callback para manejar la selección

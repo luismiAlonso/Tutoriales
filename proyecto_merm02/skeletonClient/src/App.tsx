@@ -5,6 +5,10 @@ import NavBar from "./components/NavBar"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Produccion from "./pages/Produccion"
 import OrdenProducionPage from "./pages/OrdenProducionPage"
+import MainInventario from "./pages/MainInventario"
+import EntradasInventarioPage from "./pages/EntradasInventarioPage"
+import EntradasInventarioConfiguracion from "./pages/EntradasInventarioConfiguracion"
+import ListarParteProduccion from "./pages/ListarParteProduccion"
 
 /*
 import RegisterPage from "./pages/RegisterPage"
@@ -26,6 +30,11 @@ function App() {
             <Route path="/MainTask" element={<MainTask />} /> 
             <Route path="/Produccion" element={<Produccion />} />
             <Route path="/OrdenProducionPage" element={<OrdenProducionPage />} />
+            <Route path="/ListarParteProduccion" element={<ListarParteProduccion />} />
+            <Route path="/MainInventario" element={<MainInventario />} />
+            <Route path="/EntradasINventario" element={<MainInventario />} />
+            <Route path="/EntradasInventarioPage" element={<EntradasInventarioPage />} />
+            <Route path="/EntradasInventarioConfiguracion" element={<EntradasInventarioConfiguracion />} />
           </Route> 
           {/*<Route path="/register" element={<RegisterPage />} />
                 <Route element={<ProtectedRoute />}>

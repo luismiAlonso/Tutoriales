@@ -3,21 +3,23 @@ import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
 
 type OrdenProduccionStore = {
-  
   ordenesProduccion: OrdenProduccion[]
   ordenReciente: OrdenProduccion | null
   productoActual: Producto | null
-  listaProductosOrdenReciente: Producto []
+  listaProductosOrdenReciente: Producto[]
+  listaTotalProduccion: Producto []
   columnDescriptors: ColumnDescriptor[] // Nueva definición para los ColumnDescriptor
-  
+
   addOrdenProduccion: (orden: OrdenProduccion) => void
   removeOrdenProduccion: (idParte: number) => void
   updateOrdenProduccion: (
     idParte: number,
     updatedOrden: Partial<OrdenProduccion>
   ) => void
-  setListaProductosOrdenReciente: (productos: Producto[]) => void;
-  getListaProductosOrdenReciente: () => Producto[];
+  setListaProductosOrdenReciente: (productos: Producto[]) => void
+  getListaProductosOrdenReciente: () => Producto[]
+  setListaTotalProduccion: (productos:Producto[]) => void
+  getListaTotalProduccion: () => Producto[]
   getOrdenProduccion: (idParte: number) => OrdenProduccion | undefined
   setOrdenReciente: (orden: OrdenProduccion) => void
   setOrdenesProduccion: (ordenes: OrdenProduccion[]) => void
@@ -32,6 +34,7 @@ export const useOrdenProductionStore = create<OrdenProduccionStore>(
     ordenesProduccion: [],
     ordenReciente: null,
     listaProductosOrdenReciente: [],
+    listaTotalProduccion: [],
     productoActual: null,
     columnDescriptors: [], // Inicialización del estado para los ColumnDescriptor
 
@@ -65,14 +68,17 @@ export const useOrdenProductionStore = create<OrdenProduccionStore>(
       )
       return orden
     },
-
+    setListaTotalProduccion: (productos) => set(() => ({ listaTotalProduccion: productos })),
+    getListaTotalProduccion: () => get().listaTotalProduccion,
     setOrdenReciente: (orden) => set(() => ({ ordenReciente: orden })),
 
-    setOrdenesProduccion: (ordenes) => set(() => ({ ordenesProduccion: ordenes })),
+    setOrdenesProduccion: (ordenes) =>
+      set(() => ({ ordenesProduccion: ordenes })),
 
     setProductoActual: (producto) => set(() => ({ productoActual: producto })),
 
-    setColumnDescriptors: (columns) => set(() => ({ columnDescriptors: columns })),
+    setColumnDescriptors: (columns) =>
+      set(() => ({ columnDescriptors: columns })),
 
     setInputValue: (id, value) => {
       set((state) => ({
@@ -89,7 +95,8 @@ export const useOrdenProductionStore = create<OrdenProduccionStore>(
       return column?.value
     },
 
-    setListaProductosOrdenReciente: (productos) => set(() => ({ listaProductosOrdenReciente: productos })),
+    setListaProductosOrdenReciente: (productos) =>
+      set(() => ({ listaProductosOrdenReciente: productos })),
     getListaProductosOrdenReciente: () => get().listaProductosOrdenReciente
   })
 )

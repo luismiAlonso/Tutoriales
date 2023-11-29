@@ -1,3 +1,12 @@
+import { date } from "zod"
+import {
+  convertStringDateToDate,
+  convertDateToFormatString,
+  compararFechasAscendente,
+  compararFechasDescendente,
+  getIntervalDate
+} from "../../utilidades/dateUtil"
+
 export function sortData(
   data: any[],
   propiedad: string,
@@ -18,7 +27,6 @@ export function sortData(
     } else if (isDate(primerElemento[propiedad])) {
       tipoDato = "date"
     } else {
-
       const resultParse = parseSpecialNumber(primerElemento[propiedad])
       if (
         resultParse &&
@@ -27,7 +35,6 @@ export function sortData(
       ) {
         tipoDato = "especial"
       }
-
     }
 
     switch (tipoDato) {
@@ -43,7 +50,6 @@ export function sortData(
       default:
         copiaOrdenada = ordenarCadenas(data, propiedad, orden)
     }
-    
   } catch (error) {
     console.error(error)
     return data
@@ -61,7 +67,6 @@ export const filterDataInRange = (
   // Determinar el tipo de datos
   let dataType: "string" | "number" | "date" | "especial" = "string"
   const primerElemento = data[0]
-
   if (isNumber(primerElemento[property])) {
     dataType = "number"
   } else if (isDate(primerElemento[property])) {
@@ -76,7 +81,6 @@ export const filterDataInRange = (
       dataType = "especial"
     }
   }
-
   // Aplicar el filtro adecuado basado en el tipo de datos
   return data.filter((item: any) => {
     const value = item[property]
@@ -103,7 +107,6 @@ export function sortDataByInputFill(
   propiedad: string,
   orden: "asc" | "desc"
 ): string[] {
-
   // Llamar al método de ordenación correspondiente según el tipo de dato
   let copiaOrdenada: string[] = []
   try {
@@ -118,6 +121,7 @@ export function sortDataByInputFill(
     if (isNumber(primerElemento[propiedad])) {
       tipoDato = "number"
     } else if (isDate(primerElemento[propiedad])) {
+      console.log(primerElemento[propiedad])
       tipoDato = "date"
     } else {
       tipoDato = "string"
@@ -187,11 +191,9 @@ function ordenarCadenas(
   try {
     const sortedData = [...data]
     sortedData.sort((a, b) => {
-
-      console.log(a[propiedad],propiedad)
       const valorA = a[propiedad]
       const valorB = b[propiedad]
-     
+
       // Verificar si los valores son strings válidos
       if (typeof valorA === "string" && typeof valorB === "string") {
         if (orden === "asc") {
@@ -210,6 +212,7 @@ function ordenarCadenas(
         return 0
       }
     })
+
     return sortedData
   } catch (error) {
     console.error(error)
@@ -224,6 +227,7 @@ function ordenarNumeros(
 ): string[] {
   try {
     const sortedData = [...data]
+
     sortedData.sort((a, b) => {
       const numA = parseFloat(a[propiedad])
       const numB = parseFloat(b[propiedad])
@@ -285,7 +289,6 @@ function filtrarYOrdenarCadenas(
   orden: "asc" | "desc"
 ): string[] {
   try {
-
     const filteredData = data
       .filter((item) => {
         const itemProperty = String(item[propiedad]).toLowerCase()
@@ -299,7 +302,6 @@ function filtrarYOrdenarCadenas(
       )
 
     return filteredData
-    
   } catch (error) {
     console.log(error)
     return data
@@ -336,6 +338,111 @@ function filtrarYOrdenarNumeros(
       )
   } catch (error) {
     //console.log("error???",error)
+    return data
+  }
+}
+
+export const sortDateRange = (
+  data: any[],
+  from: Date,
+  to: Date,
+  orden: "asc" | "desc"
+): any[] => {
+
+  const filteredDataDates = data.filter((objeto) => {
+    // Asegúrate de que el objeto tiene una propiedad 'fecha' y es una cadena válida
+    if (!objeto.fecha) {
+      return false
+    }
+
+    // Convertir la cadena de fecha del objeto en un objeto Date
+    const fechaObjeto = convertStringDateToDate(objeto.fecha)
+    //Verificar si la fecha del objeto está dentro del intervalo
+
+    const filterDates = getIntervalDate(fechaObjeto, to, from)
+
+    return filterDates
+  })
+
+  //console.log(convertDateToFormatString(from,"dd/MM/yyyy"),convertDateToFormatString(to,"dd/MM/yyyy"))
+  return filteredDataDates.sort((a, b) => {
+    const dateA = convertStringDateToDate(a.fecha)
+    const dateB = convertStringDateToDate(b.fecha)
+
+    return orden === "asc"
+      ? compararFechasAscendente(dateA, dateB)
+      : compararFechasDescendente(dateA, dateB)
+  })
+}
+
+/*export const sortDateRange = (
+  data: any[],
+  from: Date,
+  to: Date,
+  orden: "asc" | "desc"
+): any[] => {
+  try {
+
+    const filteredData = data.filter(
+      (objeto) =>
+        "fecha" in objeto &&
+        isDateInRange(convertStringDateToDate(objeto.fecha), from, to)
+    )
+
+    //console.log(convertDateToFormatString(from,"dd/MM/yyyy"),convertDateToFormatString(to,"dd/MM/yyyy"))
+    return filteredData.sort((a, b) => {
+      const dateA = convertStringDateToDate(a.fecha)
+      const dateB = convertStringDateToDate(b.fecha)
+
+      return orden === "asc"
+        ? compararFechasAscendente(dateA, dateB)
+        : compararFechasDescendente(dateA, dateB)
+    })
+  } catch (error) {
+    console.error("Error al ordenar los datos: ", error)
+    return data
+  }
+}*/
+
+/*
+export const sortDateRange = (
+  data: any[],
+  from: Date,
+  to: Date,
+  orden: "asc" | "desc"
+): any[] => {
+
+  const inicio = from.setHours(0, 0, 0, 0)
+  const fin = to.setHours(23, 59, 59, 999)
+
+  return data.filter((objeto) => {
+    const fechaObjeto = new Date(objeto.fecha).setHours(0, 0, 0, 0)
+    return fechaObjeto >= inicio && fechaObjeto <= fin
+  })
+}
+*/
+
+export const sortDataByDateRange = (
+  data: any[],
+  propiedad: string,
+  from: Date,
+  to: Date,
+  orden: "asc" | "desc"
+): any[] => {
+  try {
+    // Filtrar primero por rango de fechas
+    const filteredData = filterDataInRange(data, from, to, propiedad)
+    //Luego, ordenar los datos filtrados
+    return filteredData.sort((a, b) => {
+      const dateA = new Date(a[propiedad])
+      const dateB = new Date(b[propiedad])
+
+      return orden === "asc"
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime()
+    })
+  } catch (error) {
+    console.error("Error al ordenar los datos: ", error)
     return data
   }
 }
@@ -397,9 +504,8 @@ export function parseSpecialNumber(input: string): ParsedValue {
 }
 
 export function isDate(dateStr: string) {
-  const regex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)?\d{2}$/
-  if (regex.test(dateStr)) return true
-  return false
+  const regex = /^([0-2][0-9]|3[0-1])(\/|-)(0[1-9]|1[0-2])\2(\d{4})$/
+  return regex.test(dateStr)
 }
 
 export function isNumber(numberStr: string) {
@@ -427,4 +533,16 @@ const filterNumberRange = (
 
 const filterDateRange = (value: Date, from: Date, to: Date): boolean => {
   return value >= from && value <= to
+}
+
+const isDateInRange = (date: Date, from: Date, to: Date) => {
+  console.log(
+    convertDateToFormatString(date, "dd/MM/yyyy"),
+    convertDateToFormatString(from, "dd/MM/yyyy"),
+    convertDateToFormatString(to, "dd/MM/yyyy")
+  )
+  return (
+    compararFechasAscendente(date, from) >= 0 &&
+    compararFechasDescendente(date, to) >= 0
+  )
 }

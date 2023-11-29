@@ -6,15 +6,15 @@ import { ParteLaminacion } from "../models/ParteLaminacion"
 import { ProductoModificacion } from "../models/ProductoModificacion"
 import { HeadersProducto } from "../models/HeadersProducto"
 import useFilterData from "../components/filters/useFilterData"
+import useListadosPartesManager from "./useListadosPartesManager"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
-import { parteProducto } from "../models/ParteProducto"
+import { ProductoInicial } from "../models/ProductoInicial"
 
 const useOrdenProduccionManager = () => {
   const {
     mapColumnDescriptors,
     incrementarIndiceProductos,
     updateOrdenProduccion,
-    mapearPropiedadesProductoLaminacion,
     getCurrentOrderProduccion,
     mapColumnDescriptorsToProducto,
     agregarNuevoProductoOP,
@@ -36,27 +36,36 @@ const useOrdenProduccionManager = () => {
   const [editMode, setEditMode] = useState<boolean>(false)
   const { filterByWords, filterData } = useFilterData()
 
-  const getAtributeList = (listado: any[]) => {
-    const mappedList = mapearPropiedadesProductoLaminacion(listado)
-    return mappedList
-  }
+  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
+    string[]
+  >([
+    "idParte",
+    "fecha",
+    "indiceProducto",
+    "operario",
+    "pasada",
+    "tipo",
+    "color",
+    "molde",
+    "planchasObtenidas",
+    "peso",
+    "formulas",
+    "planchas",
+    "acelerantes"
+  ])
 
-  const listadoTitulosProducto: string[] = getAtributeList(HeadersProducto)
-
-  const [selectPropiedades, setSelectedPropiedades] = useState(
-    listadoTitulosProducto[0]
+  const [selectPropiedades, setSelectedPropiedades] = useState<string>(
+    listadoTitulosPropiedades[0]
   )
-
   // Aquí puedes agregar cualquier lógica o funciones que manipulen estos estados
   // Por ejemplo, una función para actualizar 'datosColumna'
-
   const configurarOrdenProduccion = (orden: OrdenProduccion) => {
     if (orden === null) return
 
     setOrdenProduccion(orden)
-    ParteLaminacion[0].value = orden.idParte
-    ParteLaminacion[0].defaultValue = orden.idParte
-    setDatosColumna(ParteLaminacion)
+    ProductoInicial[0].value = orden.idParte
+    ProductoInicial[0].defaultValue = orden.idParte
+    setDatosColumna(ProductoInicial)
     updateOrdenProduccion(orden)
   }
 
@@ -64,13 +73,13 @@ const useOrdenProduccionManager = () => {
     datos: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
-
+    
     if (ordenProduccion) {
-      const producto = datos || ParteLaminacion
+      const producto = datos || ProductoInicial
       producto[0].value = ordenProduccion.idParte
       producto[0].defaultValue = ordenProduccion.idParte
 
-      const mappedProducto = mapColumnDescriptors(ParteLaminacion, producto, [
+      const mappedProducto = mapColumnDescriptors(ProductoInicial, producto, [
         "value",
         "defaultValue"
       ])
@@ -82,6 +91,8 @@ const useOrdenProduccionManager = () => {
       setDatosColumna(mappedProducto)
       updateOrdenProduccion(ordenProduccion)
       setListaProductosOrdenReciente(indexedProduct)
+      const serializeObj = JSON.stringify(mappedProducto)
+      setDatosLocalStorage("datosTemporales", serializeObj)
     }
   }
 
@@ -98,7 +109,9 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleInputChange = (value: string | number, id: any) => {
+    
     if (editMode) {
+
       const dataUpdated = updateColumnProduct(
         datosLineaMod,
         id,
@@ -109,11 +122,13 @@ const useOrdenProduccionManager = () => {
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
       }
+
     } else {
 
       const currentData = recuperarDatosTemporales()
-
+      
       if (currentData) {
+
         const dataUpdated = updateColumnProduct(
           currentData,
           id,
@@ -122,12 +137,14 @@ const useOrdenProduccionManager = () => {
         )
 
         if (dataUpdated) {
-          //console.log("actualizamos")
+
           const serializeObj = JSON.stringify(dataUpdated)
           setDatosLocalStorage("datosTemporales", serializeObj)
           setDatosColumna(dataUpdated)
         }
+
       } else {
+
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
           id,
@@ -139,6 +156,7 @@ const useOrdenProduccionManager = () => {
           //console.log("actualizamos")
           const serializeObj = JSON.stringify(dataUpdated)
           setDatosLocalStorage("datosTemporales", serializeObj)
+          //console.log(dataUpdated)
           setDatosColumna(dataUpdated)
         }
       }
@@ -147,21 +165,20 @@ const useOrdenProduccionManager = () => {
 
   const handleButtonClick = (idInput: string | number, rowIndex: number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
-    //console.log(id)
 
     if (id.toLowerCase() === "agregar") {
       //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
 
       if (ordenProduccion && ordenProduccion !== null) {
-
         if (productoActual) {
           const mappedProduct = mapColumnDescriptorsToProducto(
             productoActual,
             ordenProduccion?.idParte
           )
-          
-          mappedProduct.indiceProducto = rowIndex
+          mappedProduct.indiceProducto =
+            ordenProduccion.ordenesProduccion.length + 1
+          mappedProduct.fecha = ordenProduccion.fecha
           // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
           const nuevoOrdenProduccion = { ...ordenProduccion }
           nuevoOrdenProduccion.ordenesProduccion = [
@@ -170,20 +187,20 @@ const useOrdenProduccionManager = () => {
           ]
 
           setOrdenProduccion(nuevoOrdenProduccion)
+          //const mappedProductoActual = mapearProductoAColumnas(productoActual,ordenProduccion.idParte,mappedProduct)
           //Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
           const serializeObj = JSON.stringify(productoActual)
           setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
-
         } else {
 
           const mappedProduct = mapColumnDescriptorsToProducto(
-            ProductoModificacion,
+            ProductoInicial,
             1
           )
-
           mappedProduct.indiceProducto = 1
+          mappedProduct.fecha = ordenProduccion.fecha
 
           const nuevoOrdenProduccion = { ...ordenProduccion }
 
@@ -195,7 +212,7 @@ const useOrdenProduccionManager = () => {
           setOrdenProduccion(nuevoOrdenProduccion)
           // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-          const serializeObj = JSON.stringify(ParteLaminacion)
+          const serializeObj = JSON.stringify(ProductoInicial)
           setDatosLocalStorage("datosTemporales", serializeObj)
           setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
         }
@@ -207,7 +224,6 @@ const useOrdenProduccionManager = () => {
       setEditMode(true)
 
       if (listaProductosOrdenReciente) {
-
         const productoEditar = mapearProductoAColumnas(
           ProductoModificacion,
           listaProductosOrdenReciente[rowIndex].idParte,
@@ -215,8 +231,6 @@ const useOrdenProduccionManager = () => {
         )
 
         setDatosLineaMod(productoEditar)
-        const serializeObj = JSON.stringify(productoEditar)
-        setDatosLocalStorage("datosTemporales", serializeObj)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
 
@@ -229,16 +243,18 @@ const useOrdenProduccionManager = () => {
             ordenProduccion.idParte
           )
 
-          //console.log(convertProduct)
-
           updateProductInOrden(convertProduct, ordenProduccion.idParte)
           const ordenproducionActualizada = getCurrentOrderProduccion()
-          if(ordenproducionActualizada){
-            setOrdenProduccion(ordenproducionActualizada)
-            setListaProductosOrdenReciente(ordenproducionActualizada.ordenesProduccion)
-          }
-          setEditMode(false)
 
+          if (ordenproducionActualizada) {
+
+            setOrdenProduccion(ordenproducionActualizada)
+            setListaProductosOrdenReciente(
+              ordenproducionActualizada.ordenesProduccion)
+
+          }
+
+          setEditMode(false)
         }
       }
     }
@@ -271,6 +287,7 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleFilterChange = (id: string, value: string) => {
+    
     if (id === "byWords") {
       if (ordenProduccion?.ordenesProduccion) {
         filterByWords(
@@ -286,7 +303,7 @@ const useOrdenProduccionManager = () => {
   }
 
   //manejador del toogle
-  const handleToggleChange = (
+const handleToggleChange = (
     idToggle: string,
     toggleState: {
       value: boolean
@@ -302,7 +319,7 @@ const useOrdenProduccionManager = () => {
           selectPropiedades,
           toggleState.sortDirection
         ).then((result) => {
-          console.log(result)
+          //console.log(result)
           setListaProductosOrdenReciente(result)
         })
       }
@@ -323,7 +340,7 @@ const useOrdenProduccionManager = () => {
     setEditMode,
     listaProductosOrdenReciente,
     setListaProductosOrdenReciente,
-    listadoTitulosProducto,
+    listadoTitulosPropiedades,
     selectPropiedades,
     actualizarDatos,
     configurarOrdenProduccion,

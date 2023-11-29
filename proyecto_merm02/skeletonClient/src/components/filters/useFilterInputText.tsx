@@ -16,11 +16,11 @@ function useFilterInputText() {
       try {
 
         setFiltered(false)
+
         if (!newData || newData.length === 0 || !newProperty || !newOrder) {
           reject('Invalid input') // Rechaza la promesa con un mensaje de error
           return
         }
-        console.log("searchWord",searchWord,newData)
 
         if(searchWord==""){
           setCurrentDataStore(newData)
@@ -39,6 +39,7 @@ function useFilterInputText() {
     
         setCurrentDataStore(filteredData)
         resolve(filteredData) // Resuelve la promesa con los datos filtrados
+        
       } catch (error) {
         setFiltered(false)
         addNotification({

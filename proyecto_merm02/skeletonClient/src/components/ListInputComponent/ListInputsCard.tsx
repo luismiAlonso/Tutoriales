@@ -10,23 +10,6 @@ import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg"
 
 
-export  interface InputProps {
-    idDataProps: string,
-    type: string
-    idInput: string,
-    content:string,
-    titulo:string,
-    editable: boolean
-    defaultValue?: string | number
-    value?:string | number,
-    rowIndex?: number,
-    options: string[]
-    placeHolder: string
-    additionalStyles: string
-    onChange?: (value: string | number, idInput: string) => void
-    onClick?: (e: React.MouseEvent<HTMLButtonElement>, idInput: string, rowIndex?: number) => void,
-}
-
 export interface CustomCardProps {
   columns: ColumnDescriptor[]
   rowIndex: number
@@ -156,7 +139,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
   onButtonClick
 }) => {
 
-  console.log(columns)
+//console.log(columns)
 
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">

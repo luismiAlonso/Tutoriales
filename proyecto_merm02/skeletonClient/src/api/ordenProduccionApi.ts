@@ -1,4 +1,4 @@
-import { OrdenProduccion } from "../interfaces/OrdenProduccion"
+import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 
 export const fetchOrdenesProduccionDB = (): OrdenProduccion[] => {
   try {
@@ -46,30 +46,38 @@ export const updateOrdenByIdDB = (
 }
 
 export const updateProductInOrdenProduccionDB = (
-  idParte: number, // idParte ahora es de tipo number
+  idParte: number,
   idProducto: number,
   updatedProductData: Partial<Producto>
 ) => {
   try {
-
     const ordenes = fetchOrdenesProduccionDB()
 
-    const ordenIndex = ordenes.findIndex(
-      (orden) => orden.idParte === idParte // Comparamos directamente sin convertir a string
-    )
-    if (ordenIndex !== -1) {
-      const orden = ordenes[ordenIndex]
-      const productoIndex = orden.ordenesProduccion.findIndex(
+    // Encontrar la orden por idParte
+    const orden = ordenes.find((orden) => orden.idParte === idParte)
+        
+    if (orden) {
+      // Encontrar el producto por idProducto
+      const producto = orden.ordenesProduccion.find(
         (producto) => producto.indiceProducto === idProducto
       )
 
-      if (productoIndex !== -1) {
-        orden.ordenesProduccion[productoIndex] = {
-          ...orden.ordenesProduccion[productoIndex],
-          ...updatedProductData
+      console.log(orden,idProducto)
+
+      if (producto) {
+        // Actualizar el producto
+        const updatedProducto = { ...producto, ...updatedProductData }
+        // Reemplazar el producto en la orden
+        const productoIndex = orden.ordenesProduccion.findIndex(
+          (producto) => producto.indiceProducto === idProducto
+        )
+
+        if (productoIndex !== -1) {
+          orden.ordenesProduccion[productoIndex] = updatedProducto
+          saveOrdenesProduccionDB(ordenes)
+          console.log("anterior",producto)
+          console.log("actualizado",updatedProducto)
         }
-        
-        saveOrdenesProduccionDB(ordenes)
 
       } else {
         console.error("Producto no encontrado en la orden de producción")
@@ -81,6 +89,5 @@ export const updateProductInOrdenProduccionDB = (
     console.error("Error updating producto in orden de producción:", error)
   }
 }
-
 
 // Aquí puedes agregar más funciones según lo necesites...

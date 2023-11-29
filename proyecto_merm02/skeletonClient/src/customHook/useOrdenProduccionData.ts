@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import {
   fetchOrdenesProduccionDB,
   addOrdenProduccionDB,
@@ -11,6 +11,7 @@ import {
 
 export const useOrdenProduccionData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  
   const { addOrdenProduccion, setOrdenReciente } = useOrdenProductionStore()
 
   const cargarDatosOrdenProduccion = async (
@@ -47,7 +48,7 @@ export const useOrdenProduccionData = () => {
     const parteProduccion = ordenesProduccion.filter(
       (op) => op.idParte === idParte
     )
-    console.log(parteProduccion)
+   // console.log(parteProduccion)
     if (parteProduccion) {
       return parteProduccion
     }
@@ -150,6 +151,7 @@ export const useOrdenProduccionData = () => {
       )
       return
     }
+
     const ultimoProductoIndex = productos.length - 1
 
     // Reemplaza el producto existente con el nuevo objeto Producto
@@ -164,56 +166,6 @@ export const useOrdenProduccionData = () => {
       ...producto,
       indiceProducto: index + 1
     }))
-  }
-
-  const mapearPropiedadesProductoLaminacion = (
-    headers: ColumnDescriptor[]
-  ): string[] => {
-    type ClaveMapeo =
-      | "idParte"
-      | "indiceProducto"
-      | "operario"
-      | "pasada"
-      | "tipo"
-      | "color"
-      | "molde"
-      | "planchaObtenidas"
-      | "peso"
-      | "formulas"
-      | "planchas"
-      | "acelerantes"
-
-    const mapeoPropiedades: Record<string, ClaveMapeo> = {
-      IDPARTE: "idParte",
-      "INDEX PRODUCT": "indiceProducto",
-      OPERARIO: "operario",
-      PASADA: "pasada",
-      TIPO: "tipo",
-      COLOR: "color",
-      MOLDE: "molde",
-      "PLANCHAS OB.": "planchaObtenidas",
-      PESO: "peso",
-      FORMULAS: "formulas",
-      PLANCHAS: "planchas",
-      ACELERANTES: "acelerantes"
-    }
-
-    const propiedadesMapeadas: string[] = []
-
-    headers.forEach((header) => {
-      if (
-        header &&
-        typeof header.idInput === "string" &&
-        header.type !== "button"
-      ) {
-        const claveMapeada = mapeoPropiedades[header.idInput.toUpperCase()]
-        if (claveMapeada) {
-          propiedadesMapeadas.push(claveMapeada)
-        }
-      }
-    })
-
-    return propiedadesMapeadas
   }
 
   const mapearProductoAColumnasRead = (
@@ -373,6 +325,7 @@ export const useOrdenProduccionData = () => {
   //const saveProductInOrder = () => {}
 
   const getAllProductAndAllOrder = () => {
+    
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
     let superList: Producto[] = []
@@ -393,13 +346,15 @@ export const useOrdenProduccionData = () => {
     }
     return null
   }
-
+  
+  
   const updateColumnProduct = (
     datosActuales: ColumnDescriptor[],
     id: string | number,
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
+
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
@@ -441,66 +396,57 @@ export const useOrdenProduccionData = () => {
         // console.error("No hay datos en localStorage para actualizar.");
       }
     }
-  }
+}
 
-  /*
+
+/*
   const updateColumnProduct = (
+    datosActuales: ColumnDescriptor[],
     id: string | number,
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
+    const datosModificados =
+      datosActuales !== null ? [...datosActuales] : [...plantilla]
 
-    // Primero, intenta recuperar los datos actuales desde localStorage
-    const datosActuales = recuperarDatosTemporales()
+    // Buscar en los datos actuales o plantilla
+    const index = datosModificados.findIndex(
+      (columna) => columna.idInput === id
+    )
 
-    //console.log(datosActuales,id)
-
-    if (datosActuales !== null) {
-      // Si los datos existen, busca el descriptor de columna específico por idInput
-      const index = datosActuales.findIndex((columna) => columna.idInput === id)
-
-      if (index !== -1) {
-        // Si se encontró el descriptor de columna, actualiza su valor
-        datosActuales[index] = {
-          ...datosActuales[index],
-          value: valor
-        }
-        // Luego guarda los datos actualizados de vuelta en localStorage
-        guardarDatosTemporales(datosActuales)
-
-      } else {
-        console.error(
-          `No se encontró el descriptor de columna con idInput: ${id}`
-        )
+    if (index !== -1) {
+      // Actualiza el valor si se encuentra el descriptor
+      datosModificados[index] = {
+        ...datosModificados[index],
+        value: valor
       }
-      
     } else {
-      
-      console.log(plantilla)
-      // Si no hay datos en localStorage, busca en la plantilla
-      const index = plantilla.findIndex((columna) => columna.idInput === id)
-
-      if (index !== -1) {
-        // Si se encontró el descriptor de columna en la plantilla, actualiza su valor
-        plantilla[index] = {
-          ...plantilla[index],
+      // Si no se encuentra en datosActuales, busca en la plantilla
+      const indexPlantilla = plantilla.findIndex(
+        (columna) => columna.idInput === id
+      )
+      if (indexPlantilla !== -1) {
+        // Crea un nuevo objeto combinando la plantilla y el nuevo valor
+        const nuevoColumnDescriptor = {
+          ...plantilla[indexPlantilla],
           value: valor
         }
-        // Guarda los datos actualizados de vuelta en localStorage
-        guardarDatosTemporales(plantilla)
+        // Añade este nuevo objeto a los datos modificados
+        datosModificados.push(nuevoColumnDescriptor)
       } else {
-
         console.error(
           `No se encontró el descriptor de columna con idInput: ${id}`
         )
-        // Puedes descomentar la siguiente línea si deseas mostrar este mensaje
-        // console.error("No hay datos en localStorage para actualizar.");
       }
     }
-  }*/
+
+    // Guarda los datos actualizados en localStorage
+    // guardarDatosTemporales(datosModificados);
+    return datosModificados
+}
+*/
 
   const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
-
     setIsLoading(true)
     const ordenesProduccion = fetchOrdenesProduccionDB()
 
@@ -517,48 +463,21 @@ export const useOrdenProduccionData = () => {
     setIsLoading(false)
   }
 
-  /*
   const mapColumnDescriptorsToProducto = (
     columns: ColumnDescriptor[],
     idParte: number
   ): Producto => {
-    const findValueByTitle = (title: string) => {
-      return columns.find(
-        (col) => col.title.toLowerCase() === title.toLowerCase()
-      )
-    }
-
-    return {
-      idParte: idParte,
-      indiceProducto: obtenerUltimoProducto(idParte).indiceProducto,
-      operario: (findValueByTitle("OPERARIO")?.value as number) || 0, // Tendrás que llenar esto de alguna manera
-      pasada: (findValueByTitle("PASADA")?.value as number) || 0,
-      tipo: (findValueByTitle("TIPO")?.value as string) || "",
-      color: (findValueByTitle("COLOR")?.value as string) || "",
-      molde: (findValueByTitle("MOLDE")?.value as string) || "",
-      planchaObtenidas: (findValueByTitle("PLANCH OB.")?.value as number) || 0,
-      peso: (findValueByTitle("PESO")?.value as number) || 0,
-      formulas: (findValueByTitle("FORMULAS")?.value as number) || 0,
-      planchas: (findValueByTitle("PLANCHAS")?.value as number) || 0,
-      acelerantes: (findValueByTitle("ACELERANTES")?.value as string) || ""
-    }
-  }*/
-
-  const mapColumnDescriptorsToProducto = (
-    columns: ColumnDescriptor[],
-    idParte: number
-  ): Producto => {
-
     const producto: any = {}
 
     columns.forEach((col) => {
       if (col.idInput && col.value !== undefined) {
-    
         const key = col.idInput
         producto[key] = col.value
       }
     })
-    producto.idParte=idParte
+
+    producto.idParte = idParte
+
     return producto as Producto
   }
 
@@ -580,7 +499,6 @@ export const useOrdenProduccionData = () => {
     saveParteLaminadoActual,
     recuperarDatosTemporales,
     guardarDatosTemporales,
-    mapearPropiedadesProductoLaminacion,
     updateColumnProduct,
     updateProductInOrden
   }

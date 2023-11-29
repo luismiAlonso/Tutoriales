@@ -1,5 +1,9 @@
 import { useState } from "react"
-import { sortData, sortDataByInputFill } from "../filters/utilFiters"
+import {
+  sortData,
+  sortDataByInputFill,
+  sortDateRange  
+} from "../filters/utilFiters"
 import useNotification from "../../contextStore/useNotificationStore"
 
 function useFilterData() {
@@ -74,6 +78,38 @@ function useFilterData() {
     })
   }
 
+  const filterDateRange = async (
+    newData: any[],
+    propiedad: string,
+    dateTo: Date,
+    dateFrom: Date,
+    orden: "asc" | "desc"
+  ): Promise<any[]> => {
+
+    try {
+
+      const filteredData = sortDateRange(
+        newData,
+        dateFrom,
+        dateTo,
+        orden
+      )
+
+      setSortedDataProperties(filteredData)
+      setFiltered(true)
+
+      return filteredData
+
+    } catch (error) {
+      addNotification({
+        message: `Error en filterData by date range: ${error}`,
+        type: "error"
+      })
+      // Rechazar la promesa con un error o devolver un arreglo vacío según sea apropiado
+      return []
+    }
+  }
+
   // Otros métodos y lógica...
 
   return {
@@ -81,6 +117,7 @@ function useFilterData() {
     property,
     ordenProperties,
     isFiltered,
+    filterDateRange,
     setOrdenProperties,
     setProperty,
     filterData,

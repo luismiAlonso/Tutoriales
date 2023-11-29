@@ -52,7 +52,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     rowIndex: number
   ) => {
     e.preventDefault()
-    console.log(columnId)
+    //console.log(columnId)
     onButtonClick(column.idInput, rowIndex)
   }
 

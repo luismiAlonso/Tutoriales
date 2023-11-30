@@ -6,7 +6,7 @@ export interface ColumnDescriptor {
     value?: string | number
     editable: boolean
     options: string[]
-    defaultValue?: string | number
+    defaultValue?: string | number,
     placeHolder: string,
     additionalStyles:string,
     onChange?: (value: string | number, idInput: string) => void

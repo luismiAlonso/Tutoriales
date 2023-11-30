@@ -139,8 +139,6 @@ const CustomCard: React.FC<CustomCardProps> = ({
   onButtonClick
 }) => {
 
-//console.log(columns)
-
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">
       {columns.map((column, index) => (

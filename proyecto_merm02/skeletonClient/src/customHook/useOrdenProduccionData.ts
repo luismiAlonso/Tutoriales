@@ -11,7 +11,7 @@ import {
 
 export const useOrdenProduccionData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  
+
   const { addOrdenProduccion, setOrdenReciente } = useOrdenProductionStore()
 
   const cargarDatosOrdenProduccion = async (
@@ -20,39 +20,62 @@ export const useOrdenProduccionData = () => {
   ) => {
     setIsLoading(true)
 
-    const ordenesProduccion = fetchOrdenesProduccionDB()
+    try {
+      // Esperar a que se resuelva la promesa para obtener las órdenes de producción
+      const ordenesProduccion = await fetchOrdenesProduccionDB()
+      // Verificar si ordenesProduccion contiene datos
+      if (!Array.isArray(ordenesProduccion) || ordenesProduccion.length === 0) {
+        // Manejar el caso en el que no hay datos (mostrar mensaje, etc.)
+        console.error("No se encontraron órdenes de producción.")
+        return // Salir de la función si no hay datos
+      }
+      
+      const idParte = ordenesProduccion.length + 1
 
-    let idParte = 1
+      const nuevaOrdeProducion = {
+        idParte: idParte,
+        TipoGoma: tipoGoma,
+        ordenesProduccion: [],
+        fecha: fecha
+      }
 
-    if (ordenesProduccion.length > 0) {
-      idParte = ordenesProduccion.length + 1 // Calcular idParte basado en la longitud de la lista
+      // Agregar la nueva orden de producción a la base de datos
+      await addOrdenProduccionDB(nuevaOrdeProducion)
+
+      // Supongo que addOrdenProduccion es una función para actualizar el estado local o similar
+      addOrdenProduccion(nuevaOrdeProducion)
+    } catch (error) {
+      console.error("Error al cargar o agregar orden de producción:", error)
+    } finally {
+      setIsLoading(false)
     }
-
-    const nuevaOrdeProducion = {
-      idParte: idParte,
-      TipoGoma: tipoGoma,
-      ordenesProduccion: [],
-      fecha: fecha
-    }
-
-    await addOrdenProduccionDB(nuevaOrdeProducion)
-
-    addOrdenProduccion(nuevaOrdeProducion)
-
-    setIsLoading(false)
+    
   }
 
-  const getOrdenProduccionById = (idParte: number) => {
-    const ordenesProduccion = fetchOrdenesProduccionDB()
+  const getOrdenProduccionById = async (idParte: number) => {
+    try {
+      // Esperar a que se resuelva la promesa para obtener las órdenes de producción
+      const ordenesProduccion = await fetchOrdenesProduccionDB()
 
-    const parteProduccion = ordenesProduccion.filter(
-      (op) => op.idParte === idParte
-    )
-   // console.log(parteProduccion)
-    if (parteProduccion) {
-      return parteProduccion
+      // Filtrar para encontrar la orden de producción específica
+      const parteProduccion = ordenesProduccion.find(
+        (op) => op.idParte === idParte
+      )
+
+      // Verificar si se encontró la orden de producción
+      if (parteProduccion) {
+        return parteProduccion
+      } else {
+        // Manejar el caso en el que no se encuentra la orden de producción
+        console.error(
+          `Orden de producción con idParte ${idParte} no encontrada.`
+        )
+        return null
+      }
+    } catch (error) {
+      console.error("Error al obtener la orden de producción por ID:", error)
+      return null
     }
-    return
   }
 
   const recuperarDatosTemporales = (): ColumnDescriptor[] | null => {
@@ -127,38 +150,43 @@ export const useOrdenProduccionData = () => {
     if (producto) return producto
   }
 
-  const saveParteLaminadoActual = (
+  const saveParteLaminadoActual = async (
     idParte: number,
     columnas: ColumnDescriptor[]
   ) => {
-    // Obtén la orden de producción específica que contiene el producto que deseas modificar
-    const ordenProduccion = getOrdenProduccionById(idParte)
-    if (!ordenProduccion || ordenProduccion.length === 0) {
-      console.error(
-        `No se encontró la orden de producción con idParte ${idParte}.`
-      )
-      return
+    try {
+      // Obtén la orden de producción específica que contiene el producto que deseas modificar
+      const ordenProduccion = await getOrdenProduccionById(idParte)
+
+      if (!ordenProduccion) {
+        console.error(
+          `No se encontró la orden de producción con idParte ${idParte}.`
+        )
+        return
+      }
+
+      // Convierte el array de ColumnDescriptor a un objeto Producto
+      const producto = mapColumnDescriptorsToProducto(columnas, idParte)
+
+      // Verifica si hay productos en la orden de producción
+      if (ordenProduccion.ordenesProduccion.length === 0) {
+        console.error(
+          `No se encontraron productos en la orden de producción con idParte ${idParte}.`
+        )
+        return
+      }
+
+      // Encuentra el índice del último producto en la orden de producción
+      const ultimoProductoIndex = ordenProduccion.ordenesProduccion.length - 1
+
+      // Reemplaza el producto existente con el nuevo objeto Producto
+      ordenProduccion.ordenesProduccion[ultimoProductoIndex] = producto
+
+      // Actualiza la orden de producción en la base de datos
+      await updateOrdenProduccion(ordenProduccion)
+    } catch (error) {
+      console.error("Error al guardar la parte de laminado:", error)
     }
-
-    // Convierte el array de ColumnDescriptor a un objeto Producto
-    const producto = mapColumnDescriptorsToProducto(columnas, idParte)
-    //console.log(producto)
-    // Encuentra el índice del producto que deseas modificar dentro de esa orden de producción
-    const productos = ordenProduccion[0].ordenesProduccion
-    if (productos.length === 0) {
-      console.error(
-        `No se encontraron productos en la orden de producción con idParte ${idParte}.`
-      )
-      return
-    }
-
-    const ultimoProductoIndex = productos.length - 1
-
-    // Reemplaza el producto existente con el nuevo objeto Producto
-    productos[ultimoProductoIndex] = producto
-
-    // Actualiza la orden de producción en la base de datos
-    updateOrdenProduccion(ordenProduccion[0])
   }
 
   const incrementarIndiceProductos = (productos: Producto[]): Producto[] => {
@@ -243,6 +271,13 @@ export const useOrdenProduccionData = () => {
             value: producto.indiceProducto
           }
           break // Agregada instrucción break.
+        case "ID PRODUCT":
+          updatedColumn = {
+            ...column,
+            defaultValue: producto.indiceProducto,
+            value: producto.indiceProducto
+          }
+          break
         case "PASADA":
           updatedColumn = {
             ...column,
@@ -324,37 +359,50 @@ export const useOrdenProduccionData = () => {
 
   //const saveProductInOrder = () => {}
 
-  const getAllProductAndAllOrder = () => {
-    
-    const ordenesProduccion = fetchOrdenesProduccionDB()
+  const getAllProductAndAllOrder = async () => {
+    try {
+      // Esperar a que se resuelva la promesa para obtener las órdenes de producción
+      const ordenesProduccion = await fetchOrdenesProduccionDB()
 
-    let superList: Producto[] = []
+      let superList: Producto[] = []
 
-    ordenesProduccion.forEach((OP: OrdenProduccion) => {
-      superList = [...superList, ...OP.ordenesProduccion]
-    })
+      // Iterar sobre cada orden de producción y acumular todos los productos
+      ordenesProduccion.forEach((OP: OrdenProduccion) => {
+        superList = [...superList, ...OP.ordenesProduccion]
+      })
 
-    return superList
-  }
-
-  const getCurrentOrderProduccion = () => {
-    const ordenesProduccion = fetchOrdenesProduccionDB()
-
-    if (ordenesProduccion && ordenesProduccion.length > 0) {
-      //console.log(ordenesProduccion[ordenesProduccion.length - 1])
-      return ordenesProduccion[ordenesProduccion.length - 1]
+      return superList
+    } catch (error) {
+      console.error(
+        "Error al obtener todos los productos y órdenes de producción:",
+        error
+      )
+      return []
     }
-    return null
   }
-  
-  
+
+  const getCurrentOrderProduccion = async () => {
+    try {
+      // Esperar a que se resuelva la promesa para obtener las órdenes de producción
+      const ordenesProduccion = await fetchOrdenesProduccionDB()
+
+      // Comprobar si hay órdenes de producción y devolver la más reciente
+      if (ordenesProduccion && ordenesProduccion.length > 0) {
+        return ordenesProduccion[ordenesProduccion.length - 1]
+      }
+      return null
+    } catch (error) {
+      console.error("Error al obtener la orden de producción actual:", error)
+      return null
+    }
+  }
+
   const updateColumnProduct = (
     datosActuales: ColumnDescriptor[],
     id: string | number,
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
-
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
@@ -374,7 +422,7 @@ export const useOrdenProduccionData = () => {
         )
       }
     } else {
-      console.log(plantilla)
+      // console.log(plantilla)
       // Si no hay datos en localStorage, busca en la plantilla
       const index = plantilla.findIndex((columna) => columna.idInput === id)
 
@@ -396,10 +444,9 @@ export const useOrdenProduccionData = () => {
         // console.error("No hay datos en localStorage para actualizar.");
       }
     }
-}
+  }
 
-
-/*
+  /*
   const updateColumnProduct = (
     datosActuales: ColumnDescriptor[],
     id: string | number,
@@ -446,21 +493,43 @@ export const useOrdenProduccionData = () => {
 }
 */
 
-  const agregarNuevoProductoOP = (idParte: number, nuevoProducto: Producto) => {
+  const agregarNuevoProductoOP = async (
+    idParte: number,
+    nuevoProducto: Producto
+  ) => {
     setIsLoading(true)
-    const ordenesProduccion = fetchOrdenesProduccionDB()
 
-    const ordenIndex = ordenesProduccion.findIndex(
-      (op) => op.idParte === idParte
-    )
+    try {
+      // Esperar a que se resuelva la promesa para obtener las órdenes de producción
+      const ordenesProduccion = await fetchOrdenesProduccionDB()
 
-    if (ordenIndex !== -1) {
-      ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
-      updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex])
-      setOrdenReciente(ordenesProduccion[ordenIndex])
+      // Encontrar el índice de la orden de producción específica
+      const ordenIndex = ordenesProduccion.findIndex(
+        (op) => op.idParte === idParte
+      )
+
+      if (ordenIndex !== -1) {
+        // Agregar el nuevo producto a la orden de producción encontrada
+        ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
+
+        // Actualizar la orden de producción en la base de datos
+        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex])
+
+        // Actualizar el estado local si es necesario
+        setOrdenReciente(ordenesProduccion[ordenIndex])
+      } else {
+        console.error(
+          `No se encontró la orden de producción con idParte ${idParte}.`
+        )
+      }
+    } catch (error) {
+      console.error(
+        "Error al agregar nuevo producto a la orden de producción:",
+        error
+      )
+    } finally {
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
   const mapColumnDescriptorsToProducto = (

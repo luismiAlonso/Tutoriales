@@ -26,6 +26,18 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "TIPOGOMA",
+    idInput: "tipoGoma",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: true,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [""],
+    placeHolder: ""
+  },
+  {
     title: "INDICE PRODUCTO",
     idInput: "indiceProducto",
     value: 1,

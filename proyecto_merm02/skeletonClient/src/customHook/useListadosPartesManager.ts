@@ -145,7 +145,7 @@ const useListadosPartesManager = () => {
 
               console.log(result.length)
               setListaTotalProduccion(result)
-            //setListaPartesLaminacion(result)
+              //setListaPartesLaminacion(result)
           })
           
         }
@@ -193,6 +193,7 @@ const useListadosPartesManager = () => {
         )
         setDatosLineaMod(productoEditar)
       }
+
     } else if (id.toLowerCase() === "aceptaredicion") {
 
       if (datosLineaMod) {
@@ -227,8 +228,8 @@ const useListadosPartesManager = () => {
         ProductoModificacion
       )
 
-      console.log("datosLineaMod",datosLineaMod)
-      console.log("productoModificado",ProductoModificacion)
+      //console.log("datosLineaMod",datosLineaMod)
+      //console.log("productoModificado",ProductoModificacion)
 
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)

@@ -11,6 +11,7 @@ import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
 import InfiniteScroll from "react-infinite-scroll-component"
 import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
 import { Datepicker } from "flowbite-react"
+import { HeadersParteLaminacionExtend } from "../models/HeadersParteLaminacionExtend"
 
 // Ejemplo en un archivo principal de React
 
@@ -151,7 +152,7 @@ function ListarParteProduccion() {
           dataLength={currentPage * itemsPerPage} //This is important field to render the next data
           next={loadMoreData}
           hasMore={true}
-          loader={<h4>Loading...</h4>}
+          loader={<h4></h4>}
           endMessage={
             <p style={{ textAlign: "center" }}>
               <b>Yay! You have seen it all</b>
@@ -159,7 +160,7 @@ function ListarParteProduccion() {
           }
         >
           <CustomTable
-            columns={HeadersParteLaminacion}
+            columns={HeadersParteLaminacionExtend}
             dataColumn={ParteLaminacionProducto}
             data={loadedData}
             onInputChange={handleInputChange}

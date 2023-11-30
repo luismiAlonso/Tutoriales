@@ -1,7 +1,6 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
-export const HeadersProducto: ColumnDescriptor[] = [
-
+export const HeadersParteLaminacionExtend: ColumnDescriptor[] = [
 
     {
       title: "IDPARTE",
@@ -11,12 +10,36 @@ export const HeadersProducto: ColumnDescriptor[] = [
       type: "noInput",
       editable: false,
       defaultValue: "1",
-      additionalStyles: "",
+      additionalStyles: "style='display: none'",
       options: [""],
       placeHolder: ""
     },
     {
-      title: "ID PRODUCT",
+        title: "FECHA",
+        idInput: "fecha",
+        value: "",
+        content: "",
+        type: "noInput",
+        editable: false,
+        defaultValue: "0",
+        additionalStyles: "",
+        options: [""],
+        placeHolder: ""
+      },
+      {
+        title: "TIPOGOMA",
+        idInput: "tipoGoma",
+        value: "",
+        content: "",
+        type: "noInput",
+        editable: false,
+        defaultValue: "0",
+        additionalStyles: "",
+        options: [""],
+        placeHolder: ""
+      },
+    {
+      title: "IDPRODUCT",
       idInput: "indiceProducto",
       value: "0",
       content: "",
@@ -157,8 +180,7 @@ export const HeadersProducto: ColumnDescriptor[] = [
       additionalStyles: "",
       options: [],
       placeHolder: ""
-      //agregarNuevoProductoOP(ordenReciente?.idParte,)
-      // Aquí puedes implementar tu lógica para editar la fila
+     
     },
     {
         title: "",
@@ -170,7 +192,6 @@ export const HeadersProducto: ColumnDescriptor[] = [
         additionalStyles: "",
         options: [],
         placeHolder: ""
-        //agregarNuevoProductoOP(ordenReciente?.idParte,)
-        // Aquí puedes implementar tu lógica para editar la fila
+        
       }
   ]

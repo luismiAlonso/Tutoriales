@@ -27,7 +27,7 @@ export const HeadersParteLaminacion: ColumnDescriptor[] = [
         placeHolder: ""
       },
     {
-      title: "INDEX PRODUCT",
+      title: "IDPRODUCT",
       idInput: "indiceProducto",
       value: "0",
       content: "",

@@ -4,7 +4,7 @@ import MainTask from "./pages/MainTask"
 import NavBar from "./components/NavBar"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Produccion from "./pages/Produccion"
-import OrdenProducionPage from "./pages/OrdenProducionPage"
+import OrdenProduccion from "./pages/OrdenProduccion"
 import MainInventario from "./pages/MainInventario"
 import EntradasInventarioPage from "./pages/EntradasInventarioPage"
 import EntradasInventarioConfiguracion from "./pages/EntradasInventarioConfiguracion"
@@ -29,7 +29,7 @@ function App() {
           <Route element={<ProtectedRoute />} >
             <Route path="/MainTask" element={<MainTask />} /> 
             <Route path="/Produccion" element={<Produccion />} />
-            <Route path="/OrdenProducionPage" element={<OrdenProducionPage />} />
+            <Route path="/ordenProduccion" element={<OrdenProduccion />} />
             <Route path="/ListarParteProduccion" element={<ListarParteProduccion />} />
             <Route path="/MainInventario" element={<MainInventario />} />
             <Route path="/EntradasINventario" element={<MainInventario />} />

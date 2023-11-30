@@ -11,6 +11,7 @@ export interface Producto {
   indiceProducto: number
   operario: number
   pasada: number
+  tipoGoma:string
   tipo: string
   color: string
   molde: string

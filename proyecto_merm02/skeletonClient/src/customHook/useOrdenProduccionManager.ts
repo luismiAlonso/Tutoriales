@@ -179,6 +179,7 @@ const useOrdenProduccionManager = () => {
           mappedProduct.indiceProducto =
             ordenProduccion.ordenesProduccion.length + 1
           mappedProduct.fecha = ordenProduccion.fecha
+          mappedProduct.tipoGoma = ordenProduccion.TipoGoma
           // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
           const nuevoOrdenProduccion = { ...ordenProduccion }
           nuevoOrdenProduccion.ordenesProduccion = [
@@ -193,6 +194,7 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
+
         } else {
 
           const mappedProduct = mapColumnDescriptorsToProducto(
@@ -201,7 +203,7 @@ const useOrdenProduccionManager = () => {
           )
           mappedProduct.indiceProducto = 1
           mappedProduct.fecha = ordenProduccion.fecha
-
+          mappedProduct.tipoGoma = ordenProduccion.TipoGoma
           const nuevoOrdenProduccion = { ...ordenProduccion }
 
           nuevoOrdenProduccion.ordenesProduccion = [
@@ -220,7 +222,9 @@ const useOrdenProduccionManager = () => {
       } else {
         //console.log("entro sin orden")
       }
+
     } else if (id.toLowerCase() === "editar") {
+
       setEditMode(true)
 
       if (listaProductosOrdenReciente) {
@@ -310,6 +314,7 @@ const handleToggleChange = (
       sortDirection: "asc" | "desc"
     }
   ) => {
+
     if (idToggle === "orden01") {
       setOrdenData(toggleState.value)
 

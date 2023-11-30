@@ -21,7 +21,6 @@ const SelectComponent: React.FC<IcustomSelectProp> = ({
     const newValue = e.target.value
     setSelectedValue(newValue) // Actualiza el estado local
     onSeleccion(newValue, idSelected)
-
     if(onChange){
       onChange(e)
     }

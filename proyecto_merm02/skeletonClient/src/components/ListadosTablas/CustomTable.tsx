@@ -55,7 +55,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     //console.log(columnId)
     onButtonClick(column.idInput, rowIndex)
   }
-
+  console.log(data)
   switch (dataColumn.type) {
     case "text":
       return (

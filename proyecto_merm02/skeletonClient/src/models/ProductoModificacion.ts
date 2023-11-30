@@ -14,7 +14,7 @@ export  const ProductoModificacion: ColumnDescriptor[] = [
       placeHolder: ""
     },
     {
-      title: "INDICE PRODUCTO",
+      title: "ID PRODUCT",
       idInput: "indiceProducto",
       value: 1,
       content: "",

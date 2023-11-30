@@ -1,5 +1,7 @@
+import axios from "./axios"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 
+/*
 export const fetchOrdenesProduccionDB = (): OrdenProduccion[] => {
   try {
     const ordenesProduccionStr = localStorage.getItem("ordenesProduccion")
@@ -19,6 +21,7 @@ export const saveOrdenesProduccionDB = (ordenes: OrdenProduccion[]) => {
 }
 
 export const addOrdenProduccionDB = (orden: OrdenProduccion) => {
+
   try {
     const ordenes = fetchOrdenesProduccionDB()
     ordenes.push(orden)
@@ -26,6 +29,7 @@ export const addOrdenProduccionDB = (orden: OrdenProduccion) => {
   } catch (error) {
     console.error("Error adding orden de produccion:", error)
   }
+
 }
 
 export const updateOrdenByIdDB = (
@@ -85,6 +89,70 @@ export const updateProductInOrdenProduccionDB = (
     } else {
       console.error("Orden de producción no encontrada")
     }
+  } catch (error) {
+    console.error("Error updating producto in orden de producción:", error)
+  }
+}
+*/
+
+// Obtener todas las ordenes de producción
+export const fetchOrdenesProduccionDB = async (): Promise<
+  OrdenProduccion[]
+> => {
+  try {
+    const response = await axios.get<OrdenProduccion[]>("/ordenProduccion")
+    return response.data
+  } catch (error) {
+    console.error("Error fetching ordenes de produccion:", error)
+    return []
+  }
+}
+
+// Guardar todas las ordenes de producción
+export const saveOrdenesProduccionDB = async (
+  ordenes: OrdenProduccion[]
+): Promise<void> => {
+  try {
+    await axios.put("/ordenProduccion", ordenes)
+  } catch (error) {
+    console.error("Error saving ordenes de produccion:", error)
+  }
+}
+
+// Añadir una nueva orden de producción
+export const addOrdenProduccionDB = async (
+  orden: OrdenProduccion
+): Promise<void> => {
+  try {
+    await axios.post("/ordenProduccion", orden)
+  } catch (error) {
+    console.error("Error adding orden de produccion:", error)
+  }
+}
+
+// Actualizar una orden por ID
+export const updateOrdenByIdDB = async (
+  idParte: number,
+  updatedOrden: Partial<OrdenProduccion>
+): Promise<void> => {
+  try {
+    await axios.put(`/ordenProduccion/${idParte}`, updatedOrden)
+  } catch (error) {
+    console.error("Error updating orden by id:", error)
+  }
+}
+
+// Actualizar un producto en una orden de producción
+export const updateProductInOrdenProduccionDB = async (
+  idParte: number,
+  idProducto: number,
+  updatedProductData: Partial<Producto>
+): Promise<void> => {
+  try {
+    await axios.put(
+      `/ordenProduccion/${idParte}/productos/${idProducto}`,
+      updatedProductData
+    )
   } catch (error) {
     console.error("Error updating producto in orden de producción:", error)
   }

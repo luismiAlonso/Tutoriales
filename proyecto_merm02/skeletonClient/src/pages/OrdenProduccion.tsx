@@ -10,7 +10,7 @@ import ToggleComponent from "../components/toggle/ToggleComponent"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
-function OrdenProducionPage() {
+function OrdenProduccion() {
 
   const {
     datosColumna,
@@ -36,7 +36,6 @@ function OrdenProducionPage() {
   const { getCurrentOrderProduccion, recuperarDatosTemporales } =
     useOrdenProduccionData()
 
-
   useEffect(() => {
 
     if (!ordenProduccion) return
@@ -49,9 +48,13 @@ function OrdenProducionPage() {
 
   useEffect(() => {
     const currentOrder = getCurrentOrderProduccion()
-    if (currentOrder) {
-      configurarOrdenProduccion(currentOrder)
-    }
+    currentOrder.then((result)=>{
+      
+      if(result){
+        configurarOrdenProduccion(result)
+      }
+    })
+
   }, [])
 
   /*useEffect(()=>{
@@ -73,6 +76,11 @@ function OrdenProducionPage() {
         <div className="flex-1">
           <span className="font-bold">
             OP nº {ordenProduccion ? ordenProduccion.idParte : "1"}
+          </span>
+        </div>
+        <div className="flex-1">
+          <span className="font-bold">
+            Tipo {ordenProduccion ? ordenProduccion.TipoGoma : ""}
           </span>
         </div>
       </div>
@@ -168,4 +176,4 @@ function OrdenProducionPage() {
   )
 }
 
-export default OrdenProducionPage
+export default OrdenProduccion

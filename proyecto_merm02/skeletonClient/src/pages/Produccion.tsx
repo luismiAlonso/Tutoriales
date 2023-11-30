@@ -5,6 +5,7 @@ import { obtenerFechaActual } from "../utilidades/dateUtil"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
 
 function Produccion() {
+
   const opcionesProduccion = ["EVA", "GOMA"]
   const { cargarDatosOrdenProduccion } = useOrdenProduccionData()
   const [gomaSeleccionada, setGoma] = useState<string>("")
@@ -14,10 +15,11 @@ function Produccion() {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       // Acciones a realizar cuando el usuario selecciona una opción
       const selectedGoma = e.target.value
+
       if (selectedGoma) {
         setGoma(selectedGoma)
-        console.log(selectedGoma)
       }
+
     },
     []
   )
@@ -25,21 +27,25 @@ function Produccion() {
   const handleFilter = (filterValue: string) => {
     // Acciones a realizar para filtrar basado en el valor seleccionado
     console.log("Filtro:", filterValue)
+    if(filterValue){
+      setGoma(filterValue)
+    }
   }
 
-  const crearOrdenProducion = () => {
+  const crearOrdenProducion = (e:React.FormEvent<HTMLFormElement>) => {
+
+    e.preventDefault()
     const fecha = obtenerFechaActual()
-    //console.log(gomaSeleccionada)
     if (gomaSeleccionada) {
       cargarDatosOrdenProduccion(fecha, gomaSeleccionada)
     } else {
       cargarDatosOrdenProduccion(fecha, "GOMA")
     }
 
-    navigate("/OrdenProducionPage")
+    navigate("/ordenProduccion")
   }
-  
-  const consultarOrdenesProducion = () =>{
+
+  const consultarOrdenesProducion = () => {
     navigate("/ListarParteProduccion")
   }
 
@@ -78,8 +84,9 @@ function Produccion() {
         </button>
       </div>*/}
           <div className="p-3">
-            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={consultarOrdenesProducion}
+            <button
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              onClick={consultarOrdenesProducion}
             >
               CONSULTAR ORDEN EXISTE
             </button>

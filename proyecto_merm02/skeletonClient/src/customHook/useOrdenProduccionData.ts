@@ -10,6 +10,7 @@ import {
 } from "../api/ordenProduccionApi"
 
 export const useOrdenProduccionData = () => {
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const { addOrdenProduccion, setOrdenReciente } = useOrdenProductionStore()
@@ -18,18 +19,19 @@ export const useOrdenProduccionData = () => {
     fecha: string,
     tipoGoma: string
   ) => {
+
     setIsLoading(true)
 
     try {
+
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
       // Verificar si ordenesProduccion contiene datos
       if (!Array.isArray(ordenesProduccion) || ordenesProduccion.length === 0) {
         // Manejar el caso en el que no hay datos (mostrar mensaje, etc.)
         console.error("No se encontraron órdenes de producción.")
-        return // Salir de la función si no hay datos
       }
-      
+
       const idParte = ordenesProduccion.length + 1
 
       const nuevaOrdeProducion = {
@@ -38,18 +40,18 @@ export const useOrdenProduccionData = () => {
         ordenesProduccion: [],
         fecha: fecha
       }
-
-      // Agregar la nueva orden de producción a la base de datos
-      await addOrdenProduccionDB(nuevaOrdeProducion)
-
       // Supongo que addOrdenProduccion es una función para actualizar el estado local o similar
       addOrdenProduccion(nuevaOrdeProducion)
+      // Agregar la nueva orden de producción a la base de datos
+     const response = await addOrdenProduccionDB(nuevaOrdeProducion)
+     return response
+     
     } catch (error) {
       console.error("Error al cargar o agregar orden de producción:", error)
     } finally {
       setIsLoading(false)
     }
-    
+
   }
 
   const getOrdenProduccionById = async (idParte: number) => {
@@ -81,6 +83,7 @@ export const useOrdenProduccionData = () => {
   const recuperarDatosTemporales = (): ColumnDescriptor[] | null => {
     // Intenta recuperar la cadena JSON de localStorage usando la misma clave
     const datosSerializados = localStorage.getItem("datosTemporales")
+
     if (datosSerializados !== null) {
       // Si los datos existen, deserializa la cadena JSON de vuelta a un array de objetos
       const columnas = JSON.parse(datosSerializados)
@@ -217,6 +220,7 @@ export const useOrdenProduccionData = () => {
     })
   }
 
+  /*
   const mapColumnDescriptors = (
     template: ColumnDescriptor[],
     data: ColumnDescriptor[],
@@ -242,6 +246,33 @@ export const useOrdenProduccionData = () => {
         }, {} as ColumnDescriptor)
       }
       // Si no hay una columna correspondiente, devolver la columna del template
+      return templateColumn
+    })
+  }*/
+
+  const mapColumnDescriptors = (
+    template: ColumnDescriptor[],
+    data: ColumnDescriptor[],
+    fieldsToExclude: string[] = []
+  ): ColumnDescriptor[] => {
+    return template.map((templateColumn) => {
+      const dataColumn = data.find((dc) => dc.title === templateColumn.title)
+
+      if (dataColumn) {
+        return Object.keys(templateColumn).reduce<ColumnDescriptor>(
+          (newColumn, key) => {
+            if (!fieldsToExclude.includes(key)) {
+              newColumn[key as keyof ColumnDescriptor] =
+                dataColumn[key as keyof ColumnDescriptor]
+            } else {
+              newColumn[key as keyof ColumnDescriptor] =
+                templateColumn[key as keyof ColumnDescriptor]
+            }
+            return newColumn
+          },
+          {} as ColumnDescriptor
+        )
+      }
       return templateColumn
     })
   }
@@ -350,10 +381,12 @@ export const useOrdenProduccionData = () => {
   }
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
+    //console.log(ordenProduccion)
     updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
   const updateProductInOrden = (producto: Producto, idParte: number) => {
+    console.log(producto)
     updateProductInOrdenProduccionDB(idParte, producto.indiceProducto, producto)
   }
 
@@ -385,11 +418,11 @@ export const useOrdenProduccionData = () => {
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
-
       // Comprobar si hay órdenes de producción y devolver la más reciente
       if (ordenesProduccion && ordenesProduccion.length > 0) {
         return ordenesProduccion[ordenesProduccion.length - 1]
       }
+
       return null
     } catch (error) {
       console.error("Error al obtener la orden de producción actual:", error)
@@ -497,6 +530,7 @@ export const useOrdenProduccionData = () => {
     idParte: number,
     nuevoProducto: Producto
   ) => {
+
     setIsLoading(true)
 
     try {
@@ -507,16 +541,21 @@ export const useOrdenProduccionData = () => {
       const ordenIndex = ordenesProduccion.findIndex(
         (op) => op.idParte === idParte
       )
-
+      
       if (ordenIndex !== -1) {
         // Agregar el nuevo producto a la orden de producción encontrada
         ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
-
         // Actualizar la orden de producción en la base de datos
-        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex])
-
+        //console.log(ordenesProduccion[ordenIndex])
+      
+        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex]).then((response)=>{
+          if(response){
+            console.log(response.status)
+          }
+        })
+       
         // Actualizar el estado local si es necesario
-        setOrdenReciente(ordenesProduccion[ordenIndex])
+        // setOrdenReciente(ordenesProduccion[ordenIndex])
       } else {
         console.error(
           `No se encontró la orden de producción con idParte ${idParte}.`
@@ -534,12 +573,19 @@ export const useOrdenProduccionData = () => {
 
   const mapColumnDescriptorsToProducto = (
     columns: ColumnDescriptor[],
-    idParte: number
+    idParte: number,
+    exclude: string[] = [] // Array de propiedades a excluir
   ): Producto => {
-    const producto: any = {}
 
+    const producto: any = {}
+    
     columns.forEach((col) => {
-      if (col.idInput && col.value !== undefined) {
+      if (
+        col.idInput &&
+        col.value !== undefined &&
+        !exclude.includes(col.idInput)
+      ) {
+        // Añadir al objeto solo si la propiedad no está en la lista de exclusión
         const key = col.idInput
         producto[key] = col.value
       }

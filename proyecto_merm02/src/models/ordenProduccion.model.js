@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
 const productoSchema = new mongoose.Schema({
   idParte: Number,
@@ -15,18 +15,21 @@ const productoSchema = new mongoose.Schema({
   formulas: Number,
   planchas: Number,
   acelerantes: String
-});
+})
 
-const ordenProduccionSchema = new mongoose.Schema({
-  idParte: Number,
-  TipoGoma: String,
-  ordenesProduccion: [productoSchema], // Un array de documentos de tipo Producto
-  fecha: String
-}, {
-  timestamps: true
-});
+const ordenProduccionSchema = new mongoose.Schema(
+  {
+    idParte: Number,
+    TipoGoma: String,
+    ordenesProduccion: [productoSchema], // Un array de documentos de tipo Producto
+    fecha: String
+  },
+  {
+    timestamps: true
+  }
+)
 
-const Producto = mongoose.model('Producto', productoSchema);
-const OrdenProduccion = mongoose.model('OrdenProduccion', ordenProduccionSchema);
+const Producto = mongoose.model("Producto", productoSchema)
+const OrdenProduccion = mongoose.model("OrdenProduccion", ordenProduccionSchema)
 
-export { Producto, OrdenProduccion };
+export { Producto, OrdenProduccion }

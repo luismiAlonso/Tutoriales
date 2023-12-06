@@ -5,8 +5,7 @@ import cors from 'cors'
 import authRoutes from './routes/auth.routes.js'
 import taskRoutes from './routes/tasks.routhes.js'
 import transactionRoutes from './routes/transaction.routes.js'
-import ordenProduccionRouter from './routes/ordenProduccion.routes.js'
-
+import ordenProduccionRouter from './routes/ordenProduccion.routes.js';
 
 const app = express()
 app.use(cors({

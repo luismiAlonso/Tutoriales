@@ -47,9 +47,9 @@ function OrdenProduccion() {
   }, [ordenProduccion])
 
   useEffect(() => {
+    
     const currentOrder = getCurrentOrderProduccion()
     currentOrder.then((result)=>{
-      
       if(result){
         configurarOrdenProduccion(result)
       }

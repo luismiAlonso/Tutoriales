@@ -1,5 +1,5 @@
 import  { Router } from 'express'
-import { authRequire } from '../middlewares/validateToken.js'
+import  authRequire  from '../middlewares/validateToken.js'
 import { 
     createTranction,
     getTransaction,

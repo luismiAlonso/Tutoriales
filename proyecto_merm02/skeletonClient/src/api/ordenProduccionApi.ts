@@ -111,7 +111,7 @@ export const fetchOrdenesProduccionDB = async (): Promise<
 // Guardar todas las ordenes de producción
 export const saveOrdenesProduccionDB = async (
   ordenes: OrdenProduccion[]
-): Promise<void> => {
+) => {
   try {
     await axios.put("/ordenProduccion", ordenes)
   } catch (error) {
@@ -122,9 +122,10 @@ export const saveOrdenesProduccionDB = async (
 // Añadir una nueva orden de producción
 export const addOrdenProduccionDB = async (
   orden: OrdenProduccion
-): Promise<void> => {
+) => {
   try {
-    await axios.post("/ordenProduccion", orden)
+    const response = await axios.post("/ordenProduccion", orden)
+    return response
   } catch (error) {
     console.error("Error adding orden de produccion:", error)
   }
@@ -134,12 +135,14 @@ export const addOrdenProduccionDB = async (
 export const updateOrdenByIdDB = async (
   idParte: number,
   updatedOrden: Partial<OrdenProduccion>
-): Promise<void> => {
+) => {
   try {
-    await axios.put(`/ordenProduccion/${idParte}`, updatedOrden)
+    const response = await axios.put(`/ordenProduccion/${idParte}`, updatedOrden)
+    return response
   } catch (error) {
     console.error("Error updating orden by id:", error)
   }
+
 }
 
 // Actualizar un producto en una orden de producción
@@ -147,7 +150,8 @@ export const updateProductInOrdenProduccionDB = async (
   idParte: number,
   idProducto: number,
   updatedProductData: Partial<Producto>
-): Promise<void> => {
+)=> {
+
   try {
     await axios.put(
       `/ordenProduccion/${idParte}/productos/${idProducto}`,
@@ -156,6 +160,7 @@ export const updateProductInOrdenProduccionDB = async (
   } catch (error) {
     console.error("Error updating producto in orden de producción:", error)
   }
+
 }
 
 // Aquí puedes agregar más funciones según lo necesites...

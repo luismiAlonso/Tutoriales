@@ -7,12 +7,14 @@ export const getTasksRequest = () => axios.get("/tasks")
 export const getTaskRequest = (id: string) => axios.get(`/tasks/${id}`)
 
 export const createTaskRequest = async (task: Task) => {
+
   try {
     const response = await axios.post("/tasks", task)
-    console.log(response)
+    return response
   } catch (error) {
     handleError(error)
   }
+
 }
 
 export const updateTaskRequest = (id: string, task: Task) =>

@@ -37,11 +37,13 @@ function TaskFormPage() {
   }, [])
 
   const onSubmit = handleSubmit((data) => {
+
     const dateValid = {
       ...data,
       date: data.date ? dayjs.utc(data.date).format() : dayjs.utc().format()
     }
     if (data.date) dateValid.date = dayjs.utc(data.date).format()
+    
     if (params.id) {
       updateTask(params.id, dateValid)
     } else {

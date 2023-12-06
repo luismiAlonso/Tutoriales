@@ -6,6 +6,7 @@ import { ParteLaminacion } from "../models/ParteLaminacion"
 import { ProductoModificacion } from "../models/ProductoModificacion"
 import { HeadersProducto } from "../models/HeadersProducto"
 import useFilterData from "../components/filters/useFilterData"
+import { useParams } from "react-router-dom" // Importa useNavigate
 import useListadosPartesManager from "./useListadosPartesManager"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ProductoInicial } from "../models/ProductoInicial"
@@ -23,6 +24,7 @@ const useOrdenProduccionManager = () => {
     mapearProductoAColumnas,
     updateProductInOrden
   } = useOrdenProduccionData()
+  const params = useParams()
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
   const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
@@ -57,11 +59,12 @@ const useOrdenProduccionManager = () => {
   const [selectPropiedades, setSelectedPropiedades] = useState<string>(
     listadoTitulosPropiedades[0]
   )
+
   // Aquí puedes agregar cualquier lógica o funciones que manipulen estos estados
   // Por ejemplo, una función para actualizar 'datosColumna'
+
   const configurarOrdenProduccion = (orden: OrdenProduccion) => {
     if (orden === null) return
-
     setOrdenProduccion(orden)
     ProductoInicial[0].value = orden.idParte
     ProductoInicial[0].defaultValue = orden.idParte
@@ -73,12 +76,12 @@ const useOrdenProduccionManager = () => {
     datos: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
-    
     if (ordenProduccion) {
       const producto = datos || ProductoInicial
       producto[0].value = ordenProduccion.idParte
       producto[0].defaultValue = ordenProduccion.idParte
 
+      //console.log(ProductoInicial,producto)
       const mappedProducto = mapColumnDescriptors(ProductoInicial, producto, [
         "value",
         "defaultValue"
@@ -109,9 +112,7 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleInputChange = (value: string | number, id: any) => {
-    
     if (editMode) {
-
       const dataUpdated = updateColumnProduct(
         datosLineaMod,
         id,
@@ -122,13 +123,10 @@ const useOrdenProduccionManager = () => {
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
       }
-
     } else {
-
       const currentData = recuperarDatosTemporales()
-      
-      if (currentData) {
 
+      if (currentData) {
         const dataUpdated = updateColumnProduct(
           currentData,
           id,
@@ -137,14 +135,11 @@ const useOrdenProduccionManager = () => {
         )
 
         if (dataUpdated) {
-
           const serializeObj = JSON.stringify(dataUpdated)
           setDatosLocalStorage("datosTemporales", serializeObj)
           setDatosColumna(dataUpdated)
         }
-
       } else {
-
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
           id,
@@ -174,8 +169,11 @@ const useOrdenProduccionManager = () => {
         if (productoActual) {
           const mappedProduct = mapColumnDescriptorsToProducto(
             productoActual,
-            ordenProduccion?.idParte
+            ordenProduccion?.idParte,
+            ["Agregar", "editar"]
           )
+
+          // console.log("test",mappedProduct)
           mappedProduct.indiceProducto =
             ordenProduccion.ordenesProduccion.length + 1
           mappedProduct.fecha = ordenProduccion.fecha
@@ -187,6 +185,7 @@ const useOrdenProduccionManager = () => {
             mappedProduct
           ]
 
+          //console.log("nuevaOrdenProduccion",nuevoOrdenProduccion)
           setOrdenProduccion(nuevoOrdenProduccion)
           //const mappedProductoActual = mapearProductoAColumnas(productoActual,ordenProduccion.idParte,mappedProduct)
           //Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
@@ -194,9 +193,7 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
-
         } else {
-
           const mappedProduct = mapColumnDescriptorsToProducto(
             ProductoInicial,
             1
@@ -218,13 +215,10 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", serializeObj)
           setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
         }
-        
       } else {
         //console.log("entro sin orden")
       }
-
     } else if (id.toLowerCase() === "editar") {
-
       setEditMode(true)
 
       if (listaProductosOrdenReciente) {
@@ -237,11 +231,8 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
-
       if (datosLineaMod) {
-
         if (ordenProduccion) {
-
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenProduccion.idParte
@@ -251,11 +242,10 @@ const useOrdenProduccionManager = () => {
           const ordenproducionActualizada = getCurrentOrderProduccion()
 
           if (ordenproducionActualizada) {
-
             setOrdenProduccion(ordenproducionActualizada)
             setListaProductosOrdenReciente(
-              ordenproducionActualizada.ordenesProduccion)
-
+              ordenproducionActualizada.ordenesProduccion
+            )
           }
 
           setEditMode(false)
@@ -291,7 +281,6 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleFilterChange = (id: string, value: string) => {
-    
     if (id === "byWords") {
       if (ordenProduccion?.ordenesProduccion) {
         filterByWords(
@@ -307,14 +296,13 @@ const useOrdenProduccionManager = () => {
   }
 
   //manejador del toogle
-const handleToggleChange = (
+  const handleToggleChange = (
     idToggle: string,
     toggleState: {
       value: boolean
       sortDirection: "asc" | "desc"
     }
   ) => {
-
     if (idToggle === "orden01") {
       setOrdenData(toggleState.value)
 

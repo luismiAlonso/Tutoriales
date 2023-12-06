@@ -2,14 +2,15 @@ import React, { useEffect, useState, useCallback } from "react"
 import SelectComponent from "../components/selectComponent/SelectComponent"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { obtenerFechaActual } from "../utilidades/dateUtil"
-import { useNavigate } from "react-router-dom" // Importa useNavigate
+import { useNavigate, useParams } from "react-router-dom" // Importa useNavigate
+import { createTaskRequest, updateTaskRequest } from "../api/tasks"
 
 function Produccion() {
-
   const opcionesProduccion = ["EVA", "GOMA"]
   const { cargarDatosOrdenProduccion } = useOrdenProduccionData()
   const [gomaSeleccionada, setGoma] = useState<string>("")
   const navigate = useNavigate() // Obtén la función navigate
+  //const params = useParams()
 
   const handleSeleccion = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -19,7 +20,6 @@ function Produccion() {
       if (selectedGoma) {
         setGoma(selectedGoma)
       }
-
     },
     []
   )
@@ -27,23 +27,64 @@ function Produccion() {
   const handleFilter = (filterValue: string) => {
     // Acciones a realizar para filtrar basado en el valor seleccionado
     console.log("Filtro:", filterValue)
-    if(filterValue){
+    if (filterValue) {
       setGoma(filterValue)
     }
   }
 
-  const crearOrdenProducion = (e:React.FormEvent<HTMLFormElement>) => {
+  /*
+  // interfaces.ts
+  export interface Task {
+    // Defina las propiedades de una tarea aquí, por ejemplo:
+    id: string
+    title: string
+    description: string
+    date: Date
+    // ...
+  }
+*/
 
+  const crearOrdenProducion = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const fecha = obtenerFechaActual()
     if (gomaSeleccionada) {
-      cargarDatosOrdenProduccion(fecha, gomaSeleccionada)
+
+      cargarDatosOrdenProduccion(fecha, gomaSeleccionada).then((response)=>{
+
+        if(response){
+          const idParte = response.data.idParte
+          navigate(`/ordenProduccion/${idParte}`)
+        }
+      })
+
     } else {
-      cargarDatosOrdenProduccion(fecha, "GOMA")
+
+      cargarDatosOrdenProduccion(fecha, "GOMA").then((response)=>{
+
+        if(response){
+          const idParte = response.data.idParte
+          navigate(`/ordenProduccion/${idParte}`)
+        }
+      })
     }
 
-    navigate("/ordenProduccion")
   }
+
+  /*const modificarTestTask = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (params.id) {
+      updateTaskRequest(params.id, {
+        id: params.id,
+        title: "test",
+        description: "test"+Math.random(),
+        date: new Date()
+      }).then((result) => {
+        console.log(result)
+      })
+    }
+  }*/
 
   const consultarOrdenesProducion = () => {
     navigate("/ListarParteProduccion")

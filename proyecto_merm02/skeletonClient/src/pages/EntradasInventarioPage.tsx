@@ -14,9 +14,7 @@ function EntradasInventarioPage() {
           <span>{obtenerFechaActual()+" - "+obtenerHoraActual()}</span>
         </div>
       </div>
-
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
-
       </div>
     </form>
   )

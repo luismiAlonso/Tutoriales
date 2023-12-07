@@ -136,9 +136,13 @@ export const updateOrdenByIdDB = async (
   idParte: number,
   updatedOrden: Partial<OrdenProduccion>
 ) => {
+
   try {
+
+    //console.log(`/ordenProduccion/${idParte}`,updatedOrden)
     const response = await axios.put(`/ordenProduccion/${idParte}`, updatedOrden)
     return response
+
   } catch (error) {
     console.error("Error updating orden by id:", error)
   }

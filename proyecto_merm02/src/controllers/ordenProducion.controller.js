@@ -62,8 +62,7 @@ export const updateOrdenProduccionById = async (req, res) => {
   try {
 
     //pre cast
-    body.ordenesProduccion.forEach((producto) => {
-
+    /*body.ordenesProduccion.forEach((producto) => {
       try{
 
         producto.idParte = Number(producto.idParte)
@@ -86,7 +85,7 @@ export const updateOrdenProduccionById = async (req, res) => {
         // Opcional: manejar el error, como omitir este producto o detener el proceso
       }
       // Repite para otros campos según sea necesario
-    })
+    })*/
 
     const ordenActualizada = await OrdenProduccion.findOneAndUpdate(
       { idParte: idParte }, // Busca por idParte en lugar de _id

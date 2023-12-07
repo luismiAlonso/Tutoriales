@@ -10,7 +10,7 @@ import { z } from "zod"
   tipo: z.string(),
   color: z.string(),
   molde: z.string(),
-  planchaobtenidas: z.number(),
+  planchaobtenidas: z.string(),
   peso: z.number(),
   formulas: z.number(),
   planchas: z.number(),

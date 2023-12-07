@@ -112,6 +112,7 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleInputChange = (value: string | number, id: any) => {
+
     if (editMode) {
       const dataUpdated = updateColumnProduct(
         datosLineaMod,
@@ -123,7 +124,9 @@ const useOrdenProduccionManager = () => {
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
       }
+
     } else {
+      
       const currentData = recuperarDatosTemporales()
 
       if (currentData) {
@@ -193,6 +196,7 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
+
         } else {
           const mappedProduct = mapColumnDescriptorsToProducto(
             ProductoInicial,
@@ -214,6 +218,7 @@ const useOrdenProduccionManager = () => {
           const serializeObj = JSON.stringify(ProductoInicial)
           setDatosLocalStorage("datosTemporales", serializeObj)
           setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
+
         }
       } else {
         //console.log("entro sin orden")
@@ -231,6 +236,7 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
+
       if (datosLineaMod) {
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
@@ -240,17 +246,20 @@ const useOrdenProduccionManager = () => {
 
           updateProductInOrden(convertProduct, ordenProduccion.idParte)
           const ordenproducionActualizada = getCurrentOrderProduccion()
-
-          if (ordenproducionActualizada) {
+          ordenproducionActualizada.then((response)=>{
+            console.log(response)
+          })
+          /*if (ordenproducionActualizada) {
             setOrdenProduccion(ordenproducionActualizada)
             setListaProductosOrdenReciente(
               ordenproducionActualizada.ordenesProduccion
             )
-          }
+          }*/
 
           setEditMode(false)
         }
       }
+
     }
   }
 
@@ -304,6 +313,7 @@ const useOrdenProduccionManager = () => {
     }
   ) => {
     if (idToggle === "orden01") {
+
       setOrdenData(toggleState.value)
 
       if (listaProductosOrdenReciente) {

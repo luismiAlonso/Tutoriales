@@ -10,7 +10,7 @@ const productoSchema = new mongoose.Schema({
   tipo: String,
   color: String,
   molde: String,
-  planchaobtenidas: Number,
+  planchaobtenidas: String,
   peso: Number,
   formulas: Number,
   planchas: Number,

@@ -34,8 +34,8 @@ const useOrdenProduccionManager = () => {
     OrdenProduccion | null | undefined
   >()
 
-  const [listaProductosOrdenReciente, setListaProductosOrdenReciente] =
-    useState<Producto[]>()
+  /*const [listaProductosOrdenReciente, setListaProductosOrdenReciente] =
+    useState<Producto[]>()*/
   const [ordenData, setOrdenData] = useState<boolean>(false)
   const [editMode, setEditMode] = useState<boolean>(false)
   const { filterByWords, filterData } = useFilterData()
@@ -48,7 +48,7 @@ const useOrdenProduccionManager = () => {
     calculateItemToDisplay,
     loadMoreData
   } = useInfiniteLoader(20)
-  
+
   const { listaTotalProduccion, setListaTotalProduccion } =
   useOrdenProductionStore()
 
@@ -91,6 +91,7 @@ const useOrdenProduccionManager = () => {
     ordenProduccion: OrdenProduccion
   ) => {
     if (ordenProduccion) {
+
       const producto = datos || ProductoInicial
       producto[0].value = ordenProduccion.idParte
       producto[0].defaultValue = ordenProduccion.idParte
@@ -104,12 +105,15 @@ const useOrdenProduccionManager = () => {
       const indexedProduct = incrementarIndiceProductos(
         ordenProduccion.ordenesProduccion
       )
-
+      
       setDatosColumna(mappedProducto)
       updateOrdenProduccion(ordenProduccion)
-      setListaProductosOrdenReciente(indexedProduct)
+      //setListaProductosOrdenReciente(indexedProduct)
+      //console.log(indexedProduct)
+      setListaTotalProduccion(indexedProduct)
       const serializeObj = JSON.stringify(mappedProducto)
       setDatosLocalStorage("datosTemporales", serializeObj)
+
     }
   }
 
@@ -206,7 +210,8 @@ const useOrdenProduccionManager = () => {
           const serializeObj = JSON.stringify(productoActual)
           setDatosLocalStorage("datosTemporales", serializeObj)
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-          setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
+          //setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
+          setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
 
         } else {
           const mappedProduct = mapColumnDescriptorsToProducto(
@@ -228,7 +233,9 @@ const useOrdenProduccionManager = () => {
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           const serializeObj = JSON.stringify(ProductoInicial)
           setDatosLocalStorage("datosTemporales", serializeObj)
-          setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
+          //setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
+          setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
+
         }
       } else {
         //console.log("entro sin orden")
@@ -236,16 +243,17 @@ const useOrdenProduccionManager = () => {
     } else if (id.toLowerCase() === "editar") {
       setEditMode(true)
 
-      if (listaProductosOrdenReciente) {
+      if (listaTotalProduccion) {
         const productoEditar = mapearProductoAColumnas(
           ProductoModificacion,
-          listaProductosOrdenReciente[rowIndex].idParte,
-          listaProductosOrdenReciente[rowIndex]
+          listaTotalProduccion[rowIndex].idParte,
+          listaTotalProduccion[rowIndex]
         )
 
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
+      
       if (datosLineaMod) {
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
@@ -268,15 +276,19 @@ const useOrdenProduccionManager = () => {
             if(response){
               //console.log(response)
               setOrdenProduccion(ordenProduccion)
-              setListaProductosOrdenReciente(
+              /*setListaProductosOrdenReciente(
                 ordenProduccion.ordenesProduccion
-              )
+              )*/
+              setListaTotalProduccion(ordenProduccion.ordenesProduccion)
             }
           })
 
           setEditMode(false)
         }
       }
+
+    } else if(id.toLowerCase() === "borrar"){
+      console.log("borrar")
     }
   }
 
@@ -292,7 +304,9 @@ const useOrdenProduccionManager = () => {
     if (ordenProduccion?.ordenesProduccion) {
       filterData(ordenProduccion?.ordenesProduccion, filterValue, "asc").then(
         (result) => {
-          setListaProductosOrdenReciente(result)
+         // setListaProductosOrdenReciente(result)
+         setListaTotalProduccion(result)
+
         }
       )
     }
@@ -315,7 +329,9 @@ const useOrdenProduccionManager = () => {
           selectPropiedades,
           "asc"
         ).then((result) => {
-          setListaProductosOrdenReciente(result)
+          //setListaProductosOrdenReciente(result)
+          setListaTotalProduccion(result)
+
         })
       }
     }
@@ -332,14 +348,16 @@ const useOrdenProduccionManager = () => {
     if (idToggle === "orden01") {
       setOrdenData(toggleState.value)
 
-      if (listaProductosOrdenReciente) {
+      if (listaTotalProduccion) {
         filterData(
-          listaProductosOrdenReciente,
+          listaTotalProduccion,
           selectPropiedades,
           toggleState.sortDirection
         ).then((result) => {
           //console.log(result)
-          setListaProductosOrdenReciente(result)
+         // setListaProductosOrdenReciente(result)
+         setListaTotalProduccion(result)
+
         })
       }
       // Puedes realizar acciones adicionales basadas en el estado del toggle
@@ -347,7 +365,7 @@ const useOrdenProduccionManager = () => {
   }
 
   return {
-     currentPage,
+    currentPage,
     itemsPerPage,
     loadedData,
     datosColumna,
@@ -357,13 +375,14 @@ const useOrdenProduccionManager = () => {
     ordenProduccion,
     ordenData,
     editMode,
-    listaProductosOrdenReciente,
+    //listaProductosOrdenReciente,
+    listaTotalProduccion,
     setDatosColumna,
     setDatosLineaMod,
     setOrdenProduccion,
     setOrdenData,
     setEditMode,
-    setListaProductosOrdenReciente,
+   // setListaProductosOrdenReciente,
     setLoadedData,
     calculateItemToDisplay,
     loadMoreData,

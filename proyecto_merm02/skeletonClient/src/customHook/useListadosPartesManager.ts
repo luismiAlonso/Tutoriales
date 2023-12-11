@@ -164,13 +164,13 @@ const useListadosPartesManager = () => {
   } = useInfiniteLoader(20)
 
   const cargarDatosListaPartesProduccion = () => {
-    const listadoPartes = getAllProductAndAllOrder()
-    if (listadoPartes) {
-      //setListaPartesLaminacion(listadoPartes)
-      //console.log(listadoPartes.length)
-      setFullData(listadoPartes)
-      setListaTotalProduccion(listadoPartes)
-    }
+   getAllProductAndAllOrder().then((response)=>{
+      if(response){
+        setFullData(response)
+        setListaTotalProduccion(response)
+      }
+   })
+   
   }
 
   const handleInputTextChange = () => {}

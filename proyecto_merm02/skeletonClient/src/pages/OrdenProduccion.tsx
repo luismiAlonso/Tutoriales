@@ -7,20 +7,26 @@ import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import useOrdenProduccionManager from "../customHook/useOrdenProduccionManager"
 import { HeadersProducto } from "../models/HeadersProducto"
 import ToggleComponent from "../components/toggle/ToggleComponent"
+import InfiniteScroll from "react-infinite-scroll-component"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
+import ModalComponent from "../components/modal/ModalComponent"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
 function OrdenProduccion() {
-
   const {
     datosColumna,
     datosLineaMod,
     ordenProduccion,
     ordenData,
     editMode,
-    listaProductosOrdenReciente,
+    currentPage,
+    itemsPerPage,
+    loadedData,
+    //listaProductosOrdenReciente,
+    listaTotalProduccion,
     listadoTitulosPropiedades,
     selectPropiedades,
+    loadMoreData,
     configurarOrdenProduccion,
     actualizarDatos,
     handleSelection,
@@ -37,24 +43,21 @@ function OrdenProduccion() {
     useOrdenProduccionData()
 
   useEffect(() => {
-
     if (!ordenProduccion) return
     const productoActual = recuperarDatosTemporales()
     if (productoActual) {
       actualizarDatos(productoActual, ordenProduccion)
     }
-
   }, [ordenProduccion])
 
   useEffect(() => {
-    
     const currentOrder = getCurrentOrderProduccion()
-    currentOrder.then((result)=>{
-      if(result){
+
+    currentOrder.then((result) => {
+      if (result) {
         configurarOrdenProduccion(result)
       }
     })
-
   }, [])
 
   /*useEffect(()=>{
@@ -62,7 +65,6 @@ function OrdenProduccion() {
   },[handleInputChange])*/
 
   return (
-
     <form className="text-white">
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
         <div className="flex-grow text-left">
@@ -157,21 +159,37 @@ function OrdenProduccion() {
           </div>
         </>
       )}
-      {!editMode &&
-        listaProductosOrdenReciente &&
-        listaProductosOrdenReciente.length > 0 && (
-          <div className="mb-10 mt-4">
-            {ordenProduccion && (
+      {!editMode && loadedData && loadedData.length > 0 && (
+        <div className="mb-10 mt-4">
+          {ordenProduccion && (
+            <InfiniteScroll
+              dataLength={currentPage * itemsPerPage} //This is important field to render the next data
+              next={loadMoreData}
+              hasMore={true}
+              loader={<h4></h4>}
+              endMessage={
+                <p style={{ textAlign: "center" }}>
+                  <b>Yay! You have seen it all</b>
+                </p>
+              }
+            >
               <CustomTable
                 columns={HeadersProducto}
                 dataColumn={parteProducto}
-                data={listaProductosOrdenReciente}
+                data={loadedData}
                 onInputChange={handleInputChange}
                 onButtonClick={handleButtonClick}
               />
-            )}
-          </div>
-        )}
+            </InfiniteScroll>
+          )}
+        </div>
+      )}
+      
+        <ModalComponent 
+        title="¿DESEA ELIMINAR?" 
+        body={<p>.</p>} 
+        /*footer={modalFooter}*/
+        />
     </form>
   )
 }

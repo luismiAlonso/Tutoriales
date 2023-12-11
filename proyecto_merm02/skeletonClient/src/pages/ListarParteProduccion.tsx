@@ -46,9 +46,6 @@ function ListarParteProduccion() {
     handleInputTextChange
   } = useListadosPartesManager()
 
-  const { listaTotalProduccion, setListaTotalProduccion } =
-    useOrdenProductionStore()
-
   useEffect(() => {
     cargarDatosListaPartesProduccion()
     //console.log(listaTotalProduccion)

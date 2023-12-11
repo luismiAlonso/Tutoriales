@@ -138,7 +138,7 @@ export const updateOrdenByIdDB = async (
 ) => {
 
   try {
-
+    
     //console.log(`/ordenProduccion/${idParte}`,updatedOrden)
     const response = await axios.put(`/ordenProduccion/${idParte}`, updatedOrden)
     return response
@@ -164,7 +164,6 @@ export const updateProductInOrdenProduccionDB = async (
   } catch (error) {
     console.error("Error updating producto in orden de producción:", error)
   }
-
 }
 
 // Aquí puedes agregar más funciones según lo necesites...

@@ -5,9 +5,10 @@ import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { ParteLaminacion } from "../models/ParteLaminacion"
 import { ProductoModificacion } from "../models/ProductoModificacion"
 import { HeadersProducto } from "../models/HeadersProducto"
+import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useFilterData from "../components/filters/useFilterData"
+import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
 import { useParams } from "react-router-dom" // Importa useNavigate
-import useListadosPartesManager from "./useListadosPartesManager"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ProductoInicial } from "../models/ProductoInicial"
 
@@ -24,6 +25,7 @@ const useOrdenProduccionManager = () => {
     mapearProductoAColumnas,
     updateProductInOrden
   } = useOrdenProduccionData()
+
   const params = useParams()
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
@@ -37,6 +39,18 @@ const useOrdenProduccionManager = () => {
   const [ordenData, setOrdenData] = useState<boolean>(false)
   const [editMode, setEditMode] = useState<boolean>(false)
   const { filterByWords, filterData } = useFilterData()
+
+  const {
+    currentPage,
+    itemsPerPage,
+    loadedData,
+    setLoadedData,
+    calculateItemToDisplay,
+    loadMoreData
+  } = useInfiniteLoader(20)
+  
+  const { listaTotalProduccion, setListaTotalProduccion } =
+  useOrdenProductionStore()
 
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
@@ -83,8 +97,8 @@ const useOrdenProduccionManager = () => {
 
       //console.log(ProductoInicial,producto)
       const mappedProducto = mapColumnDescriptors(ProductoInicial, producto, [
-        "value",
-        "defaultValue"
+        /*"value",
+        "defaultValue"*/
       ])
 
       const indexedProduct = incrementarIndiceProductos(
@@ -112,7 +126,6 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleInputChange = (value: string | number, id: any) => {
-
     if (editMode) {
       const dataUpdated = updateColumnProduct(
         datosLineaMod,
@@ -124,9 +137,8 @@ const useOrdenProduccionManager = () => {
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
       }
-
     } else {
-      
+      //console.log(value)
       const currentData = recuperarDatosTemporales()
 
       if (currentData) {
@@ -188,7 +200,6 @@ const useOrdenProduccionManager = () => {
             mappedProduct
           ]
 
-          //console.log("nuevaOrdenProduccion",nuevoOrdenProduccion)
           setOrdenProduccion(nuevoOrdenProduccion)
           //const mappedProductoActual = mapearProductoAColumnas(productoActual,ordenProduccion.idParte,mappedProduct)
           //Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
@@ -218,7 +229,6 @@ const useOrdenProduccionManager = () => {
           const serializeObj = JSON.stringify(ProductoInicial)
           setDatosLocalStorage("datosTemporales", serializeObj)
           setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
-
         }
       } else {
         //console.log("entro sin orden")
@@ -236,30 +246,37 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
-
       if (datosLineaMod) {
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenProduccion.idParte
           )
-
-          updateProductInOrden(convertProduct, ordenProduccion.idParte)
-          const ordenproducionActualizada = getCurrentOrderProduccion()
-          ordenproducionActualizada.then((response)=>{
-            console.log(response)
+          convertProduct.fecha = ordenProduccion.fecha
+          convertProduct.tipoGoma = ordenProduccion.TipoGoma
+          //modifico el producto de la ordenProduccion 
+          ordenProduccion.ordenesProduccion =
+            ordenProduccion.ordenesProduccion.map((product) => {
+              if (product.indiceProducto === convertProduct.indiceProducto) {
+                return convertProduct
+              }
+              return product
+            })
+          
+          //updateProductInOrden(convertProduct, ordenProduccion.idParte)
+          updateOrdenProduccion(ordenProduccion).then((response) => {
+            if(response){
+              //console.log(response)
+              setOrdenProduccion(ordenProduccion)
+              setListaProductosOrdenReciente(
+                ordenProduccion.ordenesProduccion
+              )
+            }
           })
-          /*if (ordenproducionActualizada) {
-            setOrdenProduccion(ordenproducionActualizada)
-            setListaProductosOrdenReciente(
-              ordenproducionActualizada.ordenesProduccion
-            )
-          }*/
 
           setEditMode(false)
         }
       }
-
     }
   }
 
@@ -313,7 +330,6 @@ const useOrdenProduccionManager = () => {
     }
   ) => {
     if (idToggle === "orden01") {
-
       setOrdenData(toggleState.value)
 
       if (listaProductosOrdenReciente) {
@@ -331,20 +347,26 @@ const useOrdenProduccionManager = () => {
   }
 
   return {
+     currentPage,
+    itemsPerPage,
+    loadedData,
     datosColumna,
-    setDatosColumna,
-    datosLineaMod,
-    setDatosLineaMod,
-    ordenProduccion,
-    setOrdenProduccion,
-    ordenData,
-    setOrdenData,
-    editMode,
-    setEditMode,
-    listaProductosOrdenReciente,
-    setListaProductosOrdenReciente,
     listadoTitulosPropiedades,
     selectPropiedades,
+    datosLineaMod,
+    ordenProduccion,
+    ordenData,
+    editMode,
+    listaProductosOrdenReciente,
+    setDatosColumna,
+    setDatosLineaMod,
+    setOrdenProduccion,
+    setOrdenData,
+    setEditMode,
+    setListaProductosOrdenReciente,
+    setLoadedData,
+    calculateItemToDisplay,
+    loadMoreData,
     actualizarDatos,
     configurarOrdenProduccion,
     handleSelection,

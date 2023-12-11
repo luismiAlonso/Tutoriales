@@ -382,7 +382,7 @@ export const useOrdenProduccionData = () => {
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
     //console.log(ordenProduccion)
-    updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
+    return updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
   const updateProductInOrden = (producto: Producto, idParte: number) => {
@@ -580,19 +580,22 @@ export const useOrdenProduccionData = () => {
     const producto: any = {}
     
     columns.forEach((col) => {
-      if (
-        col.idInput &&
-        col.value !== undefined &&
-        !exclude.includes(col.idInput)
-      ) {
-        // Añadir al objeto solo si la propiedad no está en la lista de exclusión
-        const key = col.idInput
-        producto[key] = col.value
+      if (col.idInput && col.value !== undefined && !exclude.includes(col.idInput)) {
+        const key = col.idInput;
+        //parseo de tipos numericos
+        if (key === 'idParte' || key === 'indiceProducto' || key === 'operario' || 
+            key === 'pasada' || key === 'peso' || 
+            key === 'formulas' || key === 'planchas') {
+          // Convierte a número
+          producto[key] = Number(col.value);
+        } else {
+          // Mantiene como cadena
+          producto[key] = col.value;
+        }
       }
-    })
+    });
 
     producto.idParte = idParte
-
     return producto as Producto
   }
 

@@ -4,11 +4,9 @@ import { useOrdenProduccionData } from "./useOrdenProduccionData"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { ProductoModificacion } from "../models/ProductoModificacion"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
-import { convertDateToFormatString } from "../utilidades/dateUtil"
 import useCustomDatepicker from "../customHook/useCustomDatePicker"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
-import {convertDateToFormatString} from "../utilidades/dateUtil"
 
 const useListadosPartesManager = () => {
   const [editMode, setEditMode] = useState<boolean>(false)

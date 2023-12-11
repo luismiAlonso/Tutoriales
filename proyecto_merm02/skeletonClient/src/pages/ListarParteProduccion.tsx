@@ -9,7 +9,6 @@ import useListadosPartesManager from "../customHook/useListadosPartesManager"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
 import InfiniteScroll from "react-infinite-scroll-component"
-import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
 import { Datepicker } from "flowbite-react"
 import { HeadersParteLaminacionExtend } from "../models/HeadersParteLaminacionExtend"
 

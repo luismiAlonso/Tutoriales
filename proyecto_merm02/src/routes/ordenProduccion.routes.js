@@ -4,7 +4,8 @@ import {
   createOrdenProduccion,
   getOrdenProduccionById,
   updateOrdenProduccionById,
-  deleteOrdenProduccionById
+  deleteOrdenProduccionById,
+  deleteOrdenProductoInOrdenById
 } from "../controllers/ordenProducion.controller.js";
 import authRequire from "../middlewares/validateToken.js";
 //import { validateSchema } from '../middlewares/validator.middleware.js'
@@ -46,6 +47,14 @@ ordenProduccionRouter.delete(
   authRequire,
   deleteOrdenProduccionById
 )
+
+// DELETE: Eliminar un producto dentro de una orden de produccion
+ordenProduccionRouter.delete(
+  "/ordenProduccion/:id/productos/:id",
+  authRequire,
+  deleteOrdenProductoInOrdenById
+)
+
 
 export default ordenProduccionRouter
 

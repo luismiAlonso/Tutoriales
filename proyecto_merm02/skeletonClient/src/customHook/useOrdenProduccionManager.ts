@@ -5,10 +5,12 @@ import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { ParteLaminacion } from "../models/ParteLaminacion"
 import { ProductoModificacion } from "../models/ProductoModificacion"
 import { HeadersProducto } from "../models/HeadersProducto"
+import { ResumenProducto } from "../models/ResumenProducto"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useFilterData from "../components/filters/useFilterData"
 import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
-import { useParams } from "react-router-dom" // Importa useNavigate
+import { useParams, useNavigate } from "react-router-dom" // Importa useNavigate
+import useModal from "../components/modal/useModal"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ProductoInicial } from "../models/ProductoInicial"
 
@@ -23,16 +25,20 @@ const useOrdenProduccionManager = () => {
     recuperarDatosTemporales,
     updateColumnProduct,
     mapearProductoAColumnas,
-    updateProductInOrden
+    updateProductInOrden,
+    deleteOrdenProducion
   } = useOrdenProduccionData()
 
-  const params = useParams()
+  //const params = useParams()
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
   const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
+  const [resumeProduct, setResumeDataProduct] = useState<Producto>(null)
   const [ordenProduccion, setOrdenProduccion] = useState<
     OrdenProduccion | null | undefined
   >()
+  const { isOpen, openModal, closeModal } = useModal()
+  const navigate = useNavigate() // Obtén la función navigate
 
   /*const [listaProductosOrdenReciente, setListaProductosOrdenReciente] =
     useState<Producto[]>()*/
@@ -50,7 +56,7 @@ const useOrdenProduccionManager = () => {
   } = useInfiniteLoader(20)
 
   const { listaTotalProduccion, setListaTotalProduccion } =
-  useOrdenProductionStore()
+    useOrdenProductionStore()
 
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
@@ -91,7 +97,6 @@ const useOrdenProduccionManager = () => {
     ordenProduccion: OrdenProduccion
   ) => {
     if (ordenProduccion) {
-
       const producto = datos || ProductoInicial
       producto[0].value = ordenProduccion.idParte
       producto[0].defaultValue = ordenProduccion.idParte
@@ -105,7 +110,7 @@ const useOrdenProduccionManager = () => {
       const indexedProduct = incrementarIndiceProductos(
         ordenProduccion.ordenesProduccion
       )
-      
+
       setDatosColumna(mappedProducto)
       updateOrdenProduccion(ordenProduccion)
       //setListaProductosOrdenReciente(indexedProduct)
@@ -113,7 +118,6 @@ const useOrdenProduccionManager = () => {
       setListaTotalProduccion(indexedProduct)
       const serializeObj = JSON.stringify(mappedProducto)
       setDatosLocalStorage("datosTemporales", serializeObj)
-
     }
   }
 
@@ -212,7 +216,6 @@ const useOrdenProduccionManager = () => {
           agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
           //setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
           setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
-
         } else {
           const mappedProduct = mapColumnDescriptorsToProducto(
             ProductoInicial,
@@ -235,7 +238,6 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", serializeObj)
           //setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
           setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
-
         }
       } else {
         //console.log("entro sin orden")
@@ -253,7 +255,6 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
-      
       if (datosLineaMod) {
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
@@ -262,7 +263,7 @@ const useOrdenProduccionManager = () => {
           )
           convertProduct.fecha = ordenProduccion.fecha
           convertProduct.tipoGoma = ordenProduccion.TipoGoma
-          //modifico el producto de la ordenProduccion 
+          //modifico el producto de la ordenProduccion
           ordenProduccion.ordenesProduccion =
             ordenProduccion.ordenesProduccion.map((product) => {
               if (product.indiceProducto === convertProduct.indiceProducto) {
@@ -270,10 +271,10 @@ const useOrdenProduccionManager = () => {
               }
               return product
             })
-          
+
           //updateProductInOrden(convertProduct, ordenProduccion.idParte)
           updateOrdenProduccion(ordenProduccion).then((response) => {
-            if(response){
+            if (response) {
               //console.log(response)
               setOrdenProduccion(ordenProduccion)
               /*setListaProductosOrdenReciente(
@@ -286,9 +287,34 @@ const useOrdenProduccionManager = () => {
           setEditMode(false)
         }
       }
+    } else if (id.toLowerCase() === "borrar") {
+        console.log(listaTotalProduccion[rowIndex])
+        setResumeDataProduct(listaTotalProduccion[rowIndex])
+        navigate(`/ordenProduccion/${listaTotalProduccion[rowIndex].idParte}/productos/${listaTotalProduccion[rowIndex].indiceProducto}`)
+        handleOpenModal()
+    }
+  }
 
-    } else if(id.toLowerCase() === "borrar"){
-      console.log("borrar")
+  const handleDeleteProducto = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    idInput: string | number | undefined
+  ) => {
+    if (idInput === "btDelete") {
+      //console.log(productoActual)
+      if (ordenProduccion && resumeProduct) {
+
+        deleteOrdenProducion(
+          ordenProduccion.idParte,
+          resumeProduct.indiceProducto
+
+        ).then((response) => {
+          if (response.success) {
+            console.log(response.message)
+          } else {
+            console.log(response.message)
+          }
+        })
+      }
     }
   }
 
@@ -304,12 +330,26 @@ const useOrdenProduccionManager = () => {
     if (ordenProduccion?.ordenesProduccion) {
       filterData(ordenProduccion?.ordenesProduccion, filterValue, "asc").then(
         (result) => {
-         // setListaProductosOrdenReciente(result)
-         setListaTotalProduccion(result)
-
+          // setListaProductosOrdenReciente(result)
+          setListaTotalProduccion(result)
         }
       )
     }
+  }
+
+  //
+  const handleOpenModal = () => {
+    console.log("Open Modal")
+    openModal()
+  }
+
+  const handleCloseModal = () => {
+    console.log()
+    closeModal()
+  }
+
+  const handleIsOpen = () => {
+    return isOpen
   }
 
   const handleInputTextChange = (idInput: string, value: string) => {
@@ -331,7 +371,6 @@ const useOrdenProduccionManager = () => {
         ).then((result) => {
           //setListaProductosOrdenReciente(result)
           setListaTotalProduccion(result)
-
         })
       }
     }
@@ -355,9 +394,8 @@ const useOrdenProduccionManager = () => {
           toggleState.sortDirection
         ).then((result) => {
           //console.log(result)
-         // setListaProductosOrdenReciente(result)
-         setListaTotalProduccion(result)
-
+          // setListaProductosOrdenReciente(result)
+          setListaTotalProduccion(result)
         })
       }
       // Puedes realizar acciones adicionales basadas en el estado del toggle
@@ -377,12 +415,19 @@ const useOrdenProduccionManager = () => {
     editMode,
     //listaProductosOrdenReciente,
     listaTotalProduccion,
+    isOpen,
+    ResumenProducto,
+    resumeProduct,
+    setResumeDataProduct,
+    handleIsOpen,
+    handleCloseModal,
+    handleOpenModal,
     setDatosColumna,
     setDatosLineaMod,
     setOrdenProduccion,
     setOrdenData,
     setEditMode,
-   // setListaProductosOrdenReciente,
+    // setListaProductosOrdenReciente,
     setLoadedData,
     calculateItemToDisplay,
     loadMoreData,
@@ -398,7 +443,8 @@ const useOrdenProduccionManager = () => {
     actualizarDatosLinea,
     actualizaOrdenProduccion,
     handleInputChange,
-    handleButtonClick
+    handleButtonClick,
+    handleDeleteProducto
   }
 }
 

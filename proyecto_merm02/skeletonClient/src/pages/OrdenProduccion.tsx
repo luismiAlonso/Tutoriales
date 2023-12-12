@@ -10,6 +10,8 @@ import ToggleComponent from "../components/toggle/ToggleComponent"
 import InfiniteScroll from "react-infinite-scroll-component"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
 import ModalComponent from "../components/modal/ModalComponent"
+import ListadoDataResponsive from "../components/listadoDaraResposiveComponent/ListadoDataResponsive"
+import ButtonComponent from "../components/button/ButtonComponent"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
 function OrdenProduccion() {
@@ -26,6 +28,12 @@ function OrdenProduccion() {
     listaTotalProduccion,
     listadoTitulosPropiedades,
     selectPropiedades,
+    isOpen,
+    ResumenProducto,
+    resumeProduct,
+    handleIsOpen,
+    handleCloseModal,
+    handleOpenModal,
     loadMoreData,
     configurarOrdenProduccion,
     actualizarDatos,
@@ -36,7 +44,8 @@ function OrdenProduccion() {
     handleFilterChange,
     handleToggleChange,
     handleInputChange,
-    handleButtonClick
+    handleButtonClick,
+    handleDeleteProducto
   } = useOrdenProduccionManager()
 
   const { getCurrentOrderProduccion, recuperarDatosTemporales } =
@@ -184,12 +193,23 @@ function OrdenProduccion() {
           )}
         </div>
       )}
+
+      <ModalComponent
+        title="¿DESEA ELIMINAR?"
+        body={<ListadoDataResponsive
+            data={[resumeProduct]} columns={ResumenProducto} 
+           />}
+        isOpen={isOpen}
+        closeModal={handleCloseModal}
+        openModal={handleOpenModal}
+        footer={<ButtonComponent
+          buttonText="Aceptar"
+        idInput="btDelete"
+        rowIndex={1}
+        onClick={handleDeleteProducto}
+          />}
+      />
       
-        <ModalComponent 
-        title="¿DESEA ELIMINAR?" 
-        body={<p>.</p>} 
-        /*footer={modalFooter}*/
-        />
     </form>
   )
 }

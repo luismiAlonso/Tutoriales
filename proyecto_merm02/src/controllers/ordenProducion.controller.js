@@ -54,39 +54,11 @@ export const getOrdenProduccionById = async (req, res) => {
 
 // Actualizar una orden de producción por ID
 export const updateOrdenProduccionById = async (req, res) => {
-
   const idParte = req.params.id // Asumiendo que idParte es lo que se pasa en la URL
   const body = req.body
   let indexError
 
   try {
-
-    //pre cast
-    /*body.ordenesProduccion.forEach((producto) => {
-      try{
-
-        producto.idParte = Number(producto.idParte)
-        producto.fecha = String(producto.fecha)
-        producto.indiceProducto  = Number(producto.indiceProducto)
-        producto.operario =  Number(producto.operario)
-        producto.pasada = Number(producto.pasada)
-        producto.tipoGoma = String(producto.tipoGoma)
-        producto.color = String(producto.color)
-        producto.molde = String(producto.molde)
-        producto.planchaobtenidas = Number(producto.planchaobtenidas)
-        producto.peso = Number(producto.peso)
-        producto.formulas = Number(producto.formulas)
-        producto.planchas = Number(producto.planchas)
-        producto.acelerantes = Number(producto.acelerantes)
-
-      }catch (error) {
-
-        console.error(`Error procesando el producto en la posición ${idParte}:`, error);
-        // Opcional: manejar el error, como omitir este producto o detener el proceso
-      }
-      // Repite para otros campos según sea necesario
-    })*/
-
     const ordenActualizada = await OrdenProduccion.findOneAndUpdate(
       { idParte: idParte }, // Busca por idParte en lugar de _id
       { $set: { ordenesProduccion: body.ordenesProduccion } },
@@ -98,15 +70,14 @@ export const updateOrdenProduccionById = async (req, res) => {
         message: `Orden de producción con idParte ${idParte} no encontrada.`
       })
     }
-    
-    res.json(ordenActualizada)
-    
 
+    res.json(ordenActualizada)
   } catch (error) {
     console.error("Error al actualizar la orden de producción:", error)
     res.status(500).json({
       message: `Error interno del servidor al intentar actualizar la orden de producción con idParte ${JSON.stringify(
-        body.ordenesProduccion,)}`,
+        body.ordenesProduccion
+      )}`,
       error: error.message
     })
   }
@@ -123,6 +94,40 @@ export const deleteOrdenProduccionById = async (req, res) => {
     res.sendStatus(204)
   } catch (error) {
     res.status(404).json({ message: "Orden de producción no encontrada" })
+  }
+}
+
+// DELETE: Eliminar un producto dentro de una orden de producción
+export const deleteOrdenProductoInOrdenById = async (req, res) => {
+  try {
+    const { idParte, indiceProducto } = req.params
+
+    // Buscar la orden de producción por ID
+    const orden = await OrdenProduccion.findById({ idParte: Number(idParte) })
+    if (!orden) {
+      return res
+        .status(404)
+        .json({ message: "Orden de producción no encontrada " + idParte })
+    }
+
+    // Eliminar el producto de la orden
+    orden.ordenesProduccion = orden.ordenesProduccion.filter(
+      (producto) => producto.indiceProducto !== Number(indiceProducto)
+    )
+
+    // Guardar la orden de producción actualizada
+    await orden.save()
+    res.sendStatus(204)
+  } catch (error) {
+    console.error(
+      "Error al eliminar el producto de la orden de producción:",
+      error
+    )
+    res.status(500).json({
+      message: "Error interno del servidor",
+      error: error.message, // Mensaje de error detallado
+      stack: error.stack // Pila de errores (opcional, eliminar en producción)
+    })
   }
 }
 

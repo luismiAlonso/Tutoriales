@@ -6,11 +6,11 @@ import {
   fetchOrdenesProduccionDB,
   addOrdenProduccionDB,
   updateOrdenByIdDB,
-  updateProductInOrdenProduccionDB
+  updateProductInOrdenProduccionDB,
+  deleteProductFromOrdenProduccionDB
 } from "../api/ordenProduccionApi"
 
 export const useOrdenProduccionData = () => {
-
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const { addOrdenProduccion, setOrdenReciente } = useOrdenProductionStore()
@@ -19,11 +19,9 @@ export const useOrdenProduccionData = () => {
     fecha: string,
     tipoGoma: string
   ) => {
-
     setIsLoading(true)
 
     try {
-
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
       // Verificar si ordenesProduccion contiene datos
@@ -43,15 +41,13 @@ export const useOrdenProduccionData = () => {
       // Supongo que addOrdenProduccion es una función para actualizar el estado local o similar
       addOrdenProduccion(nuevaOrdeProducion)
       // Agregar la nueva orden de producción a la base de datos
-     const response = await addOrdenProduccionDB(nuevaOrdeProducion)
-     return response
-     
+      const response = await addOrdenProduccionDB(nuevaOrdeProducion)
+      return response
     } catch (error) {
       console.error("Error al cargar o agregar orden de producción:", error)
     } finally {
       setIsLoading(false)
     }
-
   }
 
   const getOrdenProduccionById = async (idParte: number) => {
@@ -380,6 +376,11 @@ export const useOrdenProduccionData = () => {
     })
   }
 
+  const deleteOrdenProducion = (idParte: number,idProducto: number) => {
+    //console.log(producto)
+   return  deleteProductFromOrdenProduccionDB(idParte,idProducto)
+  }
+
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
     //console.log(ordenProduccion)
     return updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
@@ -530,7 +531,6 @@ export const useOrdenProduccionData = () => {
     idParte: number,
     nuevoProducto: Producto
   ) => {
-
     setIsLoading(true)
 
     try {
@@ -541,19 +541,21 @@ export const useOrdenProduccionData = () => {
       const ordenIndex = ordenesProduccion.findIndex(
         (op) => op.idParte === idParte
       )
-      
+
       if (ordenIndex !== -1) {
         // Agregar el nuevo producto a la orden de producción encontrada
         ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
         // Actualizar la orden de producción en la base de datos
         //console.log(ordenesProduccion[ordenIndex])
-      
-        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex]).then((response)=>{
-          if(response){
-            console.log(response.status)
+
+        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex]).then(
+          (response) => {
+            if (response) {
+              console.log(response.status)
+            }
           }
-        })
-       
+        )
+
         // Actualizar el estado local si es necesario
         // setOrdenReciente(ordenesProduccion[ordenIndex])
       } else {
@@ -576,24 +578,33 @@ export const useOrdenProduccionData = () => {
     idParte: number,
     exclude: string[] = [] // Array de propiedades a excluir
   ): Producto => {
-
     const producto: any = {}
-    
+
     columns.forEach((col) => {
-      if (col.idInput && col.value !== undefined && !exclude.includes(col.idInput)) {
-        const key = col.idInput;
+      if (
+        col.idInput &&
+        col.value !== undefined &&
+        !exclude.includes(col.idInput)
+      ) {
+        const key = col.idInput
         //parseo de tipos numericos
-        if (key === 'idParte' || key === 'indiceProducto' || key === 'operario' || 
-            key === 'pasada' || key === 'peso' || 
-            key === 'formulas' || key === 'planchas') {
+        if (
+          key === "idParte" ||
+          key === "indiceProducto" ||
+          key === "operario" ||
+          key === "pasada" ||
+          key === "peso" ||
+          key === "formulas" ||
+          key === "planchas"
+        ) {
           // Convierte a número
-          producto[key] = Number(col.value);
+          producto[key] = Number(col.value)
         } else {
           // Mantiene como cadena
-          producto[key] = col.value;
+          producto[key] = col.value
         }
       }
-    });
+    })
 
     producto.idParte = idParte
     return producto as Producto
@@ -618,6 +629,7 @@ export const useOrdenProduccionData = () => {
     recuperarDatosTemporales,
     guardarDatosTemporales,
     updateColumnProduct,
-    updateProductInOrden
+    updateProductInOrden,
+    deleteOrdenProducion
   }
 }

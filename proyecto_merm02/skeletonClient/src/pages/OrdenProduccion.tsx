@@ -12,6 +12,7 @@ import InputTextFilterComponent from "../components/inputTextFilterComponent/Inp
 import ModalComponent from "../components/modal/ModalComponent"
 import ListadoDataResponsive from "../components/listadoDaraResposiveComponent/ListadoDataResponsive"
 import ButtonComponent from "../components/button/ButtonComponent"
+import BackButton from "../components/backButtonComponent/BackButtonComponent"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
 function OrdenProduccion() {
@@ -48,7 +49,7 @@ function OrdenProduccion() {
     handleDeleteProducto
   } = useOrdenProduccionManager()
 
-  const { getCurrentOrderProduccion, recuperarDatosTemporales } =
+  const { getTempCurrenOrderProduccion, recuperarDatosTemporales } =
     useOrdenProduccionData()
 
   useEffect(() => {
@@ -60,13 +61,13 @@ function OrdenProduccion() {
   }, [ordenProduccion])
 
   useEffect(() => {
-    const currentOrder = getCurrentOrderProduccion()
 
-    currentOrder.then((result) => {
-      if (result) {
-        configurarOrdenProduccion(result)
-      }
-    })
+    const currentOrder = getTempCurrenOrderProduccion()
+
+    if(currentOrder){
+      configurarOrdenProduccion(currentOrder)
+    }
+    
   }, [])
 
   /*useEffect(()=>{
@@ -82,6 +83,9 @@ function OrdenProduccion() {
         <div className="flex-grow text-right">
           <span>{ordenProduccion?.fecha}</span>
         </div>
+        <div className="ml-3">
+          <BackButton />
+        </div>
       </div>
       <div className="flex items-center p-4 border-b border-gray-200">
         <div className="flex-1">
@@ -91,7 +95,12 @@ function OrdenProduccion() {
         </div>
         <div className="flex-1">
           <span className="font-bold">
-            Tipo {ordenProduccion ? ordenProduccion.TipoGoma : ""}
+            Tipo: {ordenProduccion ? ordenProduccion.TipoGoma : ""}
+          </span>
+        </div>
+        <div className="flex-1">
+          <span className="font-bold">
+            Bamburi: {ordenProduccion ? ordenProduccion.bamburi : ""}
           </span>
         </div>
       </div>

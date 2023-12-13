@@ -17,7 +17,7 @@ const useModal = () => {
     setIsOpen(false)
   }, [])
 
-  return { isOpen, content, openModal, closeModal,setContent }
+  return { isOpen, content,setIsOpen,  openModal, closeModal,setContent }
 }
 
 export default useModal

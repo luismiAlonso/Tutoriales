@@ -13,11 +13,8 @@ import {
 export const useOrdenProduccionData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const { addOrdenProduccion, setOrdenReciente } = useOrdenProductionStore()
-
   const cargarDatosOrdenProduccion = async (
-    fecha: string,
-    tipoGoma: string
+    nuevaOrdenProduccion: OrdenProduccion
   ) => {
     setIsLoading(true)
 
@@ -32,17 +29,22 @@ export const useOrdenProduccionData = () => {
 
       const idParte = ordenesProduccion.length + 1
 
-      const nuevaOrdeProducion = {
-        idParte: idParte,
-        TipoGoma: tipoGoma,
-        ordenesProduccion: [],
-        fecha: fecha
-      }
-      // Supongo que addOrdenProduccion es una función para actualizar el estado local o similar
+      nuevaOrdenProduccion.idParte = idParte
+      /*
+      // Es opcion almacena la orden de produccion en base de datos
       addOrdenProduccion(nuevaOrdeProducion)
       // Agregar la nueva orden de producción a la base de datos
       const response = await addOrdenProduccionDB(nuevaOrdeProducion)
       return response
+      */
+
+      ordenesProduccion.push(nuevaOrdenProduccion)
+
+      const datosSerializados = JSON.stringify(ordenesProduccion)
+      //console.log(datosSerializados)
+      // Guarda la cadena JSON en localStorage con una clave específica
+      localStorage.setItem("ordenesProduccion", datosSerializados)
+      return nuevaOrdenProduccion
     } catch (error) {
       console.error("Error al cargar o agregar orden de producción:", error)
     } finally {
@@ -376,9 +378,9 @@ export const useOrdenProduccionData = () => {
     })
   }
 
-  const deleteOrdenProducion = (idParte: number,idProducto: number) => {
+  const deleteOrdenProducion = (idParte: number, idProducto: number) => {
     //console.log(producto)
-   return  deleteProductFromOrdenProduccionDB(idParte,idProducto)
+    return deleteProductFromOrdenProduccionDB(idParte, idProducto)
   }
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
@@ -387,7 +389,7 @@ export const useOrdenProduccionData = () => {
   }
 
   const updateProductInOrden = (producto: Producto, idParte: number) => {
-    console.log(producto)
+    //console.log(producto)
     updateProductInOrdenProduccionDB(idParte, producto.indiceProducto, producto)
   }
 
@@ -428,6 +430,33 @@ export const useOrdenProduccionData = () => {
     } catch (error) {
       console.error("Error al obtener la orden de producción actual:", error)
       return null
+    }
+  }
+
+  const getTempCurrenOrderProduccion = () => {
+    try {
+      // Recuperar las órdenes de producción desde localStorage
+      const ordenesProduccionJSON = localStorage.getItem("ordenesProduccion")
+
+      if (!ordenesProduccionJSON) {
+        console.log("No hay órdenes de producción almacenadas.")
+        return null // O manejar de otra forma si es necesario
+      }
+
+      const ordenesProduccion = JSON.parse(
+        ordenesProduccionJSON
+      ) as OrdenProduccion[]
+
+      if (ordenesProduccion.length === 0) {
+        console.log("La lista de órdenes de producción está vacía.")
+        return null // O manejar de otra forma si es necesario
+      }
+
+      // Devolver la última orden de producción
+      return ordenesProduccion[ordenesProduccion.length - 1]
+    } catch (error) {
+      console.error("Error al recuperar la orden de producción actual:", error)
+      return null // O manejar el error de otra forma si es necesario
     }
   }
 
@@ -527,6 +556,13 @@ export const useOrdenProduccionData = () => {
 }
 */
 
+  const crearNuevaOrdenProduccion = async (
+    nuevaOrdenProduccion: OrdenProduccion
+  ) => {
+    //console.log(nuevaOrdenProduccion)
+    return await addOrdenProduccionDB(nuevaOrdenProduccion)
+  }
+
   const agregarNuevoProductoOP = async (
     idParte: number,
     nuevoProducto: Producto
@@ -534,6 +570,7 @@ export const useOrdenProduccionData = () => {
     setIsLoading(true)
 
     try {
+      
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
 
@@ -618,12 +655,14 @@ export const useOrdenProduccionData = () => {
     mapColumnDescriptorsToProducto,
     mapColumnDescriptors,
     agregarNuevoProductoOP,
+    crearNuevaOrdenProduccion,
     cargarDatosOrdenProduccion,
     updateOrdenProduccion,
     obtenerUltimoProducto,
     mapearProductoAColumnas,
     getOrdenProduccionById,
     getCurrentOrderProduccion,
+    getTempCurrenOrderProduccion,
     getAllProductAndAllOrder,
     saveParteLaminadoActual,
     recuperarDatosTemporales,

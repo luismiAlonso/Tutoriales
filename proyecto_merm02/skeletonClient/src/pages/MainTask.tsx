@@ -1,5 +1,6 @@
 import React from "react"
 import CardTask from "../components/CardTask"
+import BackButton from "../components/backButtonComponent/BackButtonComponent"
 
 function MainTask() {
   const listTaskCards = [
@@ -23,6 +24,7 @@ function MainTask() {
         <div className="flex-grow text-left">
           <h2>GESTION DE TAREAS</h2>
         </div>
+       
       </div>
 
       <div>

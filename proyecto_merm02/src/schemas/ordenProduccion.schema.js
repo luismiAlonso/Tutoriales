@@ -3,6 +3,7 @@ import { z } from "zod"
  export const productoSchema = z.object({
   idParte: z.number(),
   fecha: z.string(),
+  bamburi: z.string(),
   indiceProducto: z.number(),
   operario: z.number(),
   pasada: z.number(),
@@ -20,6 +21,7 @@ import { z } from "zod"
 export const ordenProduccionSchema = z.object({
   idParte: z.number(),
   TipoGoma: z.string(),
+  bamburi: z.string(),
   ordenesProduccion: z.array(productoSchema),
   fecha: z.string(),
   createdAt: z.string().optional(), 

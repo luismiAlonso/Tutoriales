@@ -19,9 +19,10 @@ const useOrdenProduccionManager = () => {
     mapColumnDescriptors,
     incrementarIndiceProductos,
     updateOrdenProduccion,
-    getCurrentOrderProduccion,
+    getTempCurrenOrderProduccion,
     mapColumnDescriptorsToProducto,
     agregarNuevoProductoOP,
+    crearNuevaOrdenProduccion,
     recuperarDatosTemporales,
     updateColumnProduct,
     mapearProductoAColumnas,
@@ -37,7 +38,8 @@ const useOrdenProduccionManager = () => {
   const [ordenProduccion, setOrdenProduccion] = useState<
     OrdenProduccion | null | undefined
   >()
-  const { isOpen, openModal, closeModal } = useModal()
+  const [hasOrdenProduct, setHasOrdenProduct] = useState<boolean>(false)
+  const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const navigate = useNavigate() // Obtén la función navigate
 
   /*const [listaProductosOrdenReciente, setListaProductosOrdenReciente] =
@@ -89,13 +91,83 @@ const useOrdenProduccionManager = () => {
     ProductoInicial[0].value = orden.idParte
     ProductoInicial[0].defaultValue = orden.idParte
     setDatosColumna(ProductoInicial)
-    updateOrdenProduccion(orden)
+    //updateOrdenProduccion(orden)
+  }
+
+  const mapearYConfigurarProducto = (
+    dataColum: ColumnDescriptor[],
+    idParte: number,
+    indiceProducto: number,
+    fecha: string,
+    tipoGoma: string,
+    bamburi: string,
+    excludes: string[]
+  ) => {
+
+    const mappedProduct = mapColumnDescriptorsToProducto(
+      dataColum,
+      idParte,
+      excludes
+    )
+    mappedProduct.indiceProducto = indiceProducto
+    mappedProduct.fecha = fecha
+    mappedProduct.tipoGoma = tipoGoma
+    mappedProduct.bamburi = bamburi
+    return mappedProduct
+  }
+
+  // Función para actualizar la orden de producción
+  const actualizarYAgregarProducto = (
+    mappedProduct: Producto,
+    dataColum: ColumnDescriptor[],
+    ordenProduccion: OrdenProduccion
+  ) => {
+
+    //console.log(mappedProduct)
+    actualizarOrdenProduccion(mappedProduct,dataColum,ordenProduccion)
+    agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
+    setListaTotalProduccion(ordenProduccion.ordenesProduccion)
+
+  }
+
+  const actualizarProductoEnOrden = (
+    productoModificado: Producto,
+    ordenProduccionActual: OrdenProduccion
+  ) => {
+    const ordenActualizada = {
+      ...ordenProduccionActual,
+      ordenesProduccion: ordenProduccionActual.ordenesProduccion.map(
+        (producto) =>
+          producto.indiceProducto === productoModificado.indiceProducto
+            ? productoModificado
+            : producto
+      )
+    }
+    return ordenActualizada
+  }
+
+  const actualizarOrdenProduccion = (
+    producto: Producto,
+    dataColum:ColumnDescriptor[],
+    ordenProduccion: OrdenProduccion
+  ) => {
+    producto.indiceProducto = ordenProduccion.ordenesProduccion.length + 1
+    const nuevoOrdenProduccion = {
+      ...ordenProduccion,
+      ordenesProduccion: [...ordenProduccion.ordenesProduccion, producto]
+    }
+
+    setOrdenProduccion(nuevoOrdenProduccion)
+    const serializeObj = JSON.stringify(dataColum)
+    setDatosLocalStorage("datosTemporales", serializeObj)
+    agregarNuevoProductoOP(ordenProduccion.idParte, producto)
   }
 
   const actualizarDatos = (
     datos: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
+
     if (ordenProduccion) {
       const producto = datos || ProductoInicial
       producto[0].value = ordenProduccion.idParte
@@ -103,8 +175,7 @@ const useOrdenProduccionManager = () => {
 
       //console.log(ProductoInicial,producto)
       const mappedProducto = mapColumnDescriptors(ProductoInicial, producto, [
-        /*"value",
-        "defaultValue"*/
+       
       ])
 
       const indexedProduct = incrementarIndiceProductos(
@@ -112,9 +183,8 @@ const useOrdenProduccionManager = () => {
       )
 
       setDatosColumna(mappedProducto)
-      updateOrdenProduccion(ordenProduccion)
+      //updateOrdenProduccion(ordenProduccion)
       //setListaProductosOrdenReciente(indexedProduct)
-      //console.log(indexedProduct)
       setListaTotalProduccion(indexedProduct)
       const serializeObj = JSON.stringify(mappedProducto)
       setDatosLocalStorage("datosTemporales", serializeObj)
@@ -185,62 +255,50 @@ const useOrdenProduccionManager = () => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
 
     if (id.toLowerCase() === "agregar") {
-      //este ide corresponde al boton de añadir
       const productoActual = recuperarDatosTemporales()
 
-      if (ordenProduccion && ordenProduccion !== null) {
-        if (productoActual) {
-          const mappedProduct = mapColumnDescriptorsToProducto(
-            productoActual,
-            ordenProduccion?.idParte,
-            ["Agregar", "editar"]
-          )
+      if (ordenProduccion) {
+        const productoParaMapear = productoActual
+          ? productoActual
+          : ProductoInicial
+        const indiceProducto = ordenProduccion.ordenesProduccion.length + 1
+        const mappedProduct = mapearYConfigurarProducto(
+          productoParaMapear,
+          ordenProduccion.idParte,
+          indiceProducto,
+          ordenProduccion.fecha,
+          ordenProduccion.TipoGoma,
+          ordenProduccion.bamburi,
+          ["Agregar", "editar"]
+        )
 
-          // console.log("test",mappedProduct)
-          mappedProduct.indiceProducto =
-            ordenProduccion.ordenesProduccion.length + 1
-          mappedProduct.fecha = ordenProduccion.fecha
-          mappedProduct.tipoGoma = ordenProduccion.TipoGoma
-          // Agregar el producto mapeado a ordenProduccion y establecer el nuevo estado
-          const nuevoOrdenProduccion = { ...ordenProduccion }
-          nuevoOrdenProduccion.ordenesProduccion = [
-            ...nuevoOrdenProduccion.ordenesProduccion,
-            mappedProduct
-          ]
+        const gestionarOrdenProduccion = () => {
+          actualizarYAgregarProducto(mappedProduct,productoParaMapear,ordenProduccion)
+        }
 
-          setOrdenProduccion(nuevoOrdenProduccion)
-          //const mappedProductoActual = mapearProductoAColumnas(productoActual,ordenProduccion.idParte,mappedProduct)
-          //Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
-          const serializeObj = JSON.stringify(productoActual)
-          setDatosLocalStorage("datosTemporales", serializeObj)
-          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-          //setListaProductosOrdenReciente(nuevoOrdenProduccion.ordenesProduccion)
-          setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
+        //comprobamos que si existe una ordenProduccion ya creada
+        if (!hasOrdenProduct) {
+          //si no existe la creamos
+          crearNuevaOrdenProduccion(ordenProduccion)
+            .then((response) => {
+              if (response?.status === 200) {
+                //agregamos nueva linea produccion
+                gestionarOrdenProduccion()
+                //modificamos el estado porque la orden de produccion ha sido creada
+                setHasOrdenProduct(true)
+              } else {
+                console.error("Error al crear la orden de producción")
+              }
+            })
+            .catch((error) => {
+              console.error("Error al crear la orden de producción:", error)
+            })
         } else {
-          const mappedProduct = mapColumnDescriptorsToProducto(
-            ProductoInicial,
-            1
-          )
-          mappedProduct.indiceProducto = 1
-          mappedProduct.fecha = ordenProduccion.fecha
-          mappedProduct.tipoGoma = ordenProduccion.TipoGoma
-          const nuevoOrdenProduccion = { ...ordenProduccion }
-
-          nuevoOrdenProduccion.ordenesProduccion = [
-            ...nuevoOrdenProduccion.ordenesProduccion,
-            mappedProduct
-          ]
-
-          setOrdenProduccion(nuevoOrdenProduccion)
-          // Suponiendo que agregarNuevoProductoOP actualiza alguna fuente de datos o realiza alguna otra función
-          agregarNuevoProductoOP(ordenProduccion.idParte, mappedProduct)
-          const serializeObj = JSON.stringify(ProductoInicial)
-          setDatosLocalStorage("datosTemporales", serializeObj)
-          //setListaProductosOrdenReciente(ordenProduccion.ordenesProduccion)
-          setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
+          //agregamos directamente, ya hemos creado una OrdenProduccion nueva linea produccion
+          gestionarOrdenProduccion()
         }
       } else {
-        //console.log("entro sin orden")
+        console.log("No hay orden de producción definida")
       }
     } else if (id.toLowerCase() === "editar") {
       setEditMode(true)
@@ -255,12 +313,16 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
+
+      /*
       if (datosLineaMod) {
+
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenProduccion.idParte
           )
+
           convertProduct.fecha = ordenProduccion.fecha
           convertProduct.tipoGoma = ordenProduccion.TipoGoma
           //modifico el producto de la ordenProduccion
@@ -277,9 +339,7 @@ const useOrdenProduccionManager = () => {
             if (response) {
               //console.log(response)
               setOrdenProduccion(ordenProduccion)
-              /*setListaProductosOrdenReciente(
-                ordenProduccion.ordenesProduccion
-              )*/
+              
               setListaTotalProduccion(ordenProduccion.ordenesProduccion)
             }
           })
@@ -287,11 +347,40 @@ const useOrdenProduccionManager = () => {
           setEditMode(false)
         }
       }
+      */
+
+      if (datosLineaMod && ordenProduccion) {
+
+        const productoModificado = mapearYConfigurarProducto(
+          datosLineaMod,
+          rowIndex,
+          ordenProduccion.idParte,
+          ordenProduccion.fecha,
+          ordenProduccion.TipoGoma,
+          []
+        )
+
+        const ordenActualizada = actualizarProductoEnOrden(
+          productoModificado,
+          ordenProduccion
+        )
+
+        updateOrdenProduccion(ordenActualizada).then((response) => {
+          if (response) {
+            setOrdenProduccion(ordenActualizada)
+            setListaTotalProduccion(ordenActualizada.ordenesProduccion)
+          }
+        })
+
+        setEditMode(false)
+      }
     } else if (id.toLowerCase() === "borrar") {
-        console.log(listaTotalProduccion[rowIndex])
-        setResumeDataProduct(listaTotalProduccion[rowIndex])
-        navigate(`/ordenProduccion/${listaTotalProduccion[rowIndex].idParte}/productos/${listaTotalProduccion[rowIndex].indiceProducto}`)
-        handleOpenModal()
+      console.log(listaTotalProduccion[rowIndex])
+      setResumeDataProduct(listaTotalProduccion[rowIndex])
+      navigate(
+        `/ordenProduccion/${listaTotalProduccion[rowIndex].idParte}/productos/${listaTotalProduccion[rowIndex].indiceProducto}`
+      )
+      handleOpenModal()
     }
   }
 
@@ -302,14 +391,13 @@ const useOrdenProduccionManager = () => {
     if (idInput === "btDelete") {
       //console.log(productoActual)
       if (ordenProduccion && resumeProduct) {
-
         deleteOrdenProducion(
           ordenProduccion.idParte,
           resumeProduct.indiceProducto
-
         ).then((response) => {
           if (response.success) {
-            console.log(response.message)
+            //console.log(response.message)
+            setIsOpen(false)
           } else {
             console.log(response.message)
           }
@@ -394,7 +482,7 @@ const useOrdenProduccionManager = () => {
           toggleState.sortDirection
         ).then((result) => {
           //console.log(result)
-          // setListaProductosOrdenReciente(result)
+          //setListaProductosOrdenReciente(result)
           setListaTotalProduccion(result)
         })
       }

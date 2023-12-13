@@ -35,7 +35,7 @@ ordenProduccionRouter.post(
 
 // PUT: Actualizar una orden de producción por ID
 ordenProduccionRouter.put(
-  "/ordenProduccion/:id",
+  "/ordenProduccion/:idParte",
   authRequire,
   validateSchema(ordenProduccionSchema),
   updateOrdenProduccionById
@@ -43,14 +43,14 @@ ordenProduccionRouter.put(
 
 // DELETE: Eliminar una orden de producción por ID
 ordenProduccionRouter.delete(
-  "/ordenProduccion/:id",
+  "/ordenProduccion/:idParte",
   authRequire,
   deleteOrdenProduccionById
 )
 
 // DELETE: Eliminar un producto dentro de una orden de produccion
 ordenProduccionRouter.delete(
-  "/ordenProduccion/:id/productos/:id",
+  "/ordenProduccion/:idParte/productos/:indiceProducto",
   authRequire,
   deleteOrdenProductoInOrdenById
 )

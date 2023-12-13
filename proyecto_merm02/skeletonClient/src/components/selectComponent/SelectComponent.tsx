@@ -20,9 +20,13 @@ const SelectComponent: React.FC<IcustomSelectProp> = ({
     e.preventDefault()
     const newValue = e.target.value
     setSelectedValue(newValue) // Actualiza el estado local
-    onSeleccion(newValue, idSelected)
+    
     if(onChange){
       onChange(e)
+    }
+
+    if(onSeleccion){
+      onSeleccion(e, idSelected)
     }
     
     if (onFilter) {

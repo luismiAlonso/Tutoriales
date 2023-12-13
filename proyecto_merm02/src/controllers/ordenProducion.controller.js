@@ -18,10 +18,11 @@ export const getOrdenesProduccion = async (req, res) => {
 // Crear una nueva orden de producción
 export const createOrdenProduccion = async (req, res) => {
   try {
-    const { idParte, TipoGoma, ordenesProduccion, fecha } = req.body
+    const { idParte, TipoGoma,bamburi , ordenesProduccion, fecha } = req.body
     const nuevaOrden = new OrdenProduccion({
       idParte,
       TipoGoma,
+      bamburi,
       ordenesProduccion,
       fecha
     })
@@ -32,14 +33,20 @@ export const createOrdenProduccion = async (req, res) => {
     if (!ordenGuardada)
       return res.status(404).json({ message: "Orden not found" })
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" })
+    res
+      .status(500)
+      .json({
+        message: "Something went wrong",
+        error: error.message,
+        stack: error.stack
+      })
   }
 }
 
 // Obtener una orden de producción por ID
 export const getOrdenProduccionById = async (req, res) => {
   try {
-    const orden = await OrdenProduccion.findById(req.params.id).populate(
+    const orden = await OrdenProduccion.findById(req.params.idParte).populate(
       "ordenesProduccion"
     )
     if (!orden)
@@ -54,9 +61,8 @@ export const getOrdenProduccionById = async (req, res) => {
 
 // Actualizar una orden de producción por ID
 export const updateOrdenProduccionById = async (req, res) => {
-  const idParte = req.params.id // Asumiendo que idParte es lo que se pasa en la URL
+  const idParte = req.params.idParte // Asumiendo que idParte es lo que se pasa en la URL
   const body = req.body
-  let indexError
 
   try {
     const ordenActualizada = await OrdenProduccion.findOneAndUpdate(
@@ -86,7 +92,7 @@ export const updateOrdenProduccionById = async (req, res) => {
 // Eliminar una orden de producción por ID
 export const deleteOrdenProduccionById = async (req, res) => {
   try {
-    const orden = await OrdenProduccion.findByIdAndDelete(req.params.id)
+    const orden = await OrdenProduccion.findByIdAndDelete(req.params.idParte)
     if (!orden)
       return res
         .status(404)
@@ -103,7 +109,8 @@ export const deleteOrdenProductoInOrdenById = async (req, res) => {
     const { idParte, indiceProducto } = req.params
 
     // Buscar la orden de producción por ID
-    const orden = await OrdenProduccion.findById({ idParte: Number(idParte) })
+    const orden = await OrdenProduccion.findOne({ idParte: idParte })
+
     if (!orden) {
       return res
         .status(404)

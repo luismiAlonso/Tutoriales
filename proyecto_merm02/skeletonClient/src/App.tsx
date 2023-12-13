@@ -29,13 +29,13 @@ function App() {
           <Route element={<ProtectedRoute />} >
             <Route path="/MainTask" element={<MainTask />} /> 
             <Route path="/Produccion" element={<Produccion />} />
-            <Route path="/Produccion/:id" element={<Produccion />} />
+            <Route path="/Produccion/:idParte" element={<Produccion />} />
             <Route path="/ordenProduccion" element={<OrdenProduccion />} />
-            <Route path="/ordenProduccion/:id" element={<OrdenProduccion />} />
-            <Route path="/ordenProduccion/:id/productos/:id" element={<OrdenProduccion />} />
+            <Route path="/ordenProduccion/:idParte" element={<OrdenProduccion />} />
+            <Route path="/ordenProduccion/:idParte/productos/:indiceProducto" element={<OrdenProduccion />} />
             <Route path="/ListarParteProduccion" element={<ListarParteProduccion />} />
             <Route path="/MainInventario" element={<MainInventario />} />
-            <Route path="/EntradasINventario" element={<MainInventario />} />
+            <Route path="/EntradasInventario" element={<MainInventario />} />
             <Route path="/EntradasInventarioPage" element={<EntradasInventarioPage />} />
             <Route path="/EntradasInventarioConfiguracion" element={<EntradasInventarioConfiguracion />} />
           </Route> 

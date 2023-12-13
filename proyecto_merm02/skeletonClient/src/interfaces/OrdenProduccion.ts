@@ -1,12 +1,14 @@
 export interface OrdenProduccion {
   idParte: number
-  TipoGoma: string
+  TipoGoma: string,
+  bamburi: string,
   ordenesProduccion: Producto[]
   fecha: string
 }
 
 export interface Producto {
   idParte: number
+  bamburi: string
   fecha: string
   indiceProducto: number
   operario: number

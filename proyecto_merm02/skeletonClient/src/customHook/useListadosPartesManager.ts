@@ -37,7 +37,9 @@ const useListadosPartesManager = () => {
     mapearProductoAColumnas,
     updateProductInOrden,
     updateColumnProduct,
-    getAllProductAndAllOrder 
+    updateOrdenProduccion,
+    getAllProductAndAllOrder,
+    getOrdenProduccionById
   } = useOrdenProduccionData()
 
   const { listaTotalProduccion, setListaTotalProduccion } =
@@ -194,7 +196,7 @@ const useListadosPartesManager = () => {
 
     } else if (id.toLowerCase() === "aceptaredicion") {
 
-      if (datosLineaMod) {
+      /*if (datosLineaMod) {
         if (datosLineaMod[0].value) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
@@ -211,7 +213,41 @@ const useListadosPartesManager = () => {
 
           setEditMode(false)
         }
+      }*/
+      
+      const ordenProduccion = getOrdenProduccionById(datosLineaMod[0].value as number)
+
+      ordenProduccion.then((ordenResponse)=>{
+        if (datosLineaMod && ordenResponse) {
+          
+          const convertProduct = mapColumnDescriptorsToProducto(
+            datosLineaMod,
+            ordenResponse?.idParte
+          )
+          convertProduct.fecha = ordenResponse.fecha
+          convertProduct.tipoGoma = ordenResponse.TipoGoma
+          //modifico el producto de la ordenProduccion
+          ordenResponse.ordenesProduccion =
+          ordenResponse.ordenesProduccion.map((product) => {
+              if (product.indiceProducto === convertProduct.indiceProducto) {
+                return convertProduct
+              }
+              return product
+            })
+
+          //updateProductInOrden(convertProduct, ordenProduccion.idParte)
+          updateOrdenProduccion(ordenResponse).then((response) => {
+            if (response) {
+              
+              setListaTotalProduccion(ordenResponse.ordenesProduccion)
+            }
+          })
+
+          setEditMode(false)
+        
       }
+      })
+     
     }
   }
 

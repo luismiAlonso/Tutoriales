@@ -37,7 +37,6 @@ export const useOrdenProduccionData = () => {
       const response = await addOrdenProduccionDB(nuevaOrdeProducion)
       return response
       */
-
       ordenesProduccion.push(nuevaOrdenProduccion)
 
       const datosSerializados = JSON.stringify(ordenesProduccion)
@@ -417,6 +416,14 @@ export const useOrdenProduccionData = () => {
     }
   }
 
+  const getAllOrdenProduction = async () => {
+    try {
+      return fetchOrdenesProduccionDB()
+    } catch (error) {
+      return null
+    }
+  }
+
   const getCurrentOrderProduccion = async () => {
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
@@ -570,7 +577,6 @@ export const useOrdenProduccionData = () => {
     setIsLoading(true)
 
     try {
-      
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
 
@@ -578,7 +584,7 @@ export const useOrdenProduccionData = () => {
       const ordenIndex = ordenesProduccion.findIndex(
         (op) => op.idParte === idParte
       )
-
+      
       if (ordenIndex !== -1) {
         // Agregar el nuevo producto a la orden de producción encontrada
         ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
@@ -588,7 +594,8 @@ export const useOrdenProduccionData = () => {
         await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex]).then(
           (response) => {
             if (response) {
-              console.log(response.status)
+              // Devuelve las órdenes de producción actualizadas
+              return ordenesProduccion
             }
           }
         )
@@ -599,15 +606,33 @@ export const useOrdenProduccionData = () => {
         console.error(
           `No se encontró la orden de producción con idParte ${idParte}.`
         )
+        return null // Devuelve null si no se encuentra la orden de producción
       }
     } catch (error) {
       console.error(
         "Error al agregar nuevo producto a la orden de producción:",
         error
       )
+      return null // Devuelve null en caso de error
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const checkOrdenIdOnTemp = (ordenProduccion: OrdenProduccion): boolean => {
+
+    getCurrentOrderProduccion().then((orden) => {
+      
+      if (orden) {
+        if (ordenProduccion.idParte === orden.idParte) {
+        
+          return true
+        }
+        return false
+      }
+    })
+
+    return false
   }
 
   const mapColumnDescriptorsToProducto = (
@@ -664,6 +689,8 @@ export const useOrdenProduccionData = () => {
     getCurrentOrderProduccion,
     getTempCurrenOrderProduccion,
     getAllProductAndAllOrder,
+    getAllOrdenProduction,
+    checkOrdenIdOnTemp,
     saveParteLaminadoActual,
     recuperarDatosTemporales,
     guardarDatosTemporales,

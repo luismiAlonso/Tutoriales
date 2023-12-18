@@ -77,7 +77,7 @@ export const updateOrdenProduccionById = async (req, res) => {
       })
     }
 
-    res.json(ordenActualizada)
+    res.json({message:"mensaje actualizacion: "+body.ordenesProduccion,ordenActualizada})
   } catch (error) {
     console.error("Error al actualizar la orden de producción:", error)
     res.status(500).json({

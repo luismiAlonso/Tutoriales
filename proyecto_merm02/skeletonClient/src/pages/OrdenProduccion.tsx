@@ -53,26 +53,24 @@ function OrdenProduccion() {
     useOrdenProduccionData()
 
   useEffect(() => {
+
     if (!ordenProduccion) return
     const productoActual = recuperarDatosTemporales()
     if (productoActual) {
       actualizarDatos(productoActual, ordenProduccion)
     }
+    
   }, [ordenProduccion])
 
   useEffect(() => {
 
-    const currentOrder = getTempCurrenOrderProduccion()
-
-    if(currentOrder){
-      configurarOrdenProduccion(currentOrder)
-    }
+      configurarOrdenProduccion()
     
   }, [])
 
   /*useEffect(()=>{
-    //console.log(datosColumna)
-  },[handleInputChange])*/
+      console.log(loadedData)
+  },[loadedData])*/
 
   return (
     <form className="text-white">

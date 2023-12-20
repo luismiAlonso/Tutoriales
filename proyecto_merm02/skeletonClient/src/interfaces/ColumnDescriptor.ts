@@ -5,6 +5,7 @@ export interface ColumnDescriptor {
     type: "text" | "number" | "dropdown" | "hybridSelect" | "checkbox" | "button" | "noInput" | "void"  | "svg"
     value?: string | number
     editable: boolean
+    visible:boolean
     options: string[]
     defaultValue?: string | number,
     placeHolder: string,

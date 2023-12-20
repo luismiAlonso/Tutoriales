@@ -6,11 +6,12 @@ import { parteProducto } from "../models/ParteProducto"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import useOrdenProduccionManager from "../customHook/useOrdenProduccionManager"
 import { HeadersProducto } from "../models/HeadersProducto"
+import {ProductoInicial} from "../models/ProductoInicial"
 import ToggleComponent from "../components/toggle/ToggleComponent"
 import InfiniteScroll from "react-infinite-scroll-component"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
 import ModalComponent from "../components/modal/ModalComponent"
-import ListadoDataResponsive from "../components/listadoDaraResposiveComponent/ListadoDataResponsive"
+import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/ListadoDataResponsive"
 import ButtonComponent from "../components/button/ButtonComponent"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 
@@ -63,7 +64,7 @@ function OrdenProduccion() {
   }, [ordenProduccion])
 
   useEffect(() => {
-
+      console.log(ProductoInicial)
       configurarOrdenProduccion()
     
   }, [])

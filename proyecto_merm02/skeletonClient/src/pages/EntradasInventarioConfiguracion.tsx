@@ -20,7 +20,7 @@ function EntradasInventarioConfiguracion() {
   const { cargarDatosNuevoInventario } = useInventarioData()
 
   const handleChangeGestor = (nuevoGestor: string) => {
-    console.log(nuevoGestor)
+    //console.log(nuevoGestor)
     setGestorSeleccionado(nuevoGestor)
   }
 

@@ -7,6 +7,7 @@ export  interface InputProps {
     editable: boolean
     defaultValue?: string | number
     value?:string | number,
+    visible: boolean,
     rowIndex?: number,
     options: string[]
     placeHolder: string

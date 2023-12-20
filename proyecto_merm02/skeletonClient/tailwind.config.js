@@ -6,8 +6,14 @@ export default {
     'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      fontSize: {
+        'xxs': '0.65rem', // Añade un tamaño de fuente más pequeño
+      },
+      screens: {
+        'custom': '1650px', // Añade un nuevo punto de interrupción llamado 'custom'
+      },
+    }
   },
-plugins: [/*require('flowbite/plugin')*/]
+  plugins: [/*require('flowbite/plugin')*/]
 }
-

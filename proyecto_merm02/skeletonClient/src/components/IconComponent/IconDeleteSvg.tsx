@@ -1,6 +1,6 @@
 import React from "react"
 
-const IconEditSvg = () => (
+const IconDeleteSvg = () => (
   <div className="cursor-pointer">
     <svg
       viewBox="0 0 1024 1024"
@@ -24,4 +24,4 @@ const IconEditSvg = () => (
   </div>
 )
 
-export default IconEditSvg
+export default IconDeleteSvg

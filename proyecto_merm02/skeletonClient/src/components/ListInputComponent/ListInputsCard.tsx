@@ -8,7 +8,7 @@ import { InputProps } from "./InputProps"
 import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg"
-
+import IconDeleteSvg from "../IconComponent/IconDeleteSvg"
 
 export interface CustomCardProps {
   columns: ColumnDescriptor[]
@@ -26,13 +26,16 @@ const InputComponent: React.FC<InputProps> = (props) => {
     props.onChange && props.onChange(value, props.idInput)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>,idInput: string,rowIndex: number) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    idInput: string,
+    rowIndex: number
+  ) => {
     //console.log(props.rowIndex)
-    props.onClick && props.onClick(e,idInput,rowIndex)
+    props.onClick && props.onClick(e, idInput, rowIndex)
   }
 
   switch (props.type) {
-
     case "text":
       return (
         <InputTextComponent
@@ -91,10 +94,10 @@ const InputComponent: React.FC<InputProps> = (props) => {
         <CustomButton
           buttonText={props.content} // Aquí puedes cambiar "Mi Botón" por el texto que desees
           className="clase-personalizada" // Aquí puedes cambiar o agregar más clases
-          onClick={(e) =>{
+          onClick={(e) => {
             e.preventDefault()
-            if(props.idInput && (props.rowIndex || props.rowIndex==0)){
-              handleClick(e,props.idInput,props.rowIndex)
+            if (props.idInput && (props.rowIndex || props.rowIndex == 0)) {
+              handleClick(e, props.idInput, props.rowIndex)
             }
           }}
         />
@@ -105,8 +108,8 @@ const InputComponent: React.FC<InputProps> = (props) => {
           <IconComponent
             onClick={(e) => {
               e.preventDefault()
-              if(props.value && (props.rowIndex || props.rowIndex==0)){
-                handleClick(e,props.idInput,props.rowIndex)
+              if (props.value && (props.rowIndex || props.rowIndex == 0)) {
+                handleClick(e, props.idInput, props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto
             iconType="svg"
@@ -117,12 +120,12 @@ const InputComponent: React.FC<InputProps> = (props) => {
         return (
           <IconComponent
             onClick={(e) => {
-              if(props.value && (props.rowIndex || props.rowIndex==0)){
-                handleClick(e,props.idInput,props.rowIndex)
+              if (props.value && (props.rowIndex || props.rowIndex == 0)) {
+                handleClick(e, props.idInput, props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto
             iconType="svg"
-            iconContent={<IconEditSvg />}
+            iconContent={<IconDeleteSvg />}
           />
         )
       }
@@ -141,31 +144,39 @@ const CustomCard: React.FC<CustomCardProps> = ({
 
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">
-      {columns.map((column, index) => (
-        <div key={index} className="flex-1 mb-6 md:mb-0">
-          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white min-h-[20px]">
-            {column.title}
-          </label>
-          <InputComponent
-            idInput={column.idInput}
-            titulo={column.title}
-            value={column.value}
-            content={column.content}
-            type={column.type}
-            rowIndex={rowIndex}
-            editable={column.editable}
-            options={column.options}
-            defaultValue={column.defaultValue}
-            placeHolder={column.placeHolder}
-            additionalStyles={column.additionalStyles}
-            onChange={(value) => onInputChange(value, column.idInput)}
-            onClick={(e) => {
-              e.preventDefault()
-              onButtonClick(column.idInput,rowIndex)
-            }}
-          />
-        </div>
-      ))}
+      {columns.map((column, index) => {
+        // Verificar si el elemento debe ser visible
+        if (!column.visible) {
+          return null // No renderiza este elemento si no es visible
+        }
+
+        return (
+          <div key={index} className="flex-1 mb-6 md:mb-0">
+            <label className="block mb-2 text-xxs font-medium text-gray-900 dark:text-white min-h-[20px]">
+              {column.title}
+            </label>
+            <InputComponent
+              idInput={column.idInput}
+              titulo={column.title}
+              value={column.value}
+              content={column.content}
+              type={column.type}
+              rowIndex={rowIndex}
+              editable={column.editable}
+              visible={column.visible}
+              options={column.options}
+              defaultValue={column.defaultValue}
+              placeHolder={column.placeHolder}
+              additionalStyles={column.additionalStyles}
+              onChange={(value) => onInputChange(value, column.idInput)}
+              onClick={(e) => {
+                e.preventDefault()
+                onButtonClick(column.idInput, rowIndex)
+              }}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

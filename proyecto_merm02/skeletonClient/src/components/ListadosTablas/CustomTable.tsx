@@ -42,6 +42,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   onInputChange,
   onButtonClick
 }) => {
+
   const handleChange = (value: string | number | boolean, rowIndex: number) => {
     onInputChange(value, column.idInput, rowIndex)
   }
@@ -52,7 +53,8 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     rowIndex: number
   ) => {
     e.preventDefault()
-    //console.log(columnId)
+
+    console.log(column.idInput,rowIndex)
     onButtonClick(column.idInput, rowIndex)
   }
   
@@ -192,7 +194,7 @@ const CustomTable: React.FC<TableProps<any>> = ({
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <thead className="text-xxs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {columns.map((column, index) => (
                 <th key={index} className="px-6 py-3">

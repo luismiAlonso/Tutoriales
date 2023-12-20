@@ -10,7 +10,9 @@ import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore
 import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { Datepicker } from "flowbite-react"
+import BackButton from "../components/backButtonComponent/BackButtonComponent" 
 import { HeadersParteLaminacionExtend } from "../models/HeadersParteLaminacionExtend"
+import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/ListadoDataResponsive"
 
 // Ejemplo en un archivo principal de React
 
@@ -48,11 +50,19 @@ function ListarParteProduccion() {
 
   useEffect(() => {
     cargarDatosListaPartesProduccion()
-    //console.log(listaTotalProduccion)
   }, [])
 
   return (
     <div>
+      <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
+        <div className="flex-grow text-left">
+          <h2>LISTADO PARTES LAMINACION</h2>
+        </div>
+        <div>
+          <BackButton />
+        </div>
+      </div>
+
       <div className="flex mt-4 items-center gap-4 mb-5">
         <div className="w-1/7">
           {
@@ -72,6 +82,7 @@ function ListarParteProduccion() {
             />
           }
         </div>
+
         <div className="w-1/7">
           <div>
             <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -143,27 +154,38 @@ function ListarParteProduccion() {
           onButtonClick={handleButtonClick}
         />)
       }
-      {!editMode && loadedData && loadedData.length > 0 && (
-        <InfiniteScroll
-          dataLength={currentPage * itemsPerPage} //This is important field to render the next data
-          next={loadMoreData}
-          hasMore={true}
-          loader={<h4></h4>}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
-        >
-          <CustomTable
-            columns={HeadersParteLaminacionExtend}
-            dataColumn={ParteLaminacionProducto}
-            data={loadedData}
-            onInputChange={handleInputChange}
-            onButtonClick={handleButtonClick}
-          />
-        </InfiniteScroll>
-      )}
+      <div className="block custom:hidden">
+        {!editMode && (
+          <ListadoDataResponsive
+          data={loadedData}
+          columns={ParteLaminacionProducto}
+          onClick={handleButtonClick}
+        />
+        )}
+      </div>
+      <div className="hidden custom:block">
+        {!editMode && loadedData && loadedData.length > 0 && (
+          <InfiniteScroll
+            dataLength={currentPage * itemsPerPage} //This is important field to render the next data
+            next={loadMoreData}
+            hasMore={true}
+            loader={<h4></h4>}
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+          >
+            <CustomTable
+              columns={HeadersParteLaminacionExtend}
+              dataColumn={ParteLaminacionProducto}
+              data={loadedData}
+              onInputChange={handleInputChange}
+              onButtonClick={handleButtonClick}
+            />
+          </InfiniteScroll>
+        )}
+      </div>
     </div>
   )
 }

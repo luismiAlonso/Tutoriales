@@ -30,6 +30,7 @@ export const useOrdenProduccionData = () => {
       const idParte = ordenesProduccion.length + 1
 
       nuevaOrdenProduccion.idParte = idParte
+
       /*
       // Es opcion almacena la orden de produccion en base de datos
       addOrdenProduccion(nuevaOrdeProducion)
@@ -259,6 +260,7 @@ export const useOrdenProduccionData = () => {
         return Object.keys(templateColumn).reduce<ColumnDescriptor>(
           (newColumn, key) => {
             if (!fieldsToExclude.includes(key)) {
+              console.log(key,dataColumn[key as keyof ColumnDescriptor])
               newColumn[key as keyof ColumnDescriptor] =
                 dataColumn[key as keyof ColumnDescriptor]
             } else {
@@ -279,6 +281,7 @@ export const useOrdenProduccionData = () => {
     idParte: number,
     producto: Producto
   ): ColumnDescriptor[] => {
+
     return columnas.map((column) => {
       let updatedColumn = column // Variable para almacenar la columna actualizada.
       switch (column.title) {
@@ -304,6 +307,20 @@ export const useOrdenProduccionData = () => {
             ...column,
             defaultValue: producto.indiceProducto,
             value: producto.indiceProducto
+          }
+          break
+        case "FECHA":
+          updatedColumn = {
+            ...column,
+            defaultValue: producto.fecha,
+            value: producto.fecha
+          }
+          break
+        case "BAMBURI":
+          updatedColumn = {
+            ...column,
+            defaultValue: producto.bamburi,
+            value: producto.bamburi
           }
           break
         case "PASADA":
@@ -383,7 +400,6 @@ export const useOrdenProduccionData = () => {
   }
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
-    //console.log(ordenProduccion)
     return updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
@@ -584,7 +600,7 @@ export const useOrdenProduccionData = () => {
       const ordenIndex = ordenesProduccion.findIndex(
         (op) => op.idParte === idParte
       )
-      
+
       if (ordenIndex !== -1) {
         // Agregar el nuevo producto a la orden de producción encontrada
         ordenesProduccion[ordenIndex].ordenesProduccion.push(nuevoProducto)
@@ -620,12 +636,9 @@ export const useOrdenProduccionData = () => {
   }
 
   const checkOrdenIdOnTemp = (ordenProduccion: OrdenProduccion): boolean => {
-
     getCurrentOrderProduccion().then((orden) => {
-      
       if (orden) {
         if (ordenProduccion.idParte === orden.idParte) {
-        
           return true
         }
         return false

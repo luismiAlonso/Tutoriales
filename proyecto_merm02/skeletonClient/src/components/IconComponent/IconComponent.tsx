@@ -8,6 +8,7 @@ const IconComponent: React.FC<IconComponentProps> = ({
   iconType,
   iconContent
 }) => {
+  
   let renderedIcon
 
   if (iconType === "svg") {

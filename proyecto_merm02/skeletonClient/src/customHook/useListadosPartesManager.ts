@@ -166,6 +166,7 @@ const useListadosPartesManager = () => {
   } = useInfiniteLoader(20)
 
   const cargarDatosListaPartesProduccion = () => {
+
    getAllProductAndAllOrder().then((response)=>{
       if(response){
         setFullData(response)
@@ -191,12 +192,14 @@ const useListadosPartesManager = () => {
           listaTotalProduccion[rowIndex].idParte,
           listaTotalProduccion[rowIndex]
         )
+        //console.log(productoEditar)
         setDatosLineaMod(productoEditar)
       }
 
     } else if (id.toLowerCase() === "aceptaredicion") {
 
-      /*if (datosLineaMod) {
+      /*
+      if (datosLineaMod) {
         if (datosLineaMod[0].value) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
@@ -213,7 +216,8 @@ const useListadosPartesManager = () => {
 
           setEditMode(false)
         }
-      }*/
+      }
+      */
       
       const ordenProduccion = getOrdenProduccionById(datosLineaMod[0].value as number)
 

@@ -6,7 +6,7 @@ import { parteProducto } from "../models/ParteProducto"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import useOrdenProduccionManager from "../customHook/useOrdenProduccionManager"
 import { HeadersProducto } from "../models/HeadersProducto"
-import {ProductoInicial} from "../models/ProductoInicial"
+import { ProductoInicial } from "../models/ProductoInicial"
 import ToggleComponent from "../components/toggle/ToggleComponent"
 import InfiniteScroll from "react-infinite-scroll-component"
 import InputTextFilterComponent from "../components/inputTextFilterComponent/InputTextFilterComponet"
@@ -14,6 +14,7 @@ import ModalComponent from "../components/modal/ModalComponent"
 import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/ListadoDataResponsive"
 import ButtonComponent from "../components/button/ButtonComponent"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
+import FilterComponent from "../components/filtersComponent/filtersComponent"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
 function OrdenProduccion() {
@@ -27,24 +28,15 @@ function OrdenProduccion() {
     itemsPerPage,
     loadedData,
     //listaProductosOrdenReciente,
-    listaTotalProduccion,
-    listadoTitulosPropiedades,
-    selectPropiedades,
     isOpen,
     ResumenProducto,
     resumeProduct,
-    handleIsOpen,
+    plantillaFiltersOrdenProduccion,
     handleCloseModal,
     handleOpenModal,
     loadMoreData,
     configurarOrdenProduccion,
     actualizarDatos,
-    handleSelection,
-    handleFilter,
-    handleInputTextChange,
-    handleInputTextClick,
-    handleFilterChange,
-    handleToggleChange,
     handleInputChange,
     handleButtonClick,
     handleDeleteProducto
@@ -54,19 +46,16 @@ function OrdenProduccion() {
     useOrdenProduccionData()
 
   useEffect(() => {
-
     if (!ordenProduccion) return
     const productoActual = recuperarDatosTemporales()
     if (productoActual) {
       actualizarDatos(productoActual, ordenProduccion)
     }
-    
   }, [ordenProduccion])
 
   useEffect(() => {
-      console.log(ProductoInicial)
-      configurarOrdenProduccion()
-    
+    //console.log(ProductoInicial)
+    configurarOrdenProduccion()
   }, [])
 
   /*useEffect(()=>{
@@ -112,6 +101,7 @@ function OrdenProduccion() {
         />
       ) : (
         <>
+          <FilterComponent filters={plantillaFiltersOrdenProduccion} />
           <div className="mt-3">
             <ListInputsCard
               columns={datosColumna}
@@ -120,6 +110,8 @@ function OrdenProduccion() {
               onButtonClick={handleButtonClick}
             />
           </div>
+          {
+            /*
           <div className="flex mt-4 items-center gap-4">
             <div className="w-1/7">
               {
@@ -174,6 +166,8 @@ function OrdenProduccion() {
               </div>
             </div>
           </div>
+          */
+          }                
         </>
       )}
       {!editMode && loadedData && loadedData.length > 0 && (
@@ -204,20 +198,24 @@ function OrdenProduccion() {
 
       <ModalComponent
         title="¿DESEA ELIMINAR?"
-        body={<ListadoDataResponsive
-            data={[resumeProduct]} columns={ResumenProducto} 
-           />}
+        body={
+          <ListadoDataResponsive
+            data={[resumeProduct]}
+            columns={ResumenProducto}
+          />
+        }
         isOpen={isOpen}
         closeModal={handleCloseModal}
         openModal={handleOpenModal}
-        footer={<ButtonComponent
-          buttonText="Aceptar"
-        idInput="btDelete"
-        rowIndex={1}
-        onClick={handleDeleteProducto}
-          />}
+        footer={
+          <ButtonComponent
+            buttonText="Aceptar"
+            idInput="btDelete"
+            rowIndex={1}
+            onClick={handleDeleteProducto}
+          />
+        }
       />
-      
     </form>
   )
 }

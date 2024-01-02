@@ -2,9 +2,10 @@ import { useState } from "react"
 import {
   sortData,
   sortDataByInputFill,
-  sortDateRange  
+  sortDateRange
 } from "../filters/utilFiters"
 import useNotification from "../../contextStore/useNotificationStore"
+import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 
 function useFilterData() {
   const [sortedDataProperties, setSortedDataProperties] = useState<any[]>([])
@@ -12,6 +13,7 @@ function useFilterData() {
   const [ordenProperties, setOrdenProperties] = useState<"desc" | "asc">("asc")
   const [isFiltered, setFiltered] = useState(false)
   const { addNotification } = useNotification()
+  const { listaProductosOrdenReciente } = useOrdenProductionStore()
 
   const filterData = async (
     newData: any[],
@@ -44,7 +46,7 @@ function useFilterData() {
       }
     })
   }
-
+  /*
   const filterByWords = async (
     newData: any[],
     searchWord: string,
@@ -54,19 +56,28 @@ function useFilterData() {
     return new Promise((resolve, reject) => {
       try {
         setFiltered(false)
-        if (!newData || newData.length === 0 || !newProperty || !newOrder) {
-          reject("No se pudieron ordenar los datos")
-          return
+        if (!newData || newData.length === 0) {
+          //reject("No se pudieron ordenar los datos")
+          console.log(listaProductosOrdenReciente)
+          newData = listaProductosOrdenReciente
         }
-        const filteredData = sortDataByInputFill(
-          newData,
-          searchWord,
-          newProperty,
-          newOrder
-        )
-        setSortedDataProperties(filteredData)
-        setFiltered(true)
-        resolve(filteredData)
+
+        console.log(searchWord, newData)
+        if (searchWord !== empty) {
+          const filteredData = sortDataByInputFill(
+            newData,
+            searchWord,
+            newProperty,
+            newOrder
+          )
+          setSortedDataProperties(filteredData)
+          setFiltered(true)
+          resolve(filteredData)
+        } else {
+          setSortedDataProperties(newData)
+          setFiltered(true)
+          resolve(newData)
+        }
       } catch (error) {
         setFiltered(false)
         addNotification({
@@ -77,6 +88,37 @@ function useFilterData() {
       }
     })
   }
+  */
+
+  const filterByWords = async (
+    searchWord: string,
+    newProperty: string,
+    newOrder: "desc" | "asc"
+  ): Promise<any[]> => {
+    try {
+
+      if (searchWord === "") {
+        // Si la palabra de búsqueda está vacía, devuelve los datos como están
+        return listaProductosOrdenReciente
+      }
+      // Filtra y ordena los datos
+      const filteredData = sortDataByInputFill(
+        listaProductosOrdenReciente,
+        searchWord,
+        newProperty,
+        newOrder
+      )
+
+      //console.log("palabra filtrada",searchWord,newProperty)
+      return filteredData
+    } catch (error) {
+      addNotification({
+        message: `Error en filterData by Words: ${error}`,
+        type: "error"
+      })
+      throw error // Lanza el error para manejarlo más arriba si es necesario
+    }
+  }
 
   const filterDateRange = async (
     newData: any[],
@@ -85,21 +127,13 @@ function useFilterData() {
     dateFrom: Date,
     orden: "asc" | "desc"
   ): Promise<any[]> => {
-
     try {
-
-      const filteredData = sortDateRange(
-        newData,
-        dateFrom,
-        dateTo,
-        orden
-      )
+      const filteredData = sortDateRange(newData, dateFrom, dateTo, orden)
 
       setSortedDataProperties(filteredData)
       setFiltered(true)
 
       return filteredData
-
     } catch (error) {
       addNotification({
         message: `Error en filterData by date range: ${error}`,

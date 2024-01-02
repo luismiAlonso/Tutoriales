@@ -136,6 +136,7 @@ export function sortDataByInputFill(
         copiaOrdenada = filtrarYOrdenarCadenas(data, palabra, propiedad, orden)
         break
       default:
+        // console.log(propiedad)
         copiaOrdenada = filtrarYOrdenarCadenas(data, palabra, propiedad, orden)
     }
   } catch (error) {
@@ -289,8 +290,10 @@ function filtrarYOrdenarCadenas(
   orden: "asc" | "desc"
 ): string[] {
   try {
+
     const filteredData = data
       .filter((item) => {
+        console.log(item[propiedad],propiedad)
         const itemProperty = String(item[propiedad]).toLowerCase()
         const containsWord = itemProperty.includes(palabra.toLowerCase())
         return item[propiedad] != null && containsWord

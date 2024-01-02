@@ -13,6 +13,9 @@ import { useParams, useNavigate } from "react-router-dom" // Importa useNavigate
 import useModal from "../components/modal/useModal"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ProductoInicial } from "../models/ProductoInicial"
+import {ItextInputFilter} from "../components/inputTextFilterComponent/ItextInputFilter"
+import {IcustomSelectProp} from "../components/selectComponent/IcustomSelectProp"
+import { ItoggleProps } from "../components/toggle/ItoggleProps"
 
 const useOrdenProduccionManager = () => {
   const {
@@ -47,7 +50,7 @@ const useOrdenProduccionManager = () => {
 
   /*const [listaProductosOrdenReciente, setListaProductosOrdenReciente] =
     useState<Producto[]>()*/
-  const [ordenData, setOrdenData] = useState<boolean>(false)
+  const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
   const [editMode, setEditMode] = useState<boolean>(false)
   const { filterByWords, filterData } = useFilterData()
 
@@ -89,7 +92,6 @@ const useOrdenProduccionManager = () => {
   // Por ejemplo, una función para actualizar 'datosColumna'
 
   const configurarOrdenProduccion = () => {
-
     const currentTempOrder = getTempCurrenOrderProduccion() //recuperamos la utima ordenProduccion de temporal
     //const currentOrder = getCurrentOrderProduccion()
     const ordenesProduccion = getAllOrdenProduction() //recuperamos todas las ordenesProduccion de BD
@@ -262,7 +264,6 @@ const useOrdenProduccionManager = () => {
     datos: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
-    
     if (ordenProduccion) {
       //console.log("ActualizaDatos:",ProductoInicial)
       const producto = datos || ProductoInicial
@@ -348,6 +349,7 @@ const useOrdenProduccionManager = () => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
 
     if (id.toLowerCase() === "agregar") {
+
       const productoActual = recuperarDatosTemporales()
 
       if (ordenProduccion) {
@@ -433,7 +435,6 @@ const useOrdenProduccionManager = () => {
     } else if (id.toLowerCase() === "aceptaredicion") {
 
       if (datosLineaMod) {
-        
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
@@ -492,6 +493,7 @@ const useOrdenProduccionManager = () => {
 
         setEditMode(false)
       }*/
+
     } else if (id.toLowerCase() === "borrar") {
       console.log(listaTotalProduccion[rowIndex])
       setResumeDataProduct(listaTotalProduccion[rowIndex])
@@ -524,8 +526,8 @@ const useOrdenProduccionManager = () => {
     }
   }
 
-  const handleSelection = (value: string) => {
-    //console.log("Valor seleccionado:", value)
+  const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
     setSelectedPropiedades(value) // Actualiza el estado con el valor seleccionado
   }
 
@@ -550,7 +552,6 @@ const useOrdenProduccionManager = () => {
   }
 
   const handleCloseModal = () => {
-    console.log()
     closeModal()
   }
 
@@ -570,7 +571,6 @@ const useOrdenProduccionManager = () => {
     if (id === "byWords") {
       if (ordenProduccion?.ordenesProduccion) {
         filterByWords(
-          ordenProduccion?.ordenesProduccion,
           value,
           selectPropiedades,
           "asc"
@@ -591,8 +591,8 @@ const useOrdenProduccionManager = () => {
     }
   ) => {
     if (idToggle === "orden01") {
-      setOrdenData(toggleState.value)
-
+      setOrdenData(toggleState.sortDirection)
+    
       if (listaTotalProduccion) {
         filterData(
           listaTotalProduccion,
@@ -607,6 +607,46 @@ const useOrdenProduccionManager = () => {
       // Puedes realizar acciones adicionales basadas en el estado del toggle
     }
   }
+
+  const plantillaFiltersOrdenProduccion = [
+    {
+      type: "text",
+      idInput: "byWords",
+      activeButton: false,
+      activeSearchIcon: true,
+      placeHolder: "write to search...",
+      activeLabel: true,
+      typeFill: "search",
+      style:
+        "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+      onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado
+      onClick: handleInputTextClick,
+      onFilter: handleFilterChange
+    } as ItextInputFilter,
+    {
+      idInput: "selectPropiedades",
+      type: "select",
+      activeLabel: true,
+      optionsSelect: listadoTitulosPropiedades,
+      idSelected: "selectPropiedades",
+      selectClassName: "mt-4 mb-4 w-1/4",
+      value: selectPropiedades, // Asegúrate de que estas variables estén definidas
+      defaultValue: listadoTitulosPropiedades[0], // o el valor que necesites
+      onSeleccion: handleSelection,
+      onFilter: handleFilter,
+      onChange: handleSelection
+    } as IcustomSelectProp,
+    {
+      idInput: "orden",
+      type: "toggle",
+      activeLabel: true,
+      valueProp: ordenData || true,
+      trueText: "asc",
+      falseText: "desc",
+      onChange: handleToggleChange
+    } as ItoggleProps
+    // Puedes agregar más filtros según necesites
+  ]
 
   return {
     currentPage,
@@ -624,6 +664,7 @@ const useOrdenProduccionManager = () => {
     isOpen,
     ResumenProducto,
     resumeProduct,
+    plantillaFiltersOrdenProduccion,
     setResumeDataProduct,
     handleIsOpen,
     handleCloseModal,

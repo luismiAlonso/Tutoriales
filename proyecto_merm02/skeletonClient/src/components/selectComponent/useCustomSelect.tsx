@@ -22,7 +22,7 @@ export function useCustomSelect(optionDefault: string, opcionsInit: string[]) {
     options,
     selectedValue,
     defaultOption,
-    setDefaultOption,
+    setDefaultOption, 
     setSelectedValue,
     handleSelectChange,
     updateOptions

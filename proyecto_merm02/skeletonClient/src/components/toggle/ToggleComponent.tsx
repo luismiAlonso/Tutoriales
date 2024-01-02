@@ -1,19 +1,10 @@
 import React from "react"
 import useToggle from "./useToggle"
-
-interface ItoggleProps {
-  idToggle: string
-  valueProp: boolean
-  onChange: (
-    idToggle: string,
-    toggleState: { value: boolean; sortDirection: "asc" | "desc" }
-  ) => void
-  trueText: string
-  falseText: string
-}
+import { ItoggleProps } from "./ItoggleProps"
 
 function ToggleComponent({
-  idToggle,
+  idInput,
+  activeLabel,
   valueProp,
   onChange,
   trueText,
@@ -27,11 +18,21 @@ function ToggleComponent({
   // Manejador para el cambio del toggle
   const handleToggleChange = () => {
     toggle() // Cambia el valor del toggle
-    onChange(idToggle, getToggleState()) // Obtén el estado actualizado y pásalo a onChange
+    onChange(idInput, getToggleState()) // Obtén el estado actualizado y pásalo a onChange
   }
 
   return (
     <div>
+      <div>
+        <label
+          htmlFor="default-search"
+          className={`mb-2 text-sm font-medium text-gray-900 dark:text-white ${
+            activeLabel ? "" : "sr-only"
+          }`}
+        >
+          {idInput}
+        </label>
+      </div>
       <label className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"

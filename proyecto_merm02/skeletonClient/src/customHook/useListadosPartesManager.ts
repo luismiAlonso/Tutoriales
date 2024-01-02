@@ -7,12 +7,16 @@ import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 import useCustomDatepicker from "../customHook/useCustomDatePicker"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
+import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
+import { IcustomSelectProp } from "../components/selectComponent/IcustomSelectProp"
+import { DateFilterProps } from "../components/customDatePicker/DateFilterProps"
+import { ItoggleProps } from "../components/toggle/ItoggleProps"
 
 const useListadosPartesManager = () => {
   const [editMode, setEditMode] = useState<boolean>(false)
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
   const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
-  const [fullData,setFullData] = useState<Producto[]>([])
+  const [fullData, setFullData] = useState<Producto[]>([])
 
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
@@ -32,7 +36,7 @@ const useListadosPartesManager = () => {
     "acelerantes"
   ])
 
-  const { 
+  const {
     mapColumnDescriptorsToProducto,
     mapearProductoAColumnas,
     updateProductInOrden,
@@ -42,8 +46,12 @@ const useListadosPartesManager = () => {
     getOrdenProduccionById
   } = useOrdenProduccionData()
 
-  const { listaTotalProduccion, setListaTotalProduccion } =
-    useOrdenProductionStore()
+  const {
+    listaTotalProduccion,
+    setListaTotalProduccion,
+    listaProductosOrdenReciente,
+    setListaProductosOrdenReciente
+  } = useOrdenProductionStore()
 
   const [selectPropiedades, setSelectedPropiedades] = useState<string>(
     listadoTitulosPropiedades[0]
@@ -60,7 +68,6 @@ const useListadosPartesManager = () => {
     }
   ) => {
     if (idToggle === "orden01") {
-
       setOrdenData(toggleState.sortDirection)
 
       /*if (listaPartesLaminacion) {
@@ -76,7 +83,6 @@ const useListadosPartesManager = () => {
       }*/
 
       if (listaTotalProduccion) {
-
         filterData(
           listaTotalProduccion,
           selectPropiedades,
@@ -85,7 +91,6 @@ const useListadosPartesManager = () => {
           setListaTotalProduccion(result)
           //setListaProductosOrdenReciente(result)
         })
-
       }
 
       // Puedes realizar acciones adicionales basadas en el estado del toggle
@@ -98,7 +103,7 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedStartDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      //console.log("Fecha selectStartDate:", selectedEndDate)
+      console.log("Fecha selectStartDate:", date)
       validateDates(date, selectedEndDate)
     }
   })
@@ -109,16 +114,14 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedEndDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      //console.log("Fecha selectEndDate:", selectedStartDate)
+      console.log("Fecha selectEndDate:", date)
       validateDates(selectedStartDate, date)
     }
   })
 
   const validateDates = (startDate: Date, endDate: Date) => {
-
     if (startDate && endDate) {
       if (startDate <= endDate) {
-
         /*if (listaPartesLaminacion) {
           filterDateRange(
             listaPartesLaminacion,
@@ -132,7 +135,7 @@ const useListadosPartesManager = () => {
           })
         }*/
 
-       //console.log(convertDateToFormatString(startDate,"dd/MM/yyyy"),convertDateToFormatString(endDate,"dd/MM/yyyy"))
+        //console.log(convertDateToFormatString(startDate,"dd/MM/yyyy"),convertDateToFormatString(endDate,"dd/MM/yyyy"))
 
         if (fullData) {
           filterDateRange(
@@ -142,12 +145,10 @@ const useListadosPartesManager = () => {
             endDate,
             ordenData
           ).then((result) => {
-
-              console.log(result.length)
-              setListaTotalProduccion(result)
-              //setListaPartesLaminacion(result)
+            console.log(result.length)
+            setListaTotalProduccion(result)
+            //setListaPartesLaminacion(result)
           })
-          
         }
       }
     }
@@ -166,14 +167,13 @@ const useListadosPartesManager = () => {
   } = useInfiniteLoader(20)
 
   const cargarDatosListaPartesProduccion = () => {
-
-   getAllProductAndAllOrder().then((response)=>{
-      if(response){
+    getAllProductAndAllOrder().then((response) => {
+      if (response) {
         setFullData(response)
         setListaTotalProduccion(response)
+        setListaProductosOrdenReciente(response)
       }
-   })
-   
+    })
   }
 
   const handleInputTextChange = () => {}
@@ -195,9 +195,7 @@ const useListadosPartesManager = () => {
         //console.log(productoEditar)
         setDatosLineaMod(productoEditar)
       }
-
     } else if (id.toLowerCase() === "aceptaredicion") {
-
       /*
       if (datosLineaMod) {
         if (datosLineaMod[0].value) {
@@ -218,47 +216,45 @@ const useListadosPartesManager = () => {
         }
       }
       */
-      
-      const ordenProduccion = getOrdenProduccionById(datosLineaMod[0].value as number)
 
-      ordenProduccion.then((ordenResponse)=>{
+      const ordenProduccion = getOrdenProduccionById(
+        datosLineaMod[0].value as number
+      )
+
+      ordenProduccion.then((ordenResponse) => {
         if (datosLineaMod && ordenResponse) {
-          
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
             ordenResponse?.idParte
           )
+
           convertProduct.fecha = ordenResponse.fecha
           convertProduct.tipoGoma = ordenResponse.TipoGoma
           //modifico el producto de la ordenProduccion
-          ordenResponse.ordenesProduccion =
-          ordenResponse.ordenesProduccion.map((product) => {
+          ordenResponse.ordenesProduccion = ordenResponse.ordenesProduccion.map(
+            (product) => {
               if (product.indiceProducto === convertProduct.indiceProducto) {
                 return convertProduct
               }
               return product
-            })
+            }
+          )
 
           //updateProductInOrden(convertProduct, ordenProduccion.idParte)
           updateOrdenProduccion(ordenResponse).then((response) => {
             if (response) {
-              
               setListaTotalProduccion(ordenResponse.ordenesProduccion)
             }
           })
 
           setEditMode(false)
-        
-      }
+        }
       })
-     
     }
   }
 
   const handleInputChange = (value: string | number, id: any) => {
-
     if (editMode) {
-
       const dataUpdated = updateColumnProduct(
         datosLineaMod,
         id,
@@ -272,43 +268,24 @@ const useListadosPartesManager = () => {
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
       }
-
-    } 
-
+    }
   }
 
-  const handleSelection = (value: string) => {
-    console.log(value)
+  const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
     setSelectedPropiedades(value) // Actualiza el estado con el valor seleccionado
   }
 
-  const handleFilterChange = (id: string, value: string) => {
-
+  const handleFilterChange = async (id: string, value: string) => {
     if (id === "byWords") {
-
-      /*
-      if (listaPartesLaminacion) {
-        filterByWords(
-          listaPartesLaminacion,
-          value,
-          selectPropiedades,
-          "asc"
-        ).then((result) => {
-          setListaPartesLaminacion(result)
-        })
-      */
-      if (listaTotalProduccion) {
-        filterByWords(
-          listaTotalProduccion,
-          value,
-          selectPropiedades,
-          "asc"
-        ).then((result) => {
-          //setListaPartesLaminacion(result)
-          setListaTotalProduccion(result)
-        })
+      try {
+        const result = await filterByWords(value, selectPropiedades, "asc")
+        //setListaPartesLaminacion(result);
+        setListaTotalProduccion(result)
+      } catch (error) {
+        console.error("Error al filtrar por palabras: ", error)
+        // Aquí puedes manejar el error como sea necesario
       }
-
     }
   }
 
@@ -326,6 +303,7 @@ const useListadosPartesManager = () => {
     }
     */
 
+    setSelectedPropiedades(filterValue)
     if (listaTotalProduccion) {
       filterData(listaTotalProduccion, filterValue, "desc").then((result) => {
         // setListaPartesLaminacion(result)
@@ -333,6 +311,66 @@ const useListadosPartesManager = () => {
       })
     }
   }
+
+  const plantillaFiltersListados = [
+    {
+      type: "text",
+      idInput: "byWords",
+      activeButton: false,
+      activeSearchIcon: true,
+      placeHolder: "write to search...",
+      activeLabel: true,
+      typeFill: "search",
+      style:
+        "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+      onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado
+      onClick: handleInputTextClick,
+      onFilter: handleFilterChange
+    } as ItextInputFilter,
+    {
+      idInput: "selectPropiedades",
+      type: "select",
+      activeLabel: true,
+      optionsSelect: listadoTitulosPropiedades,
+      idSelected: "selectPropiedades",
+      selectClassName: "mt-4 mb-4 w-1/4",
+      value: selectPropiedades, // Asegúrate de que estas variables estén definidas
+      defaultValue: listadoTitulosPropiedades[0], // o el valor que necesites
+      onSeleccion: handleSelection,
+      onFilter: handleFilter,
+      onChange: handleSelection
+    } as IcustomSelectProp,
+    {
+      idInput: "selectedStartDate",
+      activeLabel: true,
+      type: "date",
+      language: "ES",
+      formTarget: "dd/MM/yyyy",
+      labelClearButton: "Limpar",
+      name: "selectedStartDate",
+      onSelectedDateChanged: changeSelectedStartDate
+    } as DateFilterProps,
+    {
+      idInput: "selectedEndDate",
+      activeLabel: true,
+      type: "date",
+      language: "ES",
+      formTarget: "dd/MM/yyyy",
+      labelClearButton: "Limpar",
+      name: "selectedEndDate",
+      onSelectedDateChanged: changeSelectedEndDate
+    } as DateFilterProps,
+    {
+      idInput: "Orden",
+      type: "toggle",
+      activeLabel: true,
+      valueProp: ordenData || true,
+      trueText: "asc",
+      falseText: "desc",
+      onChange: handleToggleChange
+    } as ItoggleProps
+    // Puedes agregar más filtros según necesites
+  ]
 
   return {
     listadoTitulosPropiedades,
@@ -346,6 +384,7 @@ const useListadosPartesManager = () => {
     loadedData,
     editMode,
     datosLineaMod,
+    plantillaFiltersListados,
     setDatosLineaMod,
     setEditMode,
     setLoadedData,

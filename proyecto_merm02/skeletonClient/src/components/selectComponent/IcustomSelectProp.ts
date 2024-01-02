@@ -1,4 +1,7 @@
 export interface IcustomSelectProp {
+  idInput:string
+  type:string
+  activeLabel:boolean
   optionsSelect: string[]
   idSelected: string
   selectClassName: string

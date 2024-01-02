@@ -2,6 +2,9 @@ import React, { useState, useEffect, ChangeEvent, FC } from "react"
 import { HybridSelectProps } from "./HybridSelectProps"
 
 const HybridSelect: FC<HybridSelectProps> = ({
+  type,
+  idInput,
+  activeLabel,
   options,
   value: controlledValue,
   defaultValue = "",
@@ -44,6 +47,7 @@ const HybridSelect: FC<HybridSelectProps> = ({
 
   return (
     <div className="relative">
+      {activeLabel && <label>{idInput}</label>}
       <input
         type="text"
         value={internalValue}

@@ -13,39 +13,24 @@ import { Datepicker } from "flowbite-react"
 import BackButton from "../components/backButtonComponent/BackButtonComponent" 
 import { HeadersParteLaminacionExtend } from "../models/HeadersParteLaminacionExtend"
 import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/ListadoDataResponsive"
+import FilterComponent from "../components/filtersComponent/filtersComponent"
 
 // Ejemplo en un archivo principal de React
 
 function ListarParteProduccion() {
+
   const {
-    listadoTitulosPropiedades,
-    selectPropiedades,
-    ordenData,
-    listaPartesLaminacion,
-    selectedStartDate,
-    selectedEndDate,
     currentPage, 
     itemsPerPage,
     loadedData,
     editMode,
     datosLineaMod,
-    setDatosLineaMod,
-    setEditMode,
-    setLoadedData,
+    plantillaFiltersListados,
     loadMoreData,
-    calculateItemToDisplay,
-    setListaPartesLaminacion,
-    changeSelectedEndDate,
-    changeSelectedStartDate,
-    handleToggleChange,
     cargarDatosListaPartesProduccion,
-    handleFilter,
-    handleSelection,
     handleInputChange,
-    handleButtonClick,
-    handleFilterChange,
-    handleInputTextClick,
-    handleInputTextChange
+    handleButtonClick
+
   } = useListadosPartesManager()
 
   useEffect(() => {
@@ -62,8 +47,12 @@ function ListarParteProduccion() {
           <BackButton />
         </div>
       </div>
-
-      <div className="flex mt-4 items-center gap-4 mb-5">
+      {<FilterComponent 
+        filters={plantillaFiltersListados} 
+      />}
+     {
+      
+     /*<div className="flex mt-4 items-center gap-4 mb-5">
         <div className="w-1/7">
           {
             <InputTextFilterComponent
@@ -144,7 +133,8 @@ function ListarParteProduccion() {
             </div>
           </div>
         </div>
-      </div>
+      </div>*/
+      }
       {
       editMode && (
         <ListInputsCard

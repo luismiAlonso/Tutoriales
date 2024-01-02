@@ -1,9 +1,10 @@
 export interface ItextInputFilter {
+    type: string,
     idInput: string, // Asegúrate de que el nombre de la propiedad sea consistente con lo que usas en el componente
     activeButton: boolean,
     activeSearchIcon: boolean,
     placeHolder: string,
-    isLabelVisible: boolean,
+    activeLabel: boolean,
     style: string,
     typeFill: "search" | "text" | "number",
     // Actualiza las funciones para recibir el 'id' y el 'value'

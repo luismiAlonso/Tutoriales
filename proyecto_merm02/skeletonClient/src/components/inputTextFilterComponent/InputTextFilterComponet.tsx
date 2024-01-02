@@ -5,7 +5,7 @@ function InputTextFilterComponent({
   idInput,
   style,
   activeButton,
-  isLabelVisible,
+  activeLabel,
   activeSearchIcon,
   typeFill,
   placeHolder,
@@ -13,6 +13,7 @@ function InputTextFilterComponent({
   onClick,
   onFilter
 }: ItextInputFilter) {
+  
   const [valueInput, setValueInput] = useState("")
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +36,7 @@ function InputTextFilterComponent({
     <div>
       <label
         htmlFor="default-search"
-        className={`mb-2 text-sm font-medium text-gray-900 dark:text-white ${isLabelVisible ? '' : 'sr-only'}`}
+        className={`mb-2 text-sm font-medium text-gray-900 dark:text-white ${activeLabel ? '' : 'sr-only'}`}
         >
         Search
       </label>

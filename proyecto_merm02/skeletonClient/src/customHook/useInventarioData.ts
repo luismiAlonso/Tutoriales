@@ -1,39 +1,76 @@
+import { useState } from "react"
 import {
   agregarInventarioAlmacen,
-  obtenerTodosInventarioAlmacen
+  fetchAllInventarioAlmacen
 } from "../api/InventarioApi"
-import { InventarioAlmacen } from "../interfaces/Inventario"
+import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
+import { HeaderInventario } from "../models/HeaderInventario"
 
 export const useInventarioData = () => {
-  const getUltimoInventarioAlmacen = (): InventarioAlmacen | undefined => {
-    const todosInventariosAlmacen = obtenerTodosInventarioAlmacen()
-    if (todosInventariosAlmacen && todosInventariosAlmacen.length > 0) {
-      return todosInventariosAlmacen[todosInventariosAlmacen.length - 1]
-    }
-    return undefined
-  }
+  const [productoInicial, setProductoInicial] = useState<ColumnDescriptor[]>(HeaderInventario)
+  const [currentInventario, setCurrentInventari] = useState<InventarioAlmacen>()
 
-  const cargarDatosNuevoInventario = (
-    gestor: string,
-    nombreAlmacen: string
+  const getUltimoInventarioAlmacen =
+    async (): Promise<InventarioAlmacen | null> => {
+
+      try {
+
+        const todosInventariosAlmacen = await fetchAllInventarioAlmacen(
+          "/EntradasInventarioPage"
+        )
+
+        if (todosInventariosAlmacen && todosInventariosAlmacen.length > 0) {
+          return todosInventariosAlmacen[todosInventariosAlmacen.length - 1]
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.error("Error al obtener el último inventario almacén:", error)
+        return null
+      }
+    }
+
+  const crearNuevoInventario = (
+    route: string,
+    almacen: string,
+    seccion: string
   ): void => {
-    
-    const ultimoInventarioAlmacen = getUltimoInventarioAlmacen()
+    const response = getUltimoInventarioAlmacen()
     let idInventarioAlmacen = 1
+    response.then((result) => {
+      if (result) {
+        idInventarioAlmacen = result.idInventarioAlmacen+1
+      }
+      const nuevoInventarioAlmacen = {
+        idInventarioAlmacen,
+        seccion,
+        almacen: almacen,
+        inventario: []
+      } as InventarioAlmacen
 
-    if (ultimoInventarioAlmacen) {
-      idInventarioAlmacen = ultimoInventarioAlmacen.idInventarioAlmacen + 1
-    }
-
-    const nuevoInventarioAlmacen = {
-      idInventarioAlmacen,
-      nombreAlmacen,
-      gestionadoPor: gestor,
-      inventarios: []
-    } as InventarioAlmacen
-
-    agregarInventarioAlmacen(nuevoInventarioAlmacen)
+      setCurrentInventari(nuevoInventarioAlmacen)
+      agregarInventarioAlmacen(route, nuevoInventarioAlmacen).then((result) => {
+        console.log(result)
+      })
+    }) 
   }
 
-  return { getUltimoInventarioAlmacen, cargarDatosNuevoInventario }
+  
+  const agregarNuevaEntrada = (EntradaProNuevo: ProductoInventario) => {
+    if (currentInventario) {
+      currentInventario.inventario.push(EntradaProNuevo)
+    }
+
+    //console.log(EntradaProNuevo)
+  }
+  
+
+  return {
+    getUltimoInventarioAlmacen,
+    crearNuevoInventario,
+    agregarNuevaEntrada,
+    currentInventario,
+    productoInicial
+  }
 }

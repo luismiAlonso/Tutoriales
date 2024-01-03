@@ -35,9 +35,13 @@ function App() {
             <Route path="/ordenProduccion/:idParte/productos/:indiceProducto" element={<OrdenProduccion />} />
             <Route path="/ListarParteProduccion" element={<ListarParteProduccion />} />
             <Route path="/MainInventario" element={<MainInventario />} />
-            <Route path="/EntradasInventario" element={<MainInventario />} />
-            <Route path="/EntradasInventarioPage" element={<EntradasInventarioPage />} />
             <Route path="/EntradasInventarioConfiguracion" element={<EntradasInventarioConfiguracion />} />
+            <Route path="/EntradasInventarioPage" element={<EntradasInventarioPage />} />
+            <Route path="/EntradasInventarioPage/:idInventarioAlmacen" element={<EntradasInventarioPage />} />
+            <Route path="/EntradasInventarioPage/:idInventarioAlmacen/productos/:idProducto" element={<EntradasInventarioPage />} />
+            <Route path="/SalidasInventarioPage" element={<EntradasInventarioPage />} />
+            <Route path="/SalidasInventarioPage/:idInventarioAlmacen" element={<EntradasInventarioPage />} />
+            <Route path="/SalidasInventarioPage/:idInventarioAlmacen/productos/:idProducto" element={<EntradasInventarioPage />} />
           </Route> 
           {/*<Route path="/register" element={<RegisterPage />} />
                 <Route element={<ProtectedRoute />}>

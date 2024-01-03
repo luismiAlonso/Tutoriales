@@ -1,141 +1,108 @@
-import {
-  InventarioAlmacen,
-  Inventario,
-  ProductoInventario
-} from "../interfaces/Inventario"
+import { Route } from "react-router-dom"
+import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
+import axios from "./axios"
 
-// Obtener todos los elementos
-export const obtenerTodos = <T>(clave: string): T[] => {
-  const items = localStorage.getItem(clave)
-  return items ? JSON.parse(items) : []
-}
-
-// Obtener un elemento por su ID
-export const obtenerPorId = <T>(
-  clave: string,
-  id: number | string,
-  idField: keyof T
-): T | undefined => {
-  const items: T[] = obtenerTodos(clave)
-  return items.find((item) => item[idField] === id)
-}
-
-// Crear un nuevo elemento
-export const crear = <T>(clave: string, item: T): void => {
-  const items: T[] = obtenerTodos(clave)
-  items.push(item)
-  localStorage.setItem(clave, JSON.stringify(items))
-}
-
-// Actualizar un elemento existente
-export const actualizar = <T>(
-  clave: string,
-  item: T,
-  idField: keyof T
-): void => {
-  const items: T[] = obtenerTodos(clave)
-  const index = items.findIndex((i) => i[idField] === item[idField])
-  if (index !== -1) {
-    items[index] = item
-    localStorage.setItem(clave, JSON.stringify(items))
-  }
-}
-
-// Eliminar un elemento
-export const eliminar = <T>(
-  clave: string,
-  id: number | string,
-  idField: keyof T
-): void => {
-  const items: T[] = obtenerTodos(clave)
-  const newItems = items.filter((item) => item[idField] !== id)
-  localStorage.setItem(clave, JSON.stringify(newItems))
-}
-
-// Funciones específicas para cada tipo de objeto, usando los nombres correctos de campos ID
-export const obtenerInventarioAlmacenPorId = (
+export const fetchInventarioAlmacenById = async (
+  route: string,
   id: number
-): InventarioAlmacen | undefined =>
-  obtenerPorId<InventarioAlmacen>(
-    "inventarioAlmacen",
-    id,
-    "idInventarioAlmacen"
-  )
-export const actualizarInventarioAlmacen = (
-  inventarioAlmacen: InventarioAlmacen
-): void =>
-  actualizar("inventarioAlmacen", inventarioAlmacen, "idInventarioAlmacen")
-export const eliminarInventarioAlmacen = (id: number): void =>
-  eliminar("inventarioAlmacen", id, "idInventarioAlmacen")
-
-export const obtenerInventarioPorId = (id: number): Inventario | undefined =>
-  obtenerPorId<Inventario>("inventario", id, "idInventario")
-export const actualizarInventario = (inventario: Inventario): void =>
-  actualizar("inventario", inventario, "idInventario")
-export const eliminarInventario = (id: number): void =>
-  eliminar("inventario", id, "idInventario")
-
-export const obtenerProductoInventarioPorId = (
-  id: string
-): ProductoInventario | undefined =>
-  obtenerPorId<ProductoInventario>("productoInventario", id, "idProducto")
-export const actualizarProductoInventario = (
-  productoInventario: ProductoInventario
-): void => actualizar("productoInventario", productoInventario, "idProducto")
-export const eliminarProductoInventario = (id: string): void =>
-  eliminar("productoInventario", id, "idProducto")
-
-//Obtrinen todos los almacenesInventario
-export const obtenerTodosInventarioAlmacen = (): InventarioAlmacen[] =>
-  obtenerTodos<InventarioAlmacen>("inventarioAlmacen")
-
-// Funciones específicas para Inventario
-export const obtenerTodosInventarios = (
-  idInventarioAlmacen: number
-): Inventario[] => {
-  const inventarioAlmacen = obtenerInventarioAlmacenPorId(idInventarioAlmacen)
-  if (inventarioAlmacen) {
-    return inventarioAlmacen.inventarios
+): Promise<InventarioAlmacen | null> => {
+  try {
+    const response = await axios.get<InventarioAlmacen>(`${route}/${id}`)
+    return response.data
+  } catch (error) {
+    console.error("Error fetching inventario almacen by id:", error)
+    return null
   }
-  return []
 }
 
-//Agregaciones
-// Agregar un nuevo InventarioAlmacen
-export const agregarInventarioAlmacen = (
+export const deleteInventarioAlmacen = async (
+  route: string,
+  id: number
+): Promise<boolean> => {
+  try {
+    await axios.delete(`${route}/${id}`)
+    return true
+  } catch (error) {
+    console.error("Error deleting inventario almacen:", error)
+    return false
+  }
+}
+
+export const agregarInventarioAlmacen = async (
+  route: string,
   nuevoInventarioAlmacen: InventarioAlmacen
-): void => {
-  crear("inventarioAlmacen", nuevoInventarioAlmacen)
-}
-
-// Agregar un Inventario a un InventarioAlmacen existente
-export const agregarInventarioAInventarioAlmacen = (
-  idInventarioAlmacen: number,
-  nuevoInventario: Inventario
-): void => {
-  const inventarioAlmacen = obtenerInventarioAlmacenPorId(idInventarioAlmacen)
-  if (inventarioAlmacen) {
-    inventarioAlmacen.inventarios.push(nuevoInventario)
-    actualizarInventarioAlmacen(inventarioAlmacen)
+): Promise<boolean> => {
+  try {
+    const response = await axios.post(`${route}`, nuevoInventarioAlmacen)
+    console.log(response)
+    return true
+  } catch (error) {
+    console.error("Error adding inventario almacen:", error)
+    return false
   }
 }
 
-// Agregar un ProductoInventario a un Inventario existente
-export const agregarProductoInventarioAInventario = (
+export const updateInventario = async (
+  route: string,
+  inventarioAlmacen: InventarioAlmacen
+): Promise<boolean> => {
+  try {
+    await axios.put(
+      `${route}/${inventarioAlmacen.idInventarioAlmacen}`,
+      inventarioAlmacen
+    )
+    return true
+  } catch (error) {
+    console.error("Error updating inventario:", error)
+    return false
+  }
+}
+
+export const fetchAllInventarioAlmacen = async (
+  route: string
+): Promise<InventarioAlmacen[]> => {
+  try {
+    const response = await axios.get<InventarioAlmacen[]>(route)
+    return response.data
+  } catch (error) {
+    console.error("Error fetching all inventario almacen:", error)
+    return []
+  }
+}
+
+export const updateProductoInInventario = async (
+  route: string,
+  idInventario: number,
+  idProducto: string,
+  updatedProductoData: Partial<ProductoInventario>
+): Promise<boolean> => {
+  try {
+    await axios.put(
+      `${route}/${idInventario}/productos/${idProducto}`,
+      updatedProductoData
+    )
+    return true
+  } catch (error) {
+    console.error("Error updating producto in inventario:", error)
+    return false
+  }
+}
+
+export const addProductoInventario = async (
+  route: string,
   idInventario: number,
   nuevoProductoInventario: ProductoInventario
-): void => {
-  const todosLosInventariosAlmacen: InventarioAlmacen[] =
-    obtenerTodosInventarioAlmacen()
-  todosLosInventariosAlmacen.forEach((almacen) => {
-    const inventario = almacen.inventarios.find(
-      (inv) => inv.idInventario === idInventario
+): Promise<boolean> => {
+  try {
+    await axios.post(
+      `${route}/${idInventario}/productos`,
+      nuevoProductoInventario
     )
-    if (inventario) {
-      inventario.listaProductos.push(nuevoProductoInventario)
-      actualizarInventarioAlmacen(almacen)
-    }
-  })
+    return true
+  } catch (error) {
+    console.error("Error adding producto inventario to inventario:", error)
+    return false
+  }
 }
 
 // Las demás funciones permanecen iguales

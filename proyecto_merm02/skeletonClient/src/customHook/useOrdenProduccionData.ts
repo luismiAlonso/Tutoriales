@@ -411,6 +411,7 @@ export const useOrdenProduccionData = () => {
   //const saveProductInOrder = () => {}
 
   const getAllProductAndAllOrder = async () => {
+
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
@@ -423,6 +424,7 @@ export const useOrdenProduccionData = () => {
       })
 
       return superList
+
     } catch (error) {
       console.error(
         "Error al obtener todos los productos y órdenes de producción:",
@@ -441,6 +443,7 @@ export const useOrdenProduccionData = () => {
   }
 
   const getCurrentOrderProduccion = async () => {
+    
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()

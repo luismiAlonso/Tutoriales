@@ -93,6 +93,9 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       return (
         <td className="text-center">
           <SelectComponent
+            idInput = {dataColumn.idInput}
+            type="select"
+            activeLabel={true}
             selectClassName=""
             idSelected={dataColumn.idInput}
             value={data[dataColumn.idInput] as string}
@@ -109,6 +112,9 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       return (
         <td className="text-center">
           <HybridSelect
+            type = "hybrid"
+            idInput= {dataColumn.idInput}
+            activeLabel={true}
             options={dataColumn.options || []}
             defaultValue={dataColumn.defaultValue as string}
             value={data[dataColumn.idInput] as string}

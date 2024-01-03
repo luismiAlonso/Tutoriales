@@ -5,7 +5,8 @@ import cors from 'cors'
 import authRoutes from './routes/auth.routes.js'
 import taskRoutes from './routes/tasks.routhes.js'
 import transactionRoutes from './routes/transaction.routes.js'
-import ordenProduccionRouter from './routes/ordenProduccion.routes.js';
+import ordenProduccionRouter from './routes/ordenProduccion.routes.js'
+import inventario from './routes/inventario.routes.js'
 
 const app = express()
 app.use(cors({
@@ -20,6 +21,8 @@ app.use('/api',authRoutes)
 app.use('/api',taskRoutes)
 app.use('/api',transactionRoutes)
 app.use('/api',ordenProduccionRouter)
+app.use('/api',inventario)
+
 
 
 export default app;

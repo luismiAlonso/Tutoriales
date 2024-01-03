@@ -1,6 +1,7 @@
 import React from "react"
 import CustomButton from "../components/button/ButtonComponent"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
+import BackButton from "../components/backButtonComponent/BackButtonComponent" 
 
 function MainInventario() {
 
@@ -15,6 +16,9 @@ function MainInventario() {
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
         <div className="flex-grow text-left">
           <h2>GESTION INVENTARIO ENTRADAS Y SALIDAS</h2>
+        </div>
+        <div>
+          <BackButton />
         </div>
       </div>
 

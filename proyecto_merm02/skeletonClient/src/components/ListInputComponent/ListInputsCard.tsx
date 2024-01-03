@@ -66,6 +66,9 @@ const InputComponent: React.FC<InputProps> = (props) => {
       //console.log(options, idInput)
       return (
         <SelectComponent
+          type = "select"
+          idInput= {props.idInput}
+          activeLabel={false}
           selectClassName=""
           idSelected={props.idInput}
           value={props.value as string}
@@ -81,6 +84,9 @@ const InputComponent: React.FC<InputProps> = (props) => {
       //console.log(props.value)
       return (
         <HybridSelect
+          type = "hybrid"
+          idInput= {props.idInput}
+          activeLabel={false}
           options={props.options || []}
           defaultValue={props.defaultValue as string}
           value={props.value as string} // Asegurarnos de que si no hay opciones, se pasa un array vacío
@@ -142,6 +148,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
   onButtonClick
 }) => {
 
+console.log(columns,rowIndex,onInputChange,onButtonClick)
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">
       {columns.map((column, index) => {

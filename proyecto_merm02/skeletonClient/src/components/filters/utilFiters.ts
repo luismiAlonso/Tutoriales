@@ -178,6 +178,7 @@ function ordenarNumerosSpeciales(
       item[propiedad] = `${parsed.numeric ?? "N/A"} ${parsed.grammatical}`
       return item
     })
+    
   } catch (error) {
     console.error(error)
     return data

@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react"
-import { useInventarioData } from "../customHook/useInventarioData"
+import { useInventarioManager } from "../customHook/useInventarioManager"
 import SelectComponent from "../components/selectComponent/SelectComponent"
 import HybridSelect from "../components/hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "../components/button/ButtonComponent"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
-
+import BackButton from "../components/backButtonComponent/BackButtonComponent"
 
 function EntradasInventarioConfiguracion() {
-
-
-  const listadoGestor = ["Paco", "David", "Luismi"]
+  const listadoSecciones = ["bamburi", "cortado01", "cortado02", "lacado"]
   const listadoNaves = ["Mok", "otra1"]
 
-
-  const [gestorSeleccionado, setGestorSeleccionado] = useState(listadoGestor[0])
+  const [seccion, setSeccion] = useState(listadoSecciones[0])
   const [naveSeleccionada, setNaveSeleccionada] = useState(listadoNaves[0])
-  const navigate = useNavigate() // Obtén la función navigate
 
-  const { cargarDatosNuevoInventario } = useInventarioData()
+  const { prepareDataInventarioEntradas } = useInventarioManager()
 
-  const handleChangeGestor = (nuevoGestor: string) => {
+  const handleChangeGestor = (seccion: string) => {
     //console.log(nuevoGestor)
-    setGestorSeleccionado(nuevoGestor)
+    setSeccion(seccion)
   }
 
   const handleChangeNave = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -30,13 +26,12 @@ function EntradasInventarioConfiguracion() {
   }
 
   const handleClick = () => {
-    cargarDatosNuevoInventario(gestorSeleccionado, naveSeleccionada)
-    navigate("/EntradasInventarioPage")
+     prepareDataInventarioEntradas("/EntradasInventarioPage/",seccion,naveSeleccionada)
   }
 
   const handleSelectNave = () => {}
 
-  useEffect(() => {}, [gestorSeleccionado, naveSeleccionada])
+  useEffect(() => {}, [listadoSecciones, naveSeleccionada])
 
   return (
     <form className="text-white">
@@ -44,22 +39,31 @@ function EntradasInventarioConfiguracion() {
         <div className="flex-grow text-left">
           <h2>CONFIGURA INVENTARIO</h2>
         </div>
+        <div>
+          <BackButton />
+        </div>
       </div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-start">
         <div className="md:mr-4 mb-4 md:mb-0">
-          <label>Personal</label>
+          <label>Seccion</label>
           <HybridSelect
-            options={listadoGestor}
-            defaultValue={gestorSeleccionado}
-            value={gestorSeleccionado}
+            idInput="seccion"
+            activeLabel={false}
+            type="hybrid"
+            options={listadoSecciones}
+            defaultValue={seccion}
+            value={seccion}
             onChange={handleChangeGestor}
           />
         </div>
         <div>
-          <label>Nave</label>
+          <label>Almacen</label>
           <SelectComponent
+            idInput="seccion"
+            activeLabel={false}
+            type="select"
             selectClassName=""
-            idSelected={"Nave"}
+            idSelected={listadoNaves[0]}
             value={naveSeleccionada}
             defaultValue={naveSeleccionada}
             optionsSelect={listadoNaves}

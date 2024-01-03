@@ -1,23 +1,23 @@
 export interface InventarioAlmacen {
   idInventarioAlmacen: number
-  nombreAlmacen: string,
-  gestionadoPor: string,
-  inventarios: Inventario[]
+  seccion: string,
+  almacen: string,
+  inventario: ProductoInventario[]
 }
 
-export interface Inventario {
-    idInventario:number,
+export interface ProductoInventario {
     fechaEntrada:string,
     fechaSalida:string,
     horaEntrada:string,
     horaSalida:string,
-    listaProductos:ProductoInventario[]
-}
-
-export interface ProductoInventario {
-    idProducto:string,
-    indiceProducto:number,
+    idProducto:number,
     stock:number,
     cantidadSalida:number,
-    cantidadRestante:number
+    cantidadRestante:number,
+    plancha:string,
+    color:string,
+    dibujo:string,
+    molde:string,
+    acabado:string,
+    calibre:string
 }

@@ -2,19 +2,50 @@ import express from "express"
 import {
   getAllInventarioAlmacen,
   createInventarioAlmacen,
-  getInventarioAlmacenById,
-  updateInventarioAlmacenById,
-  deleteInventarioAlmacenById,
-  updateProductoInInventarioById,
-  addProductoInventarioToInventario
+  getInventarioAlmacenBySeccionAlmacen,
+  updateInventarioAlmacenBySeccionAlmacen,
+  deleteInventarioAlmacenBySeccionAlmacen,
   // ...otros controladores que puedas necesitar
 } from "../controllers/inventario.controller.js"
 import authRequire from "../middlewares/validateToken.js"
-import {validatorInventario} from "../middlewares/validatorInventario.middleware.js"
-import { inventarioAlmacenSchema } from "../schemas/inventario.schema.js";
+import { validatorInventario } from "../middlewares/validatorInventario.middleware.js"
+import { inventarioAlmacenSchema } from "../schemas/inventario.schema.js"
 
 const inventarioRouter = express.Router()
 
+// GET: Obtener un inventario de almacén por sección y almacén
+inventarioRouter.get(
+  "/EntradasInventarioPage/:seccion/:almacen",
+  authRequire,
+  getInventarioAlmacenBySeccionAlmacen
+)
+
+// POST: Crear un nuevo inventario de almacén
+inventarioRouter.post(
+  "/EntradasInventarioPage/:seccion/:almacen",
+  authRequire,
+  validatorInventario(inventarioAlmacenSchema),
+  createInventarioAlmacen
+)
+
+// PUT: Actualizar un inventario de almacén por sección y almacén
+inventarioRouter.put(
+  "/EntradasInventarioPage/:seccion/:almacen",
+  authRequire,
+  validatorInventario(inventarioAlmacenSchema),
+  updateInventarioAlmacenBySeccionAlmacen
+)
+
+// DELETE: Eliminar un inventario de almacén por sección y almacén
+inventarioRouter.delete(
+  "/EntradasInventarioPage/:seccion/:almacen",
+  authRequire,
+  deleteInventarioAlmacenBySeccionAlmacen
+)
+
+// ...más rutas adaptadas según sea necesario
+
+/*
 // GET: Obtener todos los inventarios de almacén
 inventarioRouter.get("/EntradasInventarioPage", authRequire, getAllInventarioAlmacen)
 
@@ -62,7 +93,7 @@ inventarioRouter.post(
   authRequire,
   validatorInventario(inventarioAlmacenSchema),
   addProductoInventarioToInventario
-)
+)*/
 
 // ...más rutas según sea necesario
 

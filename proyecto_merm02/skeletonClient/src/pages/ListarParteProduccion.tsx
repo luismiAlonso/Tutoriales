@@ -50,8 +50,7 @@ function ListarParteProduccion() {
       {<FilterComponent 
         filters={plantillaFiltersListados} 
       />}
-     {
-      
+     {    
      /*<div className="flex mt-4 items-center gap-4 mb-5">
         <div className="w-1/7">
           {

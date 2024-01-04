@@ -1,75 +1,198 @@
 import { useState } from "react"
 import {
   agregarInventarioAlmacen,
-  fetchAllInventarioAlmacen
+  fetchInventarioAlmacenBySeccionAlmacen,
+  deleteInventarioAlmacen,
+  updateInventario,
+  fetchAllInventarioAlmacen,
+  updateProductoInInventario,
+  addProductoInventario
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { HeaderInventario } from "../models/HeaderInventario"
+import { boolean } from "zod"
 
 export const useInventarioData = () => {
-  const [productoInicial, setProductoInicial] = useState<ColumnDescriptor[]>(HeaderInventario)
+  const [productoInicial, setProductoInicial] =
+    useState<ColumnDescriptor[]>(HeaderInventario)
   const [currentInventario, setCurrentInventari] = useState<InventarioAlmacen>()
 
-  const getUltimoInventarioAlmacen =
-    async (): Promise<InventarioAlmacen | null> => {
-
-      try {
-
-        const todosInventariosAlmacen = await fetchAllInventarioAlmacen(
-          "/EntradasInventarioPage"
+  const getInventarioSelected = async (
+    route: string,
+    seccion: string,
+    almacen: string
+  ): Promise<InventarioAlmacen | null> => {
+    try {
+      const inventario = await fetchInventarioAlmacenBySeccionAlmacen(
+        route,
+        seccion,
+        almacen
+      )
+      if (inventario) {
+        // Aquí puedes procesar el inventario si es necesario
+        return inventario
+      } else {
+        // Manejar el caso en que no se encuentre el inventario
+        console.log(
+          "Inventario no encontrado para la sección y almacén especificados"
         )
-
-        if (todosInventariosAlmacen && todosInventariosAlmacen.length > 0) {
-          return todosInventariosAlmacen[todosInventariosAlmacen.length - 1]
-        } else {
-          return null
-        }
-      } catch (error) {
-        console.error("Error al obtener el último inventario almacén:", error)
         return null
       }
+    } catch (error) {
+      console.error("Error al obtener el inventario:", error)
+      return null
     }
-
-  const crearNuevoInventario = (
-    route: string,
-    almacen: string,
-    seccion: string
-  ): void => {
-    const response = getUltimoInventarioAlmacen()
-    let idInventarioAlmacen = 1
-    response.then((result) => {
-      if (result) {
-        idInventarioAlmacen = result.idInventarioAlmacen+1
-      }
-      const nuevoInventarioAlmacen = {
-        idInventarioAlmacen,
-        seccion,
-        almacen: almacen,
-        inventario: []
-      } as InventarioAlmacen
-
-      setCurrentInventari(nuevoInventarioAlmacen)
-      agregarInventarioAlmacen(route, nuevoInventarioAlmacen).then((result) => {
-        console.log(result)
-      })
-    }) 
   }
 
-  
-  const agregarNuevaEntrada = (EntradaProNuevo: ProductoInventario) => {
+  const crearNuevoInventario = async (
+    route: string,
+    nuevoInventario: InventarioAlmacen
+  ): Promise<boolean> => {
+    try {
+      const response = await agregarInventarioAlmacen(route, nuevoInventario)
+      setCurrentInventari(nuevoInventario)
+      return response // response ya es un booleano que indica el éxito o fracaso
+    } catch (error) {
+      console.error("Error al crear nuevo inventario:", error)
+      return false // Devolver false en caso de error
+    }
+  }
+
+  const mapColumnDescriptorsToProductoInventario = (
+    columns: ColumnDescriptor[],
+    exclude: string[] = [] // Array de propiedades a excluir
+  ): ProductoInventario => {
+    const producto: any = {}
+
+    columns.forEach((col) => {
+      if (
+        col.idInput &&
+        col.value !== undefined &&
+        !exclude.includes(col.idInput)
+      ) {
+        const key = col.idInput
+        //parseo de tipos numericos
+        if (
+          key === "stock" ||
+          key === "cantidadSalida" ||
+          key === "cantidadRestante"
+        ) {
+          // Convierte a número
+          producto[key] = Number(col.value)
+        } else {
+          // Mantiene como cadena
+          producto[key] = col.value
+        }
+      }
+    })
+
+    return producto as ProductoInventario
+  }
+
+  const updateColumnDescriptor = (
+    datosActuales: ColumnDescriptor[],
+    id: string | number,
+    valor: string | number,
+    plantilla: ColumnDescriptor[]
+  ) => {
+    if (datosActuales !== null) {
+      // Si los datos existen, busca el descriptor de columna específico por idInput
+      const index = datosActuales.findIndex((columna) => columna.idInput === id)
+
+      if (index !== -1) {
+        // Si se encontró el descriptor de columna, actualiza su valor
+        datosActuales[index] = {
+          ...datosActuales[index],
+          value: valor
+        }
+        // Luego guarda los datos actualizados de vuelta en localStorage
+        //guardarDatosTemporales(datosActuales)
+        return datosActuales
+      } else {
+        console.error(
+          `No se encontró el descriptor de columna con idInput: ${id}`
+        )
+      }
+    } else {
+      // console.log(plantilla)
+      // Si no hay datos en localStorage, busca en la plantilla
+      const index = plantilla.findIndex((columna) => columna.idInput === id)
+
+      if (index !== -1) {
+        // Si se encontró el descriptor de columna en la plantilla, actualiza su valor
+        plantilla[index] = {
+          ...plantilla[index],
+          value: valor
+        }
+
+        // Guarda los datos actualizados de vuelta en localStorage
+        // guardarDatosTemporales(plantilla)
+        return plantilla
+      } else {
+        console.error(
+          `No se encontró el descriptor de columna con idInput: ${id}`
+        )
+        // Puedes descomentar la siguiente línea si deseas mostrar este mensaje
+        // console.error("No hay datos en localStorage para actualizar.");
+      }
+    }
+  }
+
+  /*
+  const mapearProductoInventarioAColumnas = (
+    columnasTemplate: ColumnDescriptor[],
+    producto: ProductoInventario
+  ): ColumnDescriptor[] => {
+    return columnasTemplate.map((column) => {
+      // Convertimos el título a lowercase y buscamos si ese valor existe en el objeto Producto
+      const productoKey = Object.keys(producto).find(
+        (key) => key.toLowerCase() === column.title.toLowerCase()
+      ) as keyof ProductoInventario
+
+      // Si existe, asignamos el valor a defaultValue, de lo contrario retornamos el column original
+      return productoKey
+        ? {
+            ...column,
+            defaultValue: producto[productoKey],
+            value: producto[productoKey]
+          }
+        : column
+    })
+  }
+  */
+
+  /*const actualizarInventario = async()
+
+  const agregarNuevaEntrada = async (
+    seccion: string,
+    almacen: string,
+    EntradaProNuevo: ProductoInventario
+  ): Promise<boolean> => {
     if (currentInventario) {
       currentInventario.inventario.push(EntradaProNuevo)
+      try {
+        const result = await updateInventario(
+          "/EntradasInventarioPage",
+          currentInventario
+        )
+        return result // o manejar 'result' según sea necesario
+      } catch (error) {
+        console.error("Error al actualizar el inventario:", error)
+        return false
+      }
     }
 
-    //console.log(EntradaProNuevo)
-  }
-  
+    return false
+  }*/
 
   return {
-    getUltimoInventarioAlmacen,
+    getInventarioSelected,
     crearNuevoInventario,
-    agregarNuevaEntrada,
+    mapColumnDescriptorsToProductoInventario,
+    updateColumnDescriptor,
+    setCurrentInventari,
+    updateInventario,
     currentInventario,
     productoInicial
   }

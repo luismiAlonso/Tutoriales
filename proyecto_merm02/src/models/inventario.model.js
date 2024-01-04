@@ -9,7 +9,7 @@ const productoInventarioSchema = new mongoose.Schema({
   idProducto: Number,
   stock: Number,
   cantidadSalida: Number,
-  cantidadRestante: Number,
+  cantidadEntrante: Number,
   plancha: String,
   color: String,
   dibujo: String,
@@ -20,7 +20,6 @@ const productoInventarioSchema = new mongoose.Schema({
 
 // Luego define inventarioAlmacenSchema, que hace referencia a productoInventarioSchema
 const inventarioAlmacenSchema = new mongoose.Schema({
-  idInventarioAlmacen: Number,
   seccion: String,
   almacen: String,
   inventario: [productoInventarioSchema] // Un array de documentos de tipo ProductoInventario

@@ -1,10 +1,10 @@
-export const getDatosLocalStorage = (nameItem:string) => {
-    const result = localStorage.getItem(nameItem)
-    return result
+export const getDatosLocalStorage = (nameItem: string): any => {
+    const result = localStorage.getItem(nameItem);
+    return result ? JSON.parse(result) : null;
 }
 
-export const setDatosLocalStorage = (nameItem:string,value:string) => {
-    const result = localStorage.setItem(nameItem,value)
+export const setDatosLocalStorage = (nameItem: string, value: any): void => {
+    const result = localStorage.setItem(nameItem, JSON.stringify(value));
     return result
 }
 

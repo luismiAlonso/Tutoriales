@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
+import { setDatosLocalStorage,getDatosLocalStorage } from "../utilidades/util"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import {
   fetchOrdenesProduccionDB,
@@ -40,10 +41,9 @@ export const useOrdenProduccionData = () => {
       */
       ordenesProduccion.push(nuevaOrdenProduccion)
 
-      const datosSerializados = JSON.stringify(ordenesProduccion)
       //console.log(datosSerializados)
       // Guarda la cadena JSON en localStorage con una clave específica
-      localStorage.setItem("ordenesProduccion", datosSerializados)
+      setDatosLocalStorage("ordenesProduccion",ordenesProduccion)
       return nuevaOrdenProduccion
     } catch (error) {
       console.error("Error al cargar o agregar orden de producción:", error)
@@ -80,12 +80,11 @@ export const useOrdenProduccionData = () => {
 
   const recuperarDatosTemporales = (): ColumnDescriptor[] | null => {
     // Intenta recuperar la cadena JSON de localStorage usando la misma clave
-    const datosSerializados = localStorage.getItem("datosTemporales")
+    const datosSerializados = getDatosLocalStorage("datosTemporales") //localStorage.getItem("datosTemporales")
 
     if (datosSerializados !== null) {
       // Si los datos existen, deserializa la cadena JSON de vuelta a un array de objetos
-      const columnas = JSON.parse(datosSerializados)
-      return columnas
+      return datosSerializados
     }
     // Si no hay datos, devuelve null
     return null
@@ -93,10 +92,8 @@ export const useOrdenProduccionData = () => {
 
   const guardarDatosTemporales = (columnas: ColumnDescriptor[]) => {
     // Serializa el array de columnas a una cadena JSON
-    const datosSerializados = JSON.stringify(columnas)
-    //console.log(datosSerializados)
     // Guarda la cadena JSON en localStorage con una clave específica
-    localStorage.setItem("datosTemporales", datosSerializados)
+    setDatosLocalStorage("datosTemporales",columnas)
   }
 
   const obtenerUltimoProducto = (idParte: number) => {
@@ -117,14 +114,13 @@ export const useOrdenProduccionData = () => {
     }
 
     // Cargar las ordenes de producción desde localStorage
-    const ordenesProduccionStr = localStorage.getItem("ordenesProduccion")
+    const ordenesProduccionStr = getDatosLocalStorage("ordenesProduccion")
     if (!ordenesProduccionStr) {
       // Devuelve el producto por defecto
       return productoDefault
     }
 
-    const ordenesProduccion: OrdenProduccion[] =
-      JSON.parse(ordenesProduccionStr)
+    const ordenesProduccion: OrdenProduccion[] = ordenesProduccionStr
 
     // Encontrar la orden de producción específica
     const ordenProduccion = ordenesProduccion.find(

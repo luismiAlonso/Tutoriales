@@ -192,6 +192,7 @@ const useOrdenProduccionManager = () => {
     bamburi: string,
     excludes: string[]
   ) => {
+
     const mappedProduct = mapColumnDescriptorsToProducto(
       dataColum,
       idParte,
@@ -239,6 +240,7 @@ const useOrdenProduccionManager = () => {
     dataColum: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
+
     producto.indiceProducto = ordenProduccion.ordenesProduccion.length + 1
     const nuevoOrdenProduccion = {
       ...ordenProduccion,
@@ -280,8 +282,7 @@ const useOrdenProduccionManager = () => {
       //updateOrdenProduccion(ordenProduccion)
       //setListaProductosOrdenReciente(indexedProduct)
       setListaTotalProduccion(indexedProduct)
-      const serializeObj = JSON.stringify(mappedProducto)
-      setDatosLocalStorage("datosTemporales", serializeObj)
+      setDatosLocalStorage("datosTemporales",mappedProducto)
     }
   }
 
@@ -322,10 +323,10 @@ const useOrdenProduccionManager = () => {
         )
 
         if (dataUpdated) {
-          const serializeObj = JSON.stringify(dataUpdated)
-          setDatosLocalStorage("datosTemporales", serializeObj)
+          setDatosLocalStorage("datosTemporales", dataUpdated)
           setDatosColumna(dataUpdated)
         }
+
       } else {
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
@@ -336,8 +337,7 @@ const useOrdenProduccionManager = () => {
 
         if (dataUpdated) {
           //console.log("actualizamos")
-          const serializeObj = JSON.stringify(dataUpdated)
-          setDatosLocalStorage("datosTemporales", serializeObj)
+          setDatosLocalStorage("datosTemporales", dataUpdated)
           //console.log(dataUpdated)
           setDatosColumna(dataUpdated)
         }

@@ -1,4 +1,4 @@
-import { date } from "zod"
+import { parse } from "date-fns"
 import {
   convertStringDateToDate,
   convertDateToFormatString,
@@ -178,7 +178,6 @@ function ordenarNumerosSpeciales(
       item[propiedad] = `${parsed.numeric ?? "N/A"} ${parsed.grammatical}`
       return item
     })
-    
   } catch (error) {
     console.error(error)
     return data
@@ -284,6 +283,42 @@ function ordenarFechas(
   }
 }
 
+/*
+Posible Opcion para ordenar fechas con formato especial
+function ordenarFechas(
+  data: any[],
+  propiedad: string,
+  orden: "asc" | "desc"
+): any[] {
+  try {
+    const sortedData = [...data]
+    const formatoFecha = "dd/MM/yyyy HH:mm:ss"
+
+    sortedData.sort((a, b) => {
+      const dateA = parse(a[propiedad], formatoFecha, new Date())
+      const dateB = parse(b[propiedad], formatoFecha, new Date())
+
+      if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) {
+        return 0
+      } else if (isNaN(dateA.getTime())) {
+        return orden === "asc" ? -1 : 1
+      } else if (isNaN(dateB.getTime())) {
+        return orden === "asc" ? 1 : -1
+      } else {
+        return orden === "asc"
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime()
+      }
+    })
+
+    return sortedData
+  } catch (error) {
+    console.error(error)
+    return data
+  }
+}
+*/
+
 function filtrarYOrdenarCadenas(
   data: any[],
   palabra: string,
@@ -291,10 +326,9 @@ function filtrarYOrdenarCadenas(
   orden: "asc" | "desc"
 ): string[] {
   try {
-
     const filteredData = data
       .filter((item) => {
-        console.log(item[propiedad],propiedad)
+        console.log(item[propiedad], propiedad)
         const itemProperty = String(item[propiedad]).toLowerCase()
         const containsWord = itemProperty.includes(palabra.toLowerCase())
         return item[propiedad] != null && containsWord
@@ -352,7 +386,6 @@ export const sortDateRange = (
   to: Date,
   orden: "asc" | "desc"
 ): any[] => {
-
   const filteredDataDates = data.filter((objeto) => {
     // Asegúrate de que el objeto tiene una propiedad 'fecha' y es una cadena válida
     if (!objeto.fecha) {

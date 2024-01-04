@@ -121,7 +121,9 @@ const useListadosPartesManager = () => {
 
   const validateDates = (startDate: Date, endDate: Date) => {
     if (startDate && endDate) {
+      
       if (startDate <= endDate) {
+
         /*if (listaPartesLaminacion) {
           filterDateRange(
             listaPartesLaminacion,

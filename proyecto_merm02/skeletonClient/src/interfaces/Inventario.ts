@@ -1,5 +1,4 @@
 export interface InventarioAlmacen {
-  idInventarioAlmacen: number
   seccion: string,
   almacen: string,
   inventario: ProductoInventario[]
@@ -13,7 +12,7 @@ export interface ProductoInventario {
     idProducto:number,
     stock:number,
     cantidadSalida:number,
-    cantidadRestante:number,
+    cantidadEntrante:number,
     plancha:string,
     color:string,
     dibujo:string,

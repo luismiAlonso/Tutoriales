@@ -1,5 +1,4 @@
 import React, { useEffect } from "react"
-import { useLocation } from "react-router-dom"
 import { obtenerFechaActual, obtenerHoraActual } from "../utilidades/dateUtil"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import { useInventarioManager } from "../customHook/useInventarioManager"
@@ -9,10 +8,8 @@ import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
 function EntradasInventarioPage() {
   // cargarDatosNuevoInventario("/EntradasInventarioPage",seccion,naveSeleccionada)
   const { handleInputChange, handleButtonClick, crearNuevoInventario,productoInicial} = useInventarioManager()
-  const location = useLocation()
 
   useEffect(() => {
-   // crearNuevoInventario(location.pathname, "test01", "test02")
   }, [])
 
   return (
@@ -22,7 +19,7 @@ function EntradasInventarioPage() {
           <h2>ENTRADA PRODUCTO</h2>
         </div>
         <div className="flex-grow text-right">
-          <span>{obtenerFechaActual() + " - " + obtenerHoraActual()}</span>
+         {/*<span>{obtenerFechaActual() + " - " + obtenerHoraActual()}</span>*/}
         </div>
         <div className="ml-3">
           <BackButton />

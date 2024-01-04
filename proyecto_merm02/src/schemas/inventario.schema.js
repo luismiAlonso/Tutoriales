@@ -8,7 +8,7 @@ export const productoInventarioSchema = z.object({
   idProducto: z.number(),
   stock: z.number(),
   cantidadSalida: z.number(),
-  cantidadRestante: z.number(),
+  cantidadEntrante: z.number(),
   plancha: z.string(),
   color: z.string(),
   dibujo: z.string().optional(), // Suponiendo que puede ser opcional
@@ -18,7 +18,6 @@ export const productoInventarioSchema = z.object({
 })
 
 export const inventarioAlmacenSchema = z.object({
-  idInventarioAlmacen: z.number(),
   seccion: z.string(),
   almacen: z.string(),
   inventario: z.array(productoInventarioSchema)

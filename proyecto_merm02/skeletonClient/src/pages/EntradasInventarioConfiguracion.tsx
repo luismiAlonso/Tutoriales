@@ -15,6 +15,7 @@ function EntradasInventarioConfiguracion() {
 
   const { prepareDataInventarioEntradas } = useInventarioManager()
 
+  const navigate =useNavigate()
   const handleChangeGestor = (seccion: string) => {
     //console.log(nuevoGestor)
     setSeccion(seccion)
@@ -26,7 +27,10 @@ function EntradasInventarioConfiguracion() {
   }
 
   const handleClick = () => {
-     prepareDataInventarioEntradas("/EntradasInventarioPage/",seccion,naveSeleccionada)
+    const url=`/EntradasInventarioPage/${seccion}/${naveSeleccionada}`
+    prepareDataInventarioEntradas(url,seccion,naveSeleccionada)
+    navigate(url)
+
   }
 
   const handleSelectNave = () => {}

@@ -3,6 +3,7 @@ import {
   ProductoInventario
 } from "../models/inventario.model.js"
 
+/*
 // Obtener todos los inventarios de almacén
 export const getAllInventarioAlmacen = async (req, res) => {
   try {
@@ -135,6 +136,95 @@ export const addProductoInventarioToInventario = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error al agregar el producto al inventario" })
+  }
+}
+*/
+
+// Obtener todos los inventarios de almacén
+export const getAllInventarioAlmacen = async (req, res) => {
+  try {
+    const inventarios = await InventarioAlmacen.find();
+    res.json(inventarios);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los inventarios" });
+  }
+}
+
+// GET: Obtener un inventario de almacén por sección y almacén
+export const getInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+  try {
+    const { seccion, almacen } = req.params
+    const inventario = await InventarioAlmacen.findOne({ seccion, almacen })
+    if (!inventario) {
+      return res.status(404).json({ message: "Inventario no encontrado" })
+    }
+    res.json(inventario)
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el inventario" })
+  }
+}
+
+// POST: Crear un nuevo inventario de almacén
+export const createInventarioAlmacen = async (req, res) => {
+  
+  try {
+    const { seccion, almacen } = req.body
+    const existingInventario = await InventarioAlmacen.findOne({
+      seccion,
+      almacen
+    })
+
+    if (existingInventario) {
+      return res
+        .status(400)
+        .json({
+          message: "El inventario ya existe para esta sección y almacén"
+        })
+    }
+
+    const nuevoInventario = new InventarioAlmacen(req.body)
+    const inventarioGuardado = await nuevoInventario.save()
+    res.status(201).json(inventarioGuardado)
+  } catch (error) {
+    res.status(500).json({ message: "Error al crear el inventario" })
+  }
+}
+
+// PUT: Actualizar un inventario de almacén por sección y almacén
+export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+
+  try {
+    const { seccion, almacen } = req.params
+    const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
+      { seccion, almacen },
+      req.body,
+      { new: true }
+    )
+    if (!inventarioActualizado) {
+      return res.status(404).json({ message: "Inventario no encontrado" })
+    }
+    res.json(inventarioActualizado)
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar el inventario" })
+  }
+
+}
+
+// DELETE: Eliminar un inventario de almacén por sección y almacén
+export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+
+  try {
+    const { seccion, almacen } = req.params
+    const inventarioEliminado = await InventarioAlmacen.findOneAndDelete({
+      seccion,
+      almacen
+    })
+    if (!inventarioEliminado) {
+      return res.status(404).json({ message: "Inventario no encontrado" })
+    }
+    res.sendStatus(204)
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar el inventario" })
   }
 }
 

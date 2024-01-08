@@ -3,34 +3,11 @@ import { useState, useCallback, useEffect } from "react"
 import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 import { Producto } from "../../interfaces/OrdenProduccion"
 
-const useInfiniteLoader = (itemsPerPage = 100) => {
+const useInfiniteLoaderParteProducion = (itemsPerPage = 100) => {
   const [currentPage, setCurrentPage] = useState(1)
   const { listaTotalProduccion, setListaTotalProduccion } =
     useOrdenProductionStore()
   const [loadedData, setLoadedData] = useState<Producto[]>([])
-
-  /*
-  const loadMoreData = useCallback(() => {
-    setCurrentPage((prevPage) => {
-      const startIndex = (prevPage - 1) * itemsPerPage
-      const endIndex = startIndex + itemsPerPage
-      const newData = listaTotalProduccion.slice(startIndex, endIndex)
-      console.log(newData.length, itemsPerPage)
-      // Comprueba si has alcanzado el final de los datos
-      if (newData.length < itemsPerPage) {
-        console.log("Reached the end of data")
-        return prevPage // No incrementes currentPage si has alcanzado el final
-      }
-
-      // Actualiza la lista total de producción con los nuevos datos
-      const updatedData = [...listaTotalProduccion, ...newData]
-      setListaTotalProduccion(updatedData)
-      //setListaTotalProduccion((prevData) => [...prevData, ...newData]);
-
-      return prevPage + 1 // Solo incrementa currentPage si hay más datos para cargar
-    })
-  }, [listaTotalProduccion, itemsPerPage, setListaTotalProduccion])
-  */
 
   const loadMoreData = useCallback(() => {
 
@@ -76,4 +53,4 @@ const useInfiniteLoader = (itemsPerPage = 100) => {
   }
 }
 
-export default useInfiniteLoader
+export default  useInfiniteLoaderParteProducion

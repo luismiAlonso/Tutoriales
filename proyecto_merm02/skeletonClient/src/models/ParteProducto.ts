@@ -186,7 +186,7 @@ export const parteProducto: ColumnDescriptor[] = [
     {
         title: "Borrar",
         idInput: "Borrar",
-        content: "borrar",
+        content: "",
         value: "",
         type: "svg",
         editable: false,

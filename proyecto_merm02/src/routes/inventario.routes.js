@@ -2,9 +2,10 @@ import express from "express"
 import {
   getAllInventarioAlmacen,
   createInventarioAlmacen,
+  deleteProductoInventarioById,
   getInventarioAlmacenBySeccionAlmacen,
   updateInventarioAlmacenBySeccionAlmacen,
-  deleteInventarioAlmacenBySeccionAlmacen,
+  deleteInventarioAlmacenBySeccionAlmacen
   // ...otros controladores que puedas necesitar
 } from "../controllers/inventario.controller.js"
 import authRequire from "../middlewares/validateToken.js"
@@ -42,58 +43,11 @@ inventarioRouter.delete(
   authRequire,
   deleteInventarioAlmacenBySeccionAlmacen
 )
-
-// ...más rutas adaptadas según sea necesario
-
-/*
-// GET: Obtener todos los inventarios de almacén
-inventarioRouter.get("/EntradasInventarioPage", authRequire, getAllInventarioAlmacen)
-
-// GET: Obtener un inventario de almacén por ID
-inventarioRouter.get(
-  "/EntradasInventarioPage/:idInventarioAlmacen",
-  authRequire,
-  getInventarioAlmacenById
-)
-
-// POST: Crear un nuevo inventario de almacén
-inventarioRouter.post(
-  "/EntradasInventarioPage/:idInventarioAlmacen",
-  authRequire,
-  validatorInventario(inventarioAlmacenSchema),
-  createInventarioAlmacen
-)
-
-// PUT: Actualizar un inventario de almacén por ID
-inventarioRouter.put(
-  "/EntradasInventarioPage/:idInventarioAlmacen",
-  authRequire,
-  validatorInventario(inventarioAlmacenSchema),
-  updateInventarioAlmacenById
-)
-
-// DELETE: Eliminar un inventario de almacén por ID
+//DELETE: eliminar linea de inventario en un inventario especifico
 inventarioRouter.delete(
-  "/EntradasInventarioPage/:idInventarioAlmacen",
-  authRequire,
-  deleteInventarioAlmacenById
+  "/EntradasInventarioPage/:seccion/:almacen/producto/:idProducto",
+  deleteProductoInventarioById
 )
-
-// PUT: Actualizar un producto en un inventario de almacén
-inventarioRouter.put(
-  "/EntradasInventarioPage/:idInventarioAlmacen/productos/:idProducto",
-  authRequire,
-  validatorInventario(inventarioAlmacenSchema),
-  updateProductoInInventarioById
-)
-
-// POST: Agregar un producto a un inventario de almacén
-inventarioRouter.post(
-  "/EntradasInventarioPage/:idInventarioAlmacen/productos",
-  authRequire,
-  validatorInventario(inventarioAlmacenSchema),
-  addProductoInventarioToInventario
-)*/
 
 // ...más rutas según sea necesario
 

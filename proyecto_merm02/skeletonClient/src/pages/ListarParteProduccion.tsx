@@ -35,6 +35,9 @@ function ListarParteProduccion() {
 
   useEffect(() => {
     cargarDatosListaPartesProduccion()
+   // console.log("parteLaminacionProduccto",ParteLaminacionProducto.length)
+   // console.log("HeadersParteLaminacionExtend",HeadersParteLaminacionExtend.length)
+
   }, [])
 
   return (

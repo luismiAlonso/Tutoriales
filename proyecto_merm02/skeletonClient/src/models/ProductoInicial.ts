@@ -34,7 +34,7 @@ export  const ProductoInicial: ColumnDescriptor[] = [
       content: "",
       type: "text",
       editable: true,
-      visible: false,
+      visible: true,
       defaultValue: "",
       additionalStyles: "",
       options: [""],

@@ -1,8 +1,10 @@
 import { create } from "zustand"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
+import { ProductoInventario } from "../interfaces/Inventario"
 
 type OrdenProduccionStore = {
+  totalProductosInventario: ProductoInventario[]
   ordenesProduccion: OrdenProduccion[]
   ordenReciente: OrdenProduccion | null
   productoActual: Producto | null
@@ -20,6 +22,8 @@ type OrdenProduccionStore = {
   getListaProductosOrdenReciente: () => Producto[]
   setListaTotalProduccion: (productos:Producto[]) => void
   getListaTotalProduccion: () => Producto[]
+  setListaTotalProductosInventario: (productos:ProductoInventario[]) => void
+  getListaTotalProductosInventario: () => ProductoInventario[]
   getOrdenProduccion: (idParte: number) => OrdenProduccion | undefined
   setOrdenReciente: (orden: OrdenProduccion) => void
   setOrdenesProduccion: (ordenes: OrdenProduccion[]) => void
@@ -31,6 +35,7 @@ type OrdenProduccionStore = {
 
 export const useOrdenProductionStore = create<OrdenProduccionStore>(
   (set, get) => ({
+    totalProductosInventario: [],
     ordenesProduccion: [],
     ordenReciente: null,
     listaProductosOrdenReciente: [],
@@ -70,6 +75,8 @@ export const useOrdenProductionStore = create<OrdenProduccionStore>(
     },
     setListaTotalProduccion: (productos) => set(() => ({ listaTotalProduccion: productos })),
     getListaTotalProduccion: () => get().listaTotalProduccion,
+    setListaTotalProductosInventario: (productosInventario) => set(() => ({ totalProductosInventario: productosInventario })),
+    getListaTotalProductosInventario: () => get().totalProductosInventario,
     setOrdenReciente: (orden) => set(() => ({ ordenReciente: orden })),
 
     setOrdenesProduccion: (ordenes) =>

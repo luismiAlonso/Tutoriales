@@ -42,7 +42,6 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   onInputChange,
   onButtonClick
 }) => {
-
   const handleChange = (value: string | number | boolean, rowIndex: number) => {
     onInputChange(value, column.idInput, rowIndex)
   }
@@ -54,7 +53,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   ) => {
     e.preventDefault()
 
-    console.log(column.idInput,rowIndex)
+    console.log(column.idInput, rowIndex)
     onButtonClick(column.idInput, rowIndex)
   }
   
@@ -93,7 +92,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       return (
         <td className="text-center">
           <SelectComponent
-            idInput = {dataColumn.idInput}
+            idInput={dataColumn.idInput}
             type="select"
             activeLabel={true}
             selectClassName=""
@@ -112,8 +111,8 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       return (
         <td className="text-center">
           <HybridSelect
-            type = "hybrid"
-            idInput= {dataColumn.idInput}
+            type="hybrid"
+            idInput={dataColumn.idInput}
             activeLabel={true}
             options={dataColumn.options || []}
             defaultValue={dataColumn.defaultValue as string}
@@ -180,6 +179,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
       }
       return <td></td>
     case "noInput":
+      //console.log("fields",dataColumn.idInput,data[dataColumn.idInput])
       return (
         <td className="text-center">{data[dataColumn.idInput] as string}</td>
       )
@@ -196,21 +196,34 @@ const CustomTable: React.FC<TableProps<any>> = ({
   data
 }) => {
 
+  //console.log(data)
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xxs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {columns.map((column, index) => (
+              
+              {
+              columns.map((column, index) => {
+                
+                if (!column.visible){
+                  console.log(column.title,column.visible)
+                  return null
+                }
+
+                return (
                 <th key={index} className="px-6 py-3">
                   {column.title}
-                </th>
-              ))}
+                </th>)
+
+              }
+              )}
             </tr>
           </thead>
           <tbody>
             {data.map((rowData, rowIndex) => {
+
               return (
                 <tr
                   key={rowIndex}
@@ -232,10 +245,10 @@ const CustomTable: React.FC<TableProps<any>> = ({
                         onInputChange={onInputChange}
                         onButtonClick={onButtonClick}
                       />
-                    );
+                    )
                   })}
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>

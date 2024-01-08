@@ -7,8 +7,6 @@ export interface InventarioAlmacen {
 export interface ProductoInventario {
     fechaEntrada:string,
     fechaSalida:string,
-    horaEntrada:string,
-    horaSalida:string,
     idProducto:number,
     stock:number,
     cantidadSalida:number,
@@ -17,6 +15,12 @@ export interface ProductoInventario {
     color:string,
     dibujo:string,
     molde:string,
-    acabado:string,
+    acabado01:string,
+    acabado02:string,
     calibre:string
+}
+
+export interface PrepareDataInventario{
+  url:string,
+  inventarioAlmacen:InventarioAlmacen
 }

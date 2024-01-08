@@ -80,14 +80,16 @@ export const useOrdenProduccionData = () => {
 
   const recuperarDatosTemporales = (): ColumnDescriptor[] | null => {
     // Intenta recuperar la cadena JSON de localStorage usando la misma clave
-    const datosSerializados = getDatosLocalStorage("datosTemporales") //localStorage.getItem("datosTemporales")
+    const datosSerializados = getDatosLocalStorage("datosTemporales")
 
     if (datosSerializados !== null) {
+      
       // Si los datos existen, deserializa la cadena JSON de vuelta a un array de objetos
       return datosSerializados
     }
     // Si no hay datos, devuelve null
     return null
+
   }
 
   const guardarDatosTemporales = (columnas: ColumnDescriptor[]) => {
@@ -256,7 +258,6 @@ export const useOrdenProduccionData = () => {
         return Object.keys(templateColumn).reduce<ColumnDescriptor>(
           (newColumn, key) => {
             if (!fieldsToExclude.includes(key)) {
-              console.log(key,dataColumn[key as keyof ColumnDescriptor])
               newColumn[key as keyof ColumnDescriptor] =
                 dataColumn[key as keyof ColumnDescriptor]
             } else {

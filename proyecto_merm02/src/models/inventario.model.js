@@ -4,17 +4,16 @@ import mongoose from "mongoose"
 const productoInventarioSchema = new mongoose.Schema({
   fechaEntrada: String,
   fechaSalida: String,
-  horaEntrada: String,
-  horaSalida: String,
   idProducto: Number,
   stock: Number,
   cantidadSalida: Number,
   cantidadEntrante: Number,
-  plancha: String,
+  planchas: String,
   color: String,
   dibujo: String,
   molde: String,
-  acabado: String,
+  acabado01: String,
+  acabado02: String,
   calibre: String
 })
 

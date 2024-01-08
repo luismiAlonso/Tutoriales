@@ -3,6 +3,7 @@ import {
   agregarInventarioAlmacen,
   fetchInventarioAlmacenBySeccionAlmacen,
   deleteInventarioAlmacen,
+  deleteProductoInventario,
   updateInventario,
   fetchAllInventarioAlmacen,
   updateProductoInInventario,
@@ -10,25 +11,19 @@ import {
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
-import { HeaderInventario } from "../models/HeaderInventario"
-import { boolean } from "zod"
+import { productoInventarioInicial } from "../models/productoInventarioInicial"
+import id from "date-fns/esm/locale/id/index.js"
 
 export const useInventarioData = () => {
-  const [productoInicial, setProductoInicial] =
-    useState<ColumnDescriptor[]>(HeaderInventario)
+  // console.log("luego de ser seteado",HeaderInventario)
   const [currentInventario, setCurrentInventari] = useState<InventarioAlmacen>()
 
   const getInventarioSelected = async (
-    route: string,
-    seccion: string,
-    almacen: string
+    route: string
   ): Promise<InventarioAlmacen | null> => {
     try {
-      const inventario = await fetchInventarioAlmacenBySeccionAlmacen(
-        route,
-        seccion,
-        almacen
-      )
+      const inventario = await fetchInventarioAlmacenBySeccionAlmacen(route)
+
       if (inventario) {
         // Aquí puedes procesar el inventario si es necesario
         return inventario
@@ -42,6 +37,19 @@ export const useInventarioData = () => {
     } catch (error) {
       console.error("Error al obtener el inventario:", error)
       return null
+    }
+  }
+
+  const deleteLineaInventario = async (
+    route: string,
+    idProducto: number
+  ): Promise<boolean> => {
+    try {
+      const response = await deleteProductoInventario(route, idProducto)
+      return response // Esto será true o false dependiendo de la respuesta de la API
+    } catch (error) {
+      console.error("Error al eliminar producto del inventario:", error)
+      return false
     }
   }
 
@@ -65,6 +73,9 @@ export const useInventarioData = () => {
   ): ProductoInventario => {
     const producto: any = {}
 
+    /*cantidadSalida:number,
+    cantidadEntrante:number,*/
+
     columns.forEach((col) => {
       if (
         col.idInput &&
@@ -74,9 +85,10 @@ export const useInventarioData = () => {
         const key = col.idInput
         //parseo de tipos numericos
         if (
+          key === "idProducto" ||
           key === "stock" ||
           key === "cantidadSalida" ||
-          key === "cantidadRestante"
+          key === "cantidadEntrante"
         ) {
           // Convierte a número
           producto[key] = Number(col.value)
@@ -192,8 +204,9 @@ export const useInventarioData = () => {
     mapColumnDescriptorsToProductoInventario,
     updateColumnDescriptor,
     setCurrentInventari,
+    deleteLineaInventario,
     updateInventario,
     currentInventario,
-    productoInicial
+    productoInventarioInicial
   }
 }

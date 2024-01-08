@@ -8,7 +8,7 @@ import { HeadersProducto } from "../models/HeadersProducto"
 import { ResumenProducto } from "../models/ResumenProducto"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useFilterData from "../components/filters/useFilterData"
-import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoader"
+import useInfiniteLoaderParteProducion from "../components/InfiniteLoaderComponent/useInfiniteLoaderParteProducion"
 import { useParams, useNavigate } from "react-router-dom" // Importa useNavigate
 import useModal from "../components/modal/useModal"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
@@ -61,7 +61,7 @@ const useOrdenProduccionManager = () => {
     setLoadedData,
     calculateItemToDisplay,
     loadMoreData
-  } = useInfiniteLoader(20)
+  } = useInfiniteLoaderParteProducion(20)
 
   const { listaTotalProduccion, setListaTotalProduccion } =
     useOrdenProductionStore()
@@ -248,14 +248,13 @@ const useOrdenProduccionManager = () => {
     }
 
     setOrdenProduccion(nuevoOrdenProduccion)
-    const serializeObj = JSON.stringify(dataColum)
-    setDatosLocalStorage("datosTemporales", serializeObj)
+    setDatosLocalStorage("datosTemporales", dataColum)
 
     agregarNuevoProductoOP(ordenProduccion.idParte, producto).then(
+      
       (response) => {
         if (response) {
-          const serializeObj = JSON.stringify(response)
-          setDatosLocalStorage("ordenesProduccion", serializeObj)
+          setDatosLocalStorage("ordenesProduccion", dataColum)
           setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
         }
       }
@@ -267,8 +266,8 @@ const useOrdenProduccionManager = () => {
     ordenProduccion: OrdenProduccion
   ) => {
     if (ordenProduccion) {
-      //console.log("ActualizaDatos:",ProductoInicial)
       const producto = datos || ProductoInicial
+
       producto[0].value = ordenProduccion.idParte
       producto[0].defaultValue = ordenProduccion.idParte
 

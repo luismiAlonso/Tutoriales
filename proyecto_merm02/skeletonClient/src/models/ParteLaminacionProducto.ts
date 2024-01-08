@@ -28,6 +28,19 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "IDPRODUCT",
+    idInput: "indiceProducto",
+    value: "0",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible:true,
+    defaultValue: "0",
+    additionalStyles: "",
+    options: [""],
+    placeHolder: ""
+  },
+  {
     title: "BAMBURI",
     idInput: "bamburi",
     value: "",
@@ -49,19 +62,6 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     editable: true,
     visible:true,
     defaultValue: "",
-    additionalStyles: "",
-    options: [""],
-    placeHolder: ""
-  },
-  {
-    title: "INDICE PRODUCTO",
-    idInput: "indiceProducto",
-    value: 1,
-    content: "",
-    type: "noInput",
-    editable: true,
-    visible:true,
-    defaultValue: 1,
     additionalStyles: "",
     options: [""],
     placeHolder: ""
@@ -102,7 +102,7 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     visible:true,
     additionalStyles: "",
     defaultValue: "R1",
-    options: ["R1", "BK-Fx", "BK-10"],
+    options: [],
     placeHolder: ""
   },
   {
@@ -115,7 +115,7 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     visible:true,
     defaultValue: "NEGRO",
     additionalStyles: "",
-    options: ["NEGRO", "BEIG", "ANGORA"],
+    options: [],
     placeHolder: ""
   },
   {
@@ -128,7 +128,7 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
     visible:true,
     additionalStyles: "",
     defaultValue: "BIRK",
-    options: ["BIRK", "R063/R063"],
+    options: [],
     placeHolder: ""
   },
   {
@@ -211,7 +211,7 @@ export const ParteLaminacionProducto: ColumnDescriptor[] = [
   {
     title: "Borrar",
     idInput: "Borrar",
-    content: "borrar",
+    content: "",
     value: "",
     type: "svg",
     editable: false,

@@ -1,20 +1,27 @@
 import { useState } from "react"
-import { InventarioAlmacen } from "../interfaces/Inventario"
+import {
+  InventarioAlmacen,
+  ProductoInventario,
+  PrepareDataInventario
+} from "../interfaces/Inventario"
 import { useInventarioData } from "../customHook/useInventarioData"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { obtenerFechaActual } from "../utilidades/dateUtil"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
-import { date, string } from "zod"
-
-interface prepareDataInventari {
-  url: string
-  seccion: string
-  naveSeleccionada: string
-}
+import useInfiniteLoaderInventario from "../components/InfiniteLoaderComponent/useInfiniteLoaderInventario"
+import { date, map, string } from "zod"
+import { ProductoInventario } from "../models/ProductoInventario"
+import { ResumenProductoInventario } from "../models/ResumenProductoInventario"
+import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
+import useModal from "../components/modal/useModal"
+import { daysToWeeks } from "date-fns"
 
 export const useInventarioManager = () => {
+  const [resumeProduct, setResumeDataProduct] = useState<ProductoInventario>(null)
   const navigate = useNavigate() // Obtén la función navigate
+  const {totalProductosInventario,setListaTotalProductosInventario } = useOrdenProductionStore()
+  const { isOpen, setIsOpen, openModal, closeModal } = useModal()
 
   const {
     getInventarioSelected,
@@ -22,10 +29,22 @@ export const useInventarioManager = () => {
     updateInventario,
     mapColumnDescriptorsToProductoInventario,
     updateColumnDescriptor,
-    productoInicial
+    deleteLineaInventario,
+    productoInventarioInicial
   } = useInventarioData()
-  const [datosEntrada, setEntrada] =
-    useState<ColumnDescriptor[]>(productoInicial)
+
+  const {
+    currentPage,
+    itemsPerPage,
+    loadedData,
+    setLoadedData,
+    calculateItemToDisplay,
+    loadMoreData
+  } = useInfiniteLoaderInventario(20)
+
+  const [datosEntrada, setEntrada] = useState<ColumnDescriptor[]>(
+    productoInventarioInicial
+  )
 
   const handleInputChange = (value: string | number, id: any) => {
     console.log(value, id)
@@ -33,148 +52,106 @@ export const useInventarioManager = () => {
       datosEntrada,
       id,
       value,
-      productoInicial
+      productoInventarioInicial
     )
 
-    setEntrada(productoInicial)
-    setDatosLocalStorage("tempDataEntrada", updateDataColumnDescriptor)
+    if (updateDataColumnDescriptor) {
+      setEntrada(updateDataColumnDescriptor)
+      setDatosLocalStorage("tempDataEntrada", updateDataColumnDescriptor)
+    }
 
     //console.log(updateDataColumnDescriptor)
   }
 
-  /*
-  export interface InventarioAlmacen {
-    seccion: string,
-    almacen: string,
-    inventario: ProductoInventario[]
+  const handleOpenModal = () => {
+    console.log("Open Modal")
+    openModal()
   }
-  
-  export interface ProductoInventario {
-      fechaEntrada:string,
-      fechaSalida:string,
-      horaEntrada:string,
-      horaSalida:string,
-      idProducto:number,
-      stock:number,
-      cantidadSalida:number,
-      cantidadRestante:number,
-      plancha:string,
-      color:string,
-      dibujo:string,
-      molde:string,
-      acabado:string,
-      calibre:string
+
+  const handleCloseModal = () => {
+    closeModal()
   }
-  */
-
-  /* const handleButtonClick = (idInput: string | number, rowIndex: number) => {
-    if (idInput === "agregarEntrada") {
-      const dataPrepareInventario = getDatosLocalStorage(
-        "futureInventario"
-      ) as prepareDataInventari
-      if (dataPrepareInventario) {
-        const response = getInventarioSelected(
-          dataPrepareInventario.url,
-          dataPrepareInventario.seccion,
-          dataPrepareInventario.naveSeleccionada
-        )
-        const mapDatosEntrada =
-        mapColumnDescriptorsToProductoInventario(datosEntrada) 
-        mapDatosEntrada.horaEntrada=obtenerFechaActual("yyyy-MM-dd HH:mm:ss")
-        response.then((result) => {
-          // el inventario ya existe agregamos
-          if (result) {  
-
-            mapDatosEntrada.idProducto=result.inventario.length+1
-            result.inventario.push(mapDatosEntrada)
-            updateInventario(dataPrepareInventario.url,dataPrepareInventario.seccion,dataPrepareInventario.naveSeleccionada,mapDatosEntrada).then((result)=>{
-
-              if(result){
-                console.log("se ha actualizado el inventario con una entrada nueva")
-              }
-            })
-
-          }else{ 
-            // el inventario no existe creamos
-            mapDatosEntrada.idProducto=1
-            const nuevoInventario = {
-              seccion:dataPrepareInventario.seccion,
-              alamacen:dataPrepareInventario.seccion,
-              inventario:[mapDatosEntrada]
-            } 
-            crearNuevoInventario(dataPrepareInventario.url,nuevoInventario)
-            
-          }
-        })
-      }
-    }
-  }*/
 
   const handleButtonClick = async (
     idInput: string | number,
     rowIndex: number
   ) => {
-
+    console.log(idInput)
     if (idInput === "agregarEntrada") {
       const dataPrepareInventario = getDatosLocalStorage(
         "futureInventario"
-      ) as prepareDataInventari
+      ) as PrepareDataInventario
 
       if (dataPrepareInventario) {
-        console.log(dataPrepareInventario.seccion,dataPrepareInventario.naveSeleccionada)
         try {
-          const result = await getInventarioSelected(
-            dataPrepareInventario.url,
-            dataPrepareInventario.seccion,
-            dataPrepareInventario.naveSeleccionada
+          const dbInventario = await getInventarioSelected(
+            dataPrepareInventario.url
           )
 
           const mapDatosEntrada =
             mapColumnDescriptorsToProductoInventario(datosEntrada)
-          mapDatosEntrada.horaEntrada = obtenerFechaActual(
-            "yyyy-MM-dd HH:mm:ss"
+
+          mapDatosEntrada.fechaEntrada = obtenerFechaActual(
+            "dd/MM/yyyy HH:mm:ss"
           )
+          //relllenamos fechas y hora de salida
+          mapDatosEntrada.fechaSalida = obtenerFechaActual(
+            "dd/MM/yyyy HH:mm:ss"
+          )
+          mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
 
-          if (result) {
+          if (dbInventario) {
             // El inventario ya existe, agregamos
-            mapDatosEntrada.idProducto = result.inventario.length + 1
-            result.inventario.push(mapDatosEntrada)
-
+            mapDatosEntrada.idProducto = dbInventario.inventario.length + 1
+            dbInventario.inventario.push(mapDatosEntrada)
             const actualizacionExitosa = await updateInventario(
               dataPrepareInventario.url,
-              dataPrepareInventario.seccion,
-              dataPrepareInventario.naveSeleccionada,
-              result // Aquí pasamos el inventario completo, no solo mapDatosEntrada
+              dbInventario // Aquí pasamos el inventario completo, no solo mapDatosEntrada
             )
 
             if (actualizacionExitosa) {
               console.log(
-                "Se ha actualizado el inventario con una entrada nueva"
+                "Se ha actualizado el inventario con una entrada nueva",
+                dbInventario
               )
+              dataPrepareInventario.inventarioAlmacen = dbInventario
+              setDatosLocalStorage("futureInventario", dataPrepareInventario)
+              setListaTotalProductosInventario(dbInventario.inventario)
             }
           } else {
-
             // El inventario no existe, creamos
             mapDatosEntrada.idProducto = 1
             const nuevoInventario = {
-              seccion: dataPrepareInventario.seccion,
-              almacen: dataPrepareInventario.naveSeleccionada, // Asegúrate de que esto sea correcto
+              seccion: dataPrepareInventario.inventarioAlmacen.seccion,
+              almacen: dataPrepareInventario.inventarioAlmacen.almacen, // Asegúrate de que esto sea correcto
               inventario: [mapDatosEntrada]
             }
 
             const creacionExitosa = await crearNuevoInventario(
               dataPrepareInventario.url,
-              nuevoInventario 
+              nuevoInventario
             )
-
             if (creacionExitosa) {
-              console.log("Se ha creado un nuevo inventario con la entrada")
+              console.log(
+                "Se ha creado un nuevo inventario con la entrada",
+                nuevoInventario
+              )
+              dataPrepareInventario.inventarioAlmacen = nuevoInventario
+              setDatosLocalStorage("futureInventario", dataPrepareInventario)
+              setListaTotalProductosInventario(nuevoInventario.inventario)
             }
           }
         } catch (error) {
           console.error("Error en handleButtonClick:", error)
         }
       }
+    } else if (idInput === "Borrar") {
+      //setResumeDataProduct(listaTotalProduccion[rowIndex])
+      const dataInventarioTemp = getDatosLocalStorage("futureInventario") as PrepareDataInventario
+      console.log(dataInventarioTemp.url+"/producto/"+rowIndex)
+      navigate(`${dataInventarioTemp.url}/producto/${rowIndex}`)
+      setResumeDataProduct(totalProductosInventario[rowIndex])
+      handleOpenModal()
     }
   }
 
@@ -185,10 +162,31 @@ export const useInventarioManager = () => {
   ) => {
     const dataInventario = {
       url: url,
-      seccion: seccion,
-      naveSeleccionada: naveSeleccionada
-    }
-    setDatosLocalStorage("futureInventario",dataInventario)
+      inventarioAlmacen: {
+        seccion: seccion,
+        almacen: naveSeleccionada,
+        inventario: []
+      }
+    } as PrepareDataInventario
+
+    getInventarioSelected(url).then((response) => {
+      if (response) {
+        if (response.inventario) {
+          //recibo respuesta porque el inventario ya existe
+          dataInventario.inventarioAlmacen.inventario = response.inventario
+          setDatosLocalStorage("futureInventario", dataInventario)
+          setListaTotalProductosInventario(
+            dataInventario.inventarioAlmacen.inventario
+          )
+        }
+      } else {
+        setDatosLocalStorage("futureInventario", dataInventario)
+        setListaTotalProductosInventario(
+          dataInventario.inventarioAlmacen.inventario
+        )
+      }
+    })
+
     /*getUltimoInventarioAlmacen().then((response) => {
       if (response) {
         const dataInventario = {
@@ -212,7 +210,41 @@ export const useInventarioManager = () => {
         navigate(`${url}1`)
       }
     })*/
+  }
 
+  const handleDeleteProducto = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    idInput: string | number | undefined
+  ) => {
+    if (idInput === "btDelete") {
+    
+      const dataPrepareInventario = getDatosLocalStorage(
+        "futureInventario"
+      ) as PrepareDataInventario
+      if(dataPrepareInventario){
+        deleteLineaInventario(dataPrepareInventario.url,resumeProduct.idProducto).then((response)=>{
+          if(response){
+            console.log("el producto se ha eliminadocon exito")
+          }
+        })
+      }
+    }
+  }
+
+  const actualizaInvinterario = () => {
+    const datosTemporales = getDatosLocalStorage(
+      "futureInventario"
+    ) as PrepareDataInventario
+
+    if (
+      datosTemporales &&
+      datosTemporales.inventarioAlmacen.inventario.length > 0
+    ) {
+      console.log(datosTemporales)
+      setListaTotalProductosInventario(
+        datosTemporales.inventarioAlmacen.inventario
+      )
+    }
   }
 
   return {
@@ -220,6 +252,20 @@ export const useInventarioManager = () => {
     handleButtonClick,
     crearNuevoInventario,
     prepareDataInventarioEntradas,
-    productoInicial
+    setLoadedData,
+    calculateItemToDisplay,
+    actualizaInvinterario,
+    loadMoreData,
+    handleOpenModal,
+    handleCloseModal,
+    setIsOpen,
+    handleDeleteProducto,
+    ResumenProductoInventario,
+    resumeProduct,
+    isOpen,
+    currentPage,
+    itemsPerPage,
+    loadedData,
+    datosEntrada
   }
 }

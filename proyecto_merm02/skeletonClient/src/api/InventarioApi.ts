@@ -4,14 +4,11 @@ import axios from "./axios"
 
 // Ejemplo de función modificada para obtener un inventario por sección y almacén
 export const fetchInventarioAlmacenBySeccionAlmacen = async (
-  route: string,
-  seccion: string,
-  almacen: string
+  route: string
 ): Promise<InventarioAlmacen | null> => {
   try {
-    const response = await axios.get<InventarioAlmacen>(
-      `${route}/${seccion}/${almacen}`
-    )
+    console.log(route)
+    const response = await axios.get<InventarioAlmacen>(route)
     return response.data
   } catch (error) {
     console.error("Error fetching inventario by seccion and almacen:", error)
@@ -20,12 +17,23 @@ export const fetchInventarioAlmacenBySeccionAlmacen = async (
 }
 
 export const deleteInventarioAlmacen = async (
-  route: string,
-  seccion: string,
-  almacen: string
+  route: string
 ): Promise<boolean> => {
   try {
-    await axios.delete(`${route}/${seccion}/${almacen}`)
+    await axios.delete(route)
+    return true
+  } catch (error) {
+    console.error("Error deleting inventario almacen:", error)
+    return false
+  }
+}
+
+export const deleteProductoInventario = async (
+  route: string,
+  idProducto:number
+): Promise<boolean> => {
+  try {
+    await axios.delete(`${route}/producto/${idProducto}`)
     return true
   } catch (error) {
     console.error("Error deleting inventario almacen:", error)
@@ -38,7 +46,7 @@ export const agregarInventarioAlmacen = async (
   nuevoInventarioAlmacen: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-    const response = await axios.post(`${route}`, nuevoInventarioAlmacen)
+    const response = await axios.post(route, nuevoInventarioAlmacen)
     console.log(response)
     return true
   } catch (error) {
@@ -49,12 +57,10 @@ export const agregarInventarioAlmacen = async (
 
 export const updateInventario = async (
   route: string,
-  seccion: string,
-  almacen: string,
   inventarioAlmacen: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-    await axios.put(`${route}/${seccion}/${almacen}`, inventarioAlmacen)
+    await axios.put(route, inventarioAlmacen)
     return true
   } catch (error) {
     console.error("Error updating inventario:", error)
@@ -76,13 +82,11 @@ export const fetchAllInventarioAlmacen = async (
 
 export const updateProductoInInventario = async (
   route: string,
-  seccion: string,
-  almacen: string,
   updatedProductoData: Partial<ProductoInventario>
 ): Promise<boolean> => {
   try {
     await axios.put(
-      `${route}/${seccion}/${almacen}/producto/${updatedProductoData.idProducto}`,
+      `${route}/producto/${updatedProductoData.idProducto}`,
       updatedProductoData
     )
     return true
@@ -94,13 +98,11 @@ export const updateProductoInInventario = async (
 
 export const addProductoInventario = async (
   route: string,
-  seccion: string,
-  almacen: string,
   nuevoProductoInventario: ProductoInventario
 ): Promise<boolean> => {
   try {
     await axios.post(
-      `${route}/${seccion}/${almacen}/producto/${nuevoProductoInventario}`,
+      `${route}/producto/${nuevoProductoInventario}`,
       nuevoProductoInventario
     )
     return true

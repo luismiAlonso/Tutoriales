@@ -2,18 +2,17 @@ import { z } from "zod"
 
 export const productoInventarioSchema = z.object({
   fechaEntrada: z.string(),
-  fechaSalida: z.string().optional(), // Suponiendo que puede ser opcional
-  horaEntrada: z.string(),
-  horaSalida: z.string().optional(), // Suponiendo que puede ser opcional
+  fechaSalida: z.string(), // Suponiendo que puede ser opcional
   idProducto: z.number(),
   stock: z.number(),
-  cantidadSalida: z.number(),
+  cantidadSalida: z.number().optional(),
   cantidadEntrante: z.number(),
-  plancha: z.string(),
+  planchas: z.string(),
   color: z.string(),
-  dibujo: z.string().optional(), // Suponiendo que puede ser opcional
+  dibujo: z.string(), // Suponiendo que puede ser opcional
   molde: z.string(),
-  acabado: z.string(),
+  acabado01: z.string(),
+  acabado02: z.string().optional(),
   calibre: z.string()
 })
 

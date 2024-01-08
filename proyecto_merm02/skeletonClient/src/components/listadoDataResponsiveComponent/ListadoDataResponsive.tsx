@@ -63,7 +63,7 @@ const RenderColumnContent: React.FC<IrenderColumnContentProps> = ({
     }
   }
 
-  return <div className="flex flex-col text-sm">{renderContent()}</div>
+  return <div className="flex flex-col text-xs">{renderContent()}</div>
 }
 
 const ListadoDataResponsive: React.FC<IdataListComponentProps> = ({

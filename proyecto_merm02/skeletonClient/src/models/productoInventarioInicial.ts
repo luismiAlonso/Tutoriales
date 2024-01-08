@@ -1,6 +1,6 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
-export const HeaderInventario: ColumnDescriptor[] = [
+export const productoInventarioInicial: ColumnDescriptor[] = [
   {
     title: "INDEX",
     idInput: "index",
@@ -8,7 +8,7 @@ export const HeaderInventario: ColumnDescriptor[] = [
     content: "",
     type: "number",
     editable: true,
-    visible: true,
+    visible: false,
     defaultValue: 1,
     additionalStyles: "",
     options: [""],
@@ -38,12 +38,12 @@ export const HeaderInventario: ColumnDescriptor[] = [
     title: "COLOR",
     idInput: "color",
     content: "",
-    value: "BIRK",
+    value: "NEGRO",
     type: "hybridSelect",
     editable: false,
     visible: true,
     additionalStyles: "",
-    defaultValue: "BIRK",
+    defaultValue: "NEGRO",
     options: ["NEGRO", "BEIGE", "ANGORA"],
     placeHolder: ""
   },
@@ -133,13 +133,39 @@ export const HeaderInventario: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
-    title: "CANTIDAD",
-    idInput: "cantidad",
+    title: "STOCK",
+    idInput: "stock",
+    content: "",
+    value: 0,
+    type: "text",
+    editable: false,
+    visible: false,
+    additionalStyles: "",
+    defaultValue: 0,
+    options:[],
+    placeHolder: ""
+  },
+  {
+    title: "cantidadEntrante",
+    idInput: "cantidadEntrante",
     value: 1,
     content: "",
     type: "text",
     editable: false,
     visible: true,
+    defaultValue: 1,
+    additionalStyles: "",
+    options: [""],
+    placeHolder: ""
+  },
+  {
+    title: "cantidadSalida",
+    idInput: "cantidadSalida",
+    value: 1,
+    content: "",
+    type: "text",
+    editable: false,
+    visible: false,
     defaultValue: 1,
     additionalStyles: "",
     options: [""],
@@ -158,5 +184,5 @@ export const HeaderInventario: ColumnDescriptor[] = [
     placeHolder: ""
     //agregarNuevoProductoOP(ordenReciente?.idParte,)
   }
+  
 ]
-

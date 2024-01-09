@@ -34,8 +34,8 @@ function EntradasInventarioPage() {
 
   useEffect(() => {
     
-    //actualizaInvinterario()
-    console.log(datosEntrada)
+    actualizaInvinterario()
+    //console.log(datosEntrada)
 
   }, [])
 

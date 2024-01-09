@@ -8,6 +8,7 @@ export interface ProductoInventario {
     fechaEntrada:string,
     fechaSalida:string,
     idProducto:number,
+    claveComp:string,
     stock:number,
     cantidadSalida:number,
     cantidadEntrante:number,

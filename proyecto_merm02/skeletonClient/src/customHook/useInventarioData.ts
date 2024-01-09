@@ -94,6 +94,7 @@ export const useInventarioData = () => {
           producto[key] = Number(col.value)
         } else {
           // Mantiene como cadena
+         //console.log(key,col.value)
           producto[key] = col.value
         }
       }

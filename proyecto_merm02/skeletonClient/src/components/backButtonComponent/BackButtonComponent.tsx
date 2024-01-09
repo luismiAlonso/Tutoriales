@@ -1,9 +1,9 @@
 import React from "react"
-import { useNavigateBack } from "./useNavigateBack" // Asegúrate de ajustar la ruta de importación
+import { useNavigation } from "./useNavigation" // Asegúrate de ajustar la ruta de importación
 import CustomButton from "../button/ButtonComponent" // Asegúrate de ajustar la ruta de importación
 
 const BackButton: React.FC = () => {
-  const navigateBack = useNavigateBack()
+  const {navigateBack} = useNavigation()
 
   return (
     <CustomButton

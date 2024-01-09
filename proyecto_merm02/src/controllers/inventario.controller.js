@@ -3,6 +3,8 @@ import {
   ProductoInventario
 } from "../models/inventario.model.js"
 
+import { generadorClaveCompuesta } from "../utilidades/util.js"
+
 /*
 // Obtener todos los inventarios de almacén
 export const getAllInventarioAlmacen = async (req, res) => {
@@ -187,18 +189,38 @@ export const createInventarioAlmacen = async (req, res) => {
   }
 }
 
-// PUT: Actualizar un inventario de almacén por sección y almacén
+/// PUT: Actualizar un inventario de almacén por sección y almacén
 export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
   try {
     const { seccion, almacen } = req.params
+
+    // Suponiendo que 'req.body' contiene los datos del producto a añadir
+    const claveCompuesta = generadorClaveCompuesta(req.body)
+    
+    // Buscar si ya existe un producto con la misma clave compuesta
+    const inventarioExistente = await InventarioAlmacen.findOne({
+      seccion,
+      almacen,
+      "inventario.claveComp": claveCompuesta
+    })
+
+    if (inventarioExistente) {
+      return res
+        .status(409)
+        .json({ message: "Producto ya existente en el inventario" })
+    }
+
+    // Actualizar el inventario si el producto no existe
     const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
       { seccion, almacen },
-      req.body,
+      { $push: { inventario: req.body } }, // Asumiendo que quieres añadir el nuevo producto
       { new: true }
     )
+
     if (!inventarioActualizado) {
       return res.status(404).json({ message: "Inventario no encontrado" })
     }
+
     res.json(inventarioActualizado)
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el inventario" })
@@ -223,31 +245,36 @@ export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
 }
 
 export const deleteProductoInventarioById = async (req, res) => {
-  const { seccion, almacen } = req.params;
-  const idProducto = parseInt(req.params.idProducto);
+  const { seccion, almacen } = req.params
+  const idProducto = parseInt(req.params.idProducto)
 
   if (isNaN(idProducto)) {
-    return res.status(400).json({ message: "ID del producto no válido" });
+    return res.status(400).json({ message: "ID del producto no válido" })
   }
 
   try {
-    const inventarioAlmacen = await InventarioAlmacen.findOne({ seccion, almacen });
+    const inventarioAlmacen = await InventarioAlmacen.findOne({
+      seccion,
+      almacen
+    })
 
     if (!inventarioAlmacen) {
-      return res.status(404).json({ message: "Inventario no encontrado" });
+      return res.status(404).json({ message: "Inventario no encontrado" })
     }
 
     // Filtra para eliminar el producto específico
     inventarioAlmacen.inventario = inventarioAlmacen.inventario.filter(
       (producto) => producto.idProducto !== idProducto
-    );
+    )
 
     // Guarda el inventario actualizado
-    await inventarioAlmacen.save();
+    await inventarioAlmacen.save()
 
-    res.sendStatus(204);
+    res.sendStatus(204)
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar el producto del inventario" });
+    res
+      .status(500)
+      .json({ message: "Error al eliminar el producto del inventario" })
   }
 }
 

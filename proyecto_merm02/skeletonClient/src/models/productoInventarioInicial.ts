@@ -2,8 +2,8 @@ import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
 export const productoInventarioInicial: ColumnDescriptor[] = [
   {
-    title: "INDEX",
-    idInput: "index",
+    title: "IDPRODUCT",
+    idInput: "idProduct",
     value: 1,
     content: "",
     type: "number",
@@ -15,8 +15,8 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
-    title: "PLANCHAS",
-    idInput: "planchas",
+    title: "PLANCHA",
+    idInput: "plancha",
     value: "PL.B CREPELINA OSB 75",
     content: "",
     type: "hybridSelect",

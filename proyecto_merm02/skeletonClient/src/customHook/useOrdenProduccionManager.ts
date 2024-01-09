@@ -495,7 +495,7 @@ const useOrdenProduccionManager = () => {
 
     } else if (id.toLowerCase() === "borrar") {
       console.log(listaTotalProduccion[rowIndex])
-      setResumeDataProduct(listaTotalProduccion[rowIndex])
+      //setResumeDataProduct(listaTotalProduccion[rowIndex])
       navigate(
         `/ordenProduccion/${listaTotalProduccion[rowIndex].idParte}/productos/${listaTotalProduccion[rowIndex].indiceProducto}`
       )

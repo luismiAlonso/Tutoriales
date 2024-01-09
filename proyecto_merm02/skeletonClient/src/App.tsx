@@ -41,14 +41,16 @@ function App() {
             <Route path="/SalidasInventarioPage/:seccion/:almacen" element={<EntradasInventarioPage />} />
             <Route path="/SalidasInventarioPage/:seccion/:almacen/producto/:idProducto" element={<EntradasInventarioPage />} />
           </Route> 
-          {/*<Route path="/register" element={<RegisterPage />} />
+          {
+          /*<Route path="/register" element={<RegisterPage />} />
                 <Route element={<ProtectedRoute />}>
                   <Route path="/tasks" element={<TaskPage />} />
                   <Route path="/add-task" element={<TaskFormPage />} />
                   <Route path="/tasks/:id" element={<TaskFormPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/transactions" element={<TransactionPage />} />
-              </Route>*/}
+          </Route>*/
+          }
         </Routes>
       </main>
     </BrowserRouter>

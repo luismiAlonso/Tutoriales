@@ -18,9 +18,11 @@ import useModal from "../components/modal/useModal"
 import { daysToWeeks } from "date-fns"
 
 export const useInventarioManager = () => {
-  const [resumeProduct, setResumeDataProduct] = useState<ProductoInventario>(null)
+  const [resumeProduct, setResumeDataProduct] =
+    useState<ProductoInventario>(null)
   const navigate = useNavigate() // Obtén la función navigate
-  const {totalProductosInventario,setListaTotalProductosInventario } = useOrdenProductionStore()
+  const { totalProductosInventario, setListaTotalProductosInventario } =
+    useOrdenProductionStore()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
 
   const {
@@ -76,7 +78,7 @@ export const useInventarioManager = () => {
     idInput: string | number,
     rowIndex: number
   ) => {
-    console.log(idInput)
+    //console.log(idInput)
     if (idInput === "agregarEntrada") {
       const dataPrepareInventario = getDatosLocalStorage(
         "futureInventario"
@@ -94,33 +96,51 @@ export const useInventarioManager = () => {
           mapDatosEntrada.fechaEntrada = obtenerFechaActual(
             "dd/MM/yyyy HH:mm:ss"
           )
+
           //relllenamos fechas y hora de salida
           mapDatosEntrada.fechaSalida = obtenerFechaActual(
             "dd/MM/yyyy HH:mm:ss"
           )
-          mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
 
+          mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
+          
           if (dbInventario) {
             // El inventario ya existe, agregamos
-            mapDatosEntrada.idProducto = dbInventario.inventario.length + 1
+            mapDatosEntrada.idProducto =
+              dbInventario.inventario[dbInventario.inventario.length - 1]
+                .idProducto + 1
+            mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
             dbInventario.inventario.push(mapDatosEntrada)
-            const actualizacionExitosa = await updateInventario(
+            
+            //actualizamos inventario con los nuevos datos
+            const response = await updateInventario(
               dataPrepareInventario.url,
               dbInventario // Aquí pasamos el inventario completo, no solo mapDatosEntrada
             )
 
-            if (actualizacionExitosa) {
+            if (response===200) {
               console.log(
                 "Se ha actualizado el inventario con una entrada nueva",
                 dbInventario
               )
+
               dataPrepareInventario.inventarioAlmacen = dbInventario
               setDatosLocalStorage("futureInventario", dataPrepareInventario)
               setListaTotalProductosInventario(dbInventario.inventario)
+
+            }else if(response===404){
+              console.log("inventario no encontrado")
+              //  console.log("el producto que deseas agregar ya existe")
+            }else if(response===409){
+              console.log("producto repetido")
+            }else if(response===400){
+              console.log("error de insercion")
             }
+
           } else {
             // El inventario no existe, creamos
             mapDatosEntrada.idProducto = 1
+            mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
             const nuevoInventario = {
               seccion: dataPrepareInventario.inventarioAlmacen.seccion,
               almacen: dataPrepareInventario.inventarioAlmacen.almacen, // Asegúrate de que esto sea correcto
@@ -147,11 +167,17 @@ export const useInventarioManager = () => {
       }
     } else if (idInput === "Borrar") {
       //setResumeDataProduct(listaTotalProduccion[rowIndex])
-      const dataInventarioTemp = getDatosLocalStorage("futureInventario") as PrepareDataInventario
-      console.log(dataInventarioTemp.url+"/producto/"+rowIndex)
-      navigate(`${dataInventarioTemp.url}/producto/${rowIndex}`)
+      const dataInventarioTemp = getDatosLocalStorage(
+        "futureInventario"
+      ) as PrepareDataInventario
+      //console.log(dataInventarioTemp.url + "/producto/" + rowIndex)
+      navigate(`${dataInventarioTemp.url}/producto/${rowIndex}`, {
+        replace: true
+      })
       setResumeDataProduct(totalProductosInventario[rowIndex])
       handleOpenModal()
+    } else if (idInput === "Editar") {
+      console.log("estoy dentro")
     }
   }
 
@@ -217,14 +243,23 @@ export const useInventarioManager = () => {
     idInput: string | number | undefined
   ) => {
     if (idInput === "btDelete") {
-    
       const dataPrepareInventario = getDatosLocalStorage(
         "futureInventario"
       ) as PrepareDataInventario
-      if(dataPrepareInventario){
-        deleteLineaInventario(dataPrepareInventario.url,resumeProduct.idProducto).then((response)=>{
-          if(response){
-            console.log("el producto se ha eliminadocon exito")
+
+      if (dataPrepareInventario) {
+        deleteLineaInventario(
+          dataPrepareInventario.url,
+          resumeProduct.idProducto
+        ).then((response) => {
+          if (response) {
+            console.log(
+              "el producto se ha eliminadocon exito ",
+              dataPrepareInventario.url
+            )
+            // navigate(dataPrepareInventario.url)
+            actualizaInvinterario()
+            closeModal()
           }
         })
       }
@@ -236,16 +271,28 @@ export const useInventarioManager = () => {
       "futureInventario"
     ) as PrepareDataInventario
 
-    if (
-      datosTemporales &&
-      datosTemporales.inventarioAlmacen.inventario.length > 0
-    ) {
-      console.log(datosTemporales)
-      setListaTotalProductosInventario(
-        datosTemporales.inventarioAlmacen.inventario
-      )
-    }
+    //console.log("URL:",datosTemporales.url)
+    getInventarioSelected(datosTemporales.url).then((response) => {
+      if (response) {
+        if (response.inventario) {
+          //recibo respuesta porque el inventario ya existe
+          datosTemporales.inventarioAlmacen.inventario = response.inventario
+          setDatosLocalStorage("futureInventario", datosTemporales)
+          setListaTotalProductosInventario(response.inventario)
+        }
+      } else {
+        console.log(
+          "la base de datos no contiene inventario con esa definicion"
+        )
+      }
+    })
   }
+
+const generadorClaveCompuesta = (producto: ProductoInventario) => {
+    const compClave = `${producto.plancha}-${producto.molde}-${producto.dibujo}-${producto.color}-${producto.calibre}-${producto.acabado01}-${producto.acabado02}`
+    console.log(compClave)
+    return compClave
+}
 
   return {
     handleInputChange,

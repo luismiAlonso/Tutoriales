@@ -4,10 +4,11 @@ export const productoInventarioSchema = z.object({
   fechaEntrada: z.string(),
   fechaSalida: z.string(), // Suponiendo que puede ser opcional
   idProducto: z.number(),
+  claveComp:z.string(),
   stock: z.number(),
   cantidadSalida: z.number().optional(),
   cantidadEntrante: z.number(),
-  planchas: z.string(),
+  plancha: z.string(),
   color: z.string(),
   dibujo: z.string(), // Suponiendo que puede ser opcional
   molde: z.string(),

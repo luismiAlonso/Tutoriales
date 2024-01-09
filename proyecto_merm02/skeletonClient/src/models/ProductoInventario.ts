@@ -28,8 +28,8 @@ export const ProductoInventario: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
-    title: "PLANCHAS",
-    idInput: "planchas",
+    title: "PLANCHA",
+    idInput: "plancha",
     value: "",
     content: "",
     type: "noInput",

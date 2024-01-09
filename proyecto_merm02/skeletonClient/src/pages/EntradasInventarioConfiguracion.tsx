@@ -30,7 +30,6 @@ function EntradasInventarioConfiguracion() {
     const url=`/EntradasInventarioPage/${seccion}/${naveSeleccionada}`
     prepareDataInventarioEntradas(url,seccion,naveSeleccionada)
     navigate(url)
-
   }
 
   const handleSelectNave = () => {}

@@ -7,7 +7,7 @@ export const fetchInventarioAlmacenBySeccionAlmacen = async (
   route: string
 ): Promise<InventarioAlmacen | null> => {
   try {
-    console.log(route)
+    // console.log(route)
     const response = await axios.get<InventarioAlmacen>(route)
     return response.data
   } catch (error) {
@@ -30,7 +30,7 @@ export const deleteInventarioAlmacen = async (
 
 export const deleteProductoInventario = async (
   route: string,
-  idProducto:number
+  idProducto: number
 ): Promise<boolean> => {
   try {
     await axios.delete(`${route}/producto/${idProducto}`)
@@ -58,13 +58,14 @@ export const agregarInventarioAlmacen = async (
 export const updateInventario = async (
   route: string,
   inventarioAlmacen: InventarioAlmacen
-): Promise<boolean> => {
+): Promise<number> => {
   try {
-    await axios.put(route, inventarioAlmacen)
-    return true
+   // console.log(route,inventarioAlmacen)
+    const result = await axios.put(route, inventarioAlmacen)
+    return result.status
   } catch (error) {
     console.error("Error updating inventario:", error)
-    return false
+    return 0
   }
 }
 

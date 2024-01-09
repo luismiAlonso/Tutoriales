@@ -38,7 +38,7 @@ const useInfiniteLoaderInventario = (itemsPerPage = 100) => {
 
   useEffect(()=>{
    setLoadedData(calculateItemToDisplay())
-   console.log(totalProductosInventario)
+  // console.log(totalProductosInventario)
   },[totalProductosInventario])
 
   return {

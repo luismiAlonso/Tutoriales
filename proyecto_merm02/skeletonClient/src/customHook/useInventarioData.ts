@@ -5,8 +5,8 @@ import {
   deleteInventarioAlmacen,
   deleteProductoInventario,
   updateInventario,
-  fetchAllInventarioAlmacen,
   updateProductoInInventario,
+  fetchAllInventarioAlmacen,
   addProductoInventario
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
@@ -67,6 +67,20 @@ export const useInventarioData = () => {
     }
   }
 
+  const updateProductoIventario = async (
+    url: string,
+    productoInventario: ProductoInventario
+  ): Promise<boolean> => {
+    try {
+      console.log(url)
+      const response = await updateProductoInInventario(url, productoInventario)
+      return response
+
+    } catch (error) {
+      return false
+    }
+  }
+
   const mapColumnDescriptorsToProductoInventario = (
     columns: ColumnDescriptor[],
     exclude: string[] = [] // Array de propiedades a excluir
@@ -84,6 +98,7 @@ export const useInventarioData = () => {
       ) {
         const key = col.idInput
         //parseo de tipos numericos
+
         if (
           key === "idProducto" ||
           key === "stock" ||
@@ -94,7 +109,7 @@ export const useInventarioData = () => {
           producto[key] = Number(col.value)
         } else {
           // Mantiene como cadena
-         //console.log(key,col.value)
+          //console.log(key,col.value)
           producto[key] = col.value
         }
       }
@@ -207,6 +222,7 @@ export const useInventarioData = () => {
     setCurrentInventari,
     deleteLineaInventario,
     updateInventario,
+    updateProductoIventario,
     currentInventario,
     productoInventarioInicial
   }

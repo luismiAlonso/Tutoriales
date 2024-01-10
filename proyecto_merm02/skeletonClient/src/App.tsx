@@ -37,9 +37,9 @@ function App() {
             <Route path="/MainInventario" element={<MainInventario />} />
             <Route path="/EntradasInventarioConfiguracion" element={<EntradasInventarioConfiguracion />} />
             <Route path="/EntradasInventarioPage/:seccion/:almacen" element={<EntradasInventarioPage />} />
-            <Route path="/EntradasInventarioPage/:seccion/:almacen/producto/:idProducto" element={<EntradasInventarioPage />} />
+            <Route path="/EntradasInventarioPage/:seccion/:almacen/:idProducto" element={<EntradasInventarioPage />} />
             <Route path="/SalidasInventarioPage/:seccion/:almacen" element={<EntradasInventarioPage />} />
-            <Route path="/SalidasInventarioPage/:seccion/:almacen/producto/:idProducto" element={<EntradasInventarioPage />} />
+            <Route path="/SalidasInventarioPage/:seccion/:almacen/:idProducto" element={<EntradasInventarioPage />} />
           </Route> 
           {
           /*<Route path="/register" element={<RegisterPage />} />

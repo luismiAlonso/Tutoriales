@@ -35,7 +35,6 @@ function EntradasInventarioPage() {
   useEffect(() => {
     
     actualizaInvinterario()
-    //console.log(datosEntrada)
 
   }, [])
 

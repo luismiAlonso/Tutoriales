@@ -2,8 +2,8 @@ import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
 export const productoInventarioInicial: ColumnDescriptor[] = [
   {
-    title: "IDPRODUCT",
-    idInput: "idProduct",
+    title: "IDPRODUCTO",
+    idInput: "idProducto",
     value: 1,
     content: "",
     type: "number",

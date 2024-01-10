@@ -3,6 +3,7 @@ import {
   getAllInventarioAlmacen,
   createInventarioAlmacen,
   deleteProductoInventarioById,
+  updateInventarioAlmacenProduct,
   getInventarioAlmacenBySeccionAlmacen,
   updateInventarioAlmacenBySeccionAlmacen,
   deleteInventarioAlmacenBySeccionAlmacen
@@ -37,15 +38,23 @@ inventarioRouter.put(
   updateInventarioAlmacenBySeccionAlmacen
 )
 
+// PUT: Actualizar un inventario de almacén por sección y almacén
+inventarioRouter.put(
+  "/EntradasInventarioPage/:seccion/:almacen/:idProducto",
+  authRequire,
+  updateInventarioAlmacenProduct
+)
+
 // DELETE: Eliminar un inventario de almacén por sección y almacén
 inventarioRouter.delete(
   "/EntradasInventarioPage/:seccion/:almacen",
   authRequire,
   deleteInventarioAlmacenBySeccionAlmacen
 )
+
 //DELETE: eliminar linea de inventario en un inventario especifico
 inventarioRouter.delete(
-  "/EntradasInventarioPage/:seccion/:almacen/producto/:idProducto",
+  "/EntradasInventarioPage/:seccion/:almacen/:idProducto",
   deleteProductoInventarioById
 )
 

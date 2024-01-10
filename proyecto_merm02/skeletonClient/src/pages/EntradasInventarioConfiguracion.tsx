@@ -28,13 +28,15 @@ function EntradasInventarioConfiguracion() {
 
   const handleClick = () => {
     const url=`/EntradasInventarioPage/${seccion}/${naveSeleccionada}`
-    prepareDataInventarioEntradas(url,seccion,naveSeleccionada)
-    navigate(url)
+    prepareDataInventarioEntradas(url,seccion,naveSeleccionada).then((response)=>{
+      if(response){
+        navigate(url)
+      }
+    })
   }
 
   const handleSelectNave = () => {}
 
-  useEffect(() => {}, [listadoSecciones, naveSeleccionada])
 
   return (
     <form className="text-white">

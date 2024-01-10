@@ -189,41 +189,124 @@ export const createInventarioAlmacen = async (req, res) => {
   }
 }
 
-/// PUT: Actualizar un inventario de almacén por sección y almacén
-export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+export const updateInventarioAlmacenProduct = async (req, res) => {
   try {
     const { seccion, almacen } = req.params
 
     // Suponiendo que 'req.body' contiene los datos del producto a añadir
     const claveCompuesta = generadorClaveCompuesta(req.body)
-    
+
     // Buscar si ya existe un producto con la misma clave compuesta
     const inventarioExistente = await InventarioAlmacen.findOne({
       seccion,
       almacen,
-      "inventario.claveComp": claveCompuesta
+      inventario: { $elemMatch: { claveComp: claveCompuesta } }
     })
 
     if (inventarioExistente) {
-      return res
-        .status(409)
-        .json({ message: "Producto ya existente en el inventario" })
+      return res.status(409).json({
+        message: "Producto ya existente en el inventario",
+        productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
+      })
     }
 
     // Actualizar el inventario si el producto no existe
     const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
       { seccion, almacen },
-      { $push: { inventario: req.body } }, // Asumiendo que quieres añadir el nuevo producto
+      { $push: { inventario: req.body } },
       { new: true }
     )
 
     if (!inventarioActualizado) {
-      return res.status(404).json({ message: "Inventario no encontrado" })
+      return res.status(404).json({
+        message: "Inventario no encontrado",
+        error: error.message,
+        productoRecibido: req.body
+      })
     }
 
-    res.json(inventarioActualizado)
+    res.json({
+      message: "Inventario actualizado correctamente",
+      inventarioActualizado, // Incluir el inventario actualizado
+      productoAgregado: req.body // Incluir los datos del producto agregado
+    })
+
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar el inventario" })
+    
+    if (error.name === "ValidationError") {
+      // Captura errores de validación y devuelve un 400
+      return res.status(400).json({
+        message: "Datos de solicitud inválidos",
+        error: error.message,
+        productoRecibido: req.body
+      })
+    }
+    res.status(500).json({
+      message: "Error al actualizar el inventario",
+      error: error.message, // Incluir detalles del error
+      productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
+    })
+  }
+}
+
+export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+  try {
+    const { seccion, almacen } = req.params
+
+    // Suponiendo que 'req.body' contiene los datos del producto a añadir
+    /*const claveCompuesta = generadorClaveCompuesta(
+      req.body.inventario[req.body.inventario.length - 1]
+    )
+
+    // Buscar si ya existe un producto con la misma clave compuesta
+    const inventarioExistente = await InventarioAlmacen.findOne({
+      seccion,
+      almacen,
+      inventario: { $elemMatch: { claveComp: claveCompuesta } }
+    })
+
+    if (inventarioExistente) {
+      return res.status(409).json({
+        message: "Producto ya existente en el inventario",
+        productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
+      })
+    }*/
+
+    // Actualizar el inventario si el producto no existe
+    const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
+      { seccion, almacen },
+      { $set: { inventario: req.body.inventario } },
+      { new: true }
+    )
+
+    if (!inventarioActualizado) {
+      return res
+        .status(404)
+        .json({
+          message: "Inventario no encontrado",
+          productoEnviado: req.body
+        })
+    }
+
+    res.json({
+      message: "Inventario actualizado correctamente",
+      inventarioActualizado, // Incluir el inventario actualizado
+      productoAgregado: req.body // Incluir los datos del producto agregado
+    })
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      // Captura errores de validación y devuelve un 400
+      return res.status(400).json({
+        message: "Datos de solicitud inválidos",
+        error: error.message,
+        productoRecibido: req.body
+      })
+    }
+    res.status(500).json({
+      message: "Error al actualizar el inventario",
+      error: error.message, // Incluir detalles del error
+      productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
+    })
   }
 }
 

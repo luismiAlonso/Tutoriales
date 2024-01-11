@@ -346,7 +346,7 @@ const useOrdenProduccionManager = () => {
 
   const handleButtonClick = (idInput: string | number, rowIndex: number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
-
+    
     if (id.toLowerCase() === "agregar") {
 
       const productoActual = recuperarDatosTemporales()
@@ -434,6 +434,7 @@ const useOrdenProduccionManager = () => {
     } else if (id.toLowerCase() === "aceptaredicion") {
 
       if (datosLineaMod) {
+
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,

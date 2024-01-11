@@ -4,10 +4,12 @@ import { HybridSelectProps } from "./HybridSelectProps"
 const HybridSelect: FC<HybridSelectProps> = ({
   type,
   idInput,
+  editable,
   activeLabel,
   options,
   value: controlledValue,
   defaultValue = "",
+  additionalStyles,
   onChange
 }) => {
   const [isListVisible, setIsListVisible] = useState<boolean>(false)
@@ -44,24 +46,28 @@ const HybridSelect: FC<HybridSelectProps> = ({
     setInternalValue(option)
     if (onChange) onChange(option)
   }
+  const defaultClass="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 
   return (
+
     <div className="relative">
       {activeLabel && <label>{idInput}</label>}
       <input
         type="text"
         value={internalValue}
+        readOnly={!editable}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           handleInputChange(e.target.value)
           if (onChange) {
             onChange(e.target.value)
           }
         }}
-        className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      
+        className={additionalStyles ? additionalStyles : defaultClass}
         onFocus={() => setIsListVisible(true)}
       />
 
-      {isListVisible && (
+      {isListVisible && editable && (
         <ul
           className="absolute w-full mt-2 text-white bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 z-50" // Aquí se ha añadido la clase z-50
         >

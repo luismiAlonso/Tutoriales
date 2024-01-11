@@ -86,7 +86,9 @@ const InputComponent: React.FC<InputProps> = (props) => {
         <HybridSelect
           type = "hybrid"
           idInput= {props.idInput}
+          editable={props.editable}
           activeLabel={false}
+          additionalStyles={props.additionalStyles}
           options={props.options || []}
           defaultValue={props.defaultValue as string}
           value={props.value as string} // Asegurarnos de que si no hay opciones, se pasa un array vacío
@@ -167,7 +169,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
               value={column.value}
               content={column.content}
               type={column.type}
-              rowIndex={rowIndex}
+              rowIndex={index}
               editable={column.editable}
               visible={column.visible}
               options={column.options}
@@ -177,7 +179,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
               onChange={(value) => onInputChange(value, column.idInput)}
               onClick={(e) => {
                 e.preventDefault()
-                onButtonClick(column.idInput, rowIndex)
+                onButtonClick(column.idInput, index)
               }}
             />
           </div>

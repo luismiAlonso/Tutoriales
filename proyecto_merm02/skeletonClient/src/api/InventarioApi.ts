@@ -33,7 +33,7 @@ export const deleteProductoInventario = async (
   idProducto: number
 ): Promise<boolean> => {
   try {
-    await axios.delete(`${route}/producto/${idProducto}`)
+    await axios.delete(`${route}/${idProducto}`)
     return true
   } catch (error) {
     console.error("Error deleting inventario almacen:", error)
@@ -46,7 +46,7 @@ export const agregarInventarioAlmacen = async (
   nuevoInventarioAlmacen: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-    console.log(nuevoInventarioAlmacen)
+    //console.log(nuevoInventarioAlmacen)
     await axios.post(route, nuevoInventarioAlmacen)
 
     return true
@@ -59,15 +59,13 @@ export const agregarInventarioAlmacen = async (
 export const updateInventario = async (
   route: string,
   inventarioAlmacen: InventarioAlmacen
-): Promise<number> => {
+): Promise<boolean> => {
   try {
-    const result = await axios.put(route, inventarioAlmacen)
-    console.log(result.data)
-
-    return result.status
+    await axios.put(route, inventarioAlmacen)
+    return true
   } catch (error) {
     console.error("Error updating inventario:", error)
-    return 0
+    return false
   }
 }
 

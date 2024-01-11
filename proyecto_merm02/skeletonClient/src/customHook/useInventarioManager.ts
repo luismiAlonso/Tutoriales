@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom" // Importa useNavigate
 import useInfiniteLoaderInventario from "../components/InfiniteLoaderComponent/useInfiniteLoaderInventario"
 import { date, map, string } from "zod"
 import { ProductoInventario } from "../models/ProductoInventario"
+import { ProducInventarioModificacion } from "../models/ProductoInventarioModificacion"
 import { ResumenProductoInventario } from "../models/ResumenProductoInventario"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useModal from "../components/modal/useModal"
@@ -23,13 +24,16 @@ export const useInventarioManager = () => {
   const navigate = useNavigate() // Obtén la función navigate
   const { totalProductosInventario, setListaTotalProductosInventario } =
     useOrdenProductionStore()
+  const [url, setUrl] = useState<string>()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
+  const [editMode, setEditMode] = useState<boolean>(false)
 
   const {
     getInventarioSelected,
     crearNuevoInventario,
     updateProductoIventario,
     updateInventario,
+    mapearProductoInventarioAColumnas,
     mapColumnDescriptorsToProductoInventario,
     updateColumnDescriptor,
     deleteLineaInventario,
@@ -48,9 +52,13 @@ export const useInventarioManager = () => {
   const [datosEntrada, setEntrada] = useState<ColumnDescriptor[]>(
     productoInventarioInicial
   )
+  const [datosModificacion, setDatosModificacion] = useState<
+    ColumnDescriptor[]
+  >(ProducInventarioModificacion)
 
   const handleInputChange = (value: string | number, id: any) => {
     console.log(value, id)
+
     const updateDataColumnDescriptor = updateColumnDescriptor(
       datosEntrada,
       id,
@@ -63,7 +71,26 @@ export const useInventarioManager = () => {
       setDatosLocalStorage("tempDataEntrada", updateDataColumnDescriptor)
     }
 
+    if (editMode) {
+      const updateDataColumnEditDescriptor = updateColumnDescriptor(
+        datosModificacion,
+        id,
+        value,
+        ProducInventarioModificacion
+      )
+
+      if (updateDataColumnEditDescriptor)
+        setDatosModificacion(updateDataColumnEditDescriptor)
+    }
+
+    //ProducInventarioModificacion
+
     //console.log(updateDataColumnDescriptor)
+  }
+
+  const handleBackEditMod = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setEditMode(false)
   }
 
   const handleOpenModal = () => {
@@ -79,12 +106,11 @@ export const useInventarioManager = () => {
     idInput: string | number,
     rowIndex: number
   ) => {
-    //console.log(idInput)
-    if (idInput === "agregarEntrada") {
-      const dataPrepareInventario = getDatosLocalStorage(
-        "futureInventario"
-      ) as PrepareDataInventario
+    const dataPrepareInventario = getDatosLocalStorage(
+      "futureInventario"
+    ) as PrepareDataInventario
 
+    if (idInput === "agregarEntrada") {
       if (dataPrepareInventario) {
         try {
           const dbInventario = (await getInventarioSelected(
@@ -114,30 +140,34 @@ export const useInventarioManager = () => {
                 .idProducto + 1
             mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
 
-            //dbInventario.inventario.push(mapDatosEntrada)
+            dbInventario.inventario.push(mapDatosEntrada)
             //actualizamos inventario con los nuevos datos
-            /*const response = await updateInventario(
+            updateInventario(
               dataPrepareInventario.url,
               dbInventario // Aquí pasamos el inventario completo, no solo mapDatosEntrada
-            )*/
+            ).then((response) => {
+              if (response) {
+                dataPrepareInventario.inventarioAlmacen = dbInventario
+                setDatosLocalStorage("futureInventario", dataPrepareInventario)
+                setListaTotalProductosInventario(dbInventario.inventario)
+              }
+            })
 
-            /*console.log(
-              `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`
-            )*/
-
-            updateProductoIventario(
+            /*updateProductoIventario(
               `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
               mapDatosEntrada
             )
-
-            dataPrepareInventario.inventarioAlmacen = dbInventario
-            setDatosLocalStorage("futureInventario", dataPrepareInventario)
-            setListaTotalProductosInventario(dbInventario.inventario)
+             dataPrepareInventario.inventarioAlmacen = dbInventario
+                setDatosLocalStorage("futureInventario", dataPrepareInventario)
+                setListaTotalProductosInventario(dbInventario.inventario)
+              }
+            
+            */
           } else {
             // El inventario no existe, creamos
             mapDatosEntrada.idProducto = 1
             mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
-            console.log("mapeodatos", mapDatosEntrada)
+            //console.log("mapeodatos", mapDatosEntrada)
 
             const nuevoInventario = {
               seccion: dataPrepareInventario.inventarioAlmacen.seccion,
@@ -169,13 +199,44 @@ export const useInventarioManager = () => {
         "futureInventario"
       ) as PrepareDataInventario
       //console.log(dataInventarioTemp.url + "/producto/" + rowIndex)
-      navigate(`${dataInventarioTemp.url}/producto/${rowIndex}`, {
+      navigate(`${dataInventarioTemp.url}/${rowIndex}`, {
         replace: true
       })
       setResumeDataProduct(totalProductosInventario[rowIndex])
       handleOpenModal()
     } else if (idInput === "Editar") {
-      console.log("estoy dentro")
+      if (loadedData) {
+        const productoEditar = mapearProductoInventarioAColumnas(
+          ProducInventarioModificacion,
+          loadedData[rowIndex]
+        )
+        setDatosModificacion(productoEditar)
+        setEditMode(true)
+      }
+    } else if (idInput === "guardar") {
+
+      const mapDatosEntrada = mapColumnDescriptorsToProductoInventario(
+        datosModificacion,
+        ["guardar"]
+      ) as ProductoInventario
+
+      //console.log(totalProductosInventario)
+
+      updateProductoIventario(
+        `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
+        mapDatosEntrada
+      ).then((result) => {
+        if (result) {
+          totalProductosInventario[rowIndex] = mapDatosEntrada
+          setDatosLocalStorage("futureInventario", dataPrepareInventario)
+          setListaTotalProductosInventario(
+            dataPrepareInventario.inventarioAlmacen.inventario
+          )
+          console.log("exito al guardar")
+        } else {
+          console.log("error")
+        }
+      })
     }
   }
 
@@ -194,6 +255,7 @@ export const useInventarioManager = () => {
     } as PrepareDataInventario
 
     const response = await getInventarioSelected(url)
+    setUrl(url)
 
     if (response) {
       if (response.inventario) {
@@ -243,7 +305,7 @@ export const useInventarioManager = () => {
       "futureInventario"
     ) as PrepareDataInventario
 
-    console.log(datosTemporales)
+    //console.log(datosTemporales)
     getInventarioSelected(datosTemporales.url).then((response) => {
       if (response) {
         if (response.inventario) {
@@ -262,7 +324,6 @@ export const useInventarioManager = () => {
 
   const generadorClaveCompuesta = (producto: ProductoInventario) => {
     const compClave = `${producto.plancha}-${producto.molde}-${producto.dibujo}-${producto.color}-${producto.calibre}-${producto.acabado01}-${producto.acabado02}`
-    console.log(compClave)
     return compClave
   }
 
@@ -279,9 +340,12 @@ export const useInventarioManager = () => {
     handleCloseModal,
     setIsOpen,
     handleDeleteProducto,
+    handleBackEditMod,
+    datosModificacion,
     ResumenProductoInventario,
     resumeProduct,
     isOpen,
+    editMode,
     currentPage,
     itemsPerPage,
     loadedData,

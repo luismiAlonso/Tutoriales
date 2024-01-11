@@ -1,6 +1,6 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
-export const productoInventarioInicial: ColumnDescriptor[] = [
+export const ProducInventarioModificacion: ColumnDescriptor[] = [
   {
     title: "IDPRODUCTO",
     idInput: "idProducto",
@@ -20,7 +20,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     value: "PL.B CREPELINA OSB 75",
     content: "",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     defaultValue: "PL.B CREPELINA OSB 75",
     additionalStyles: "",
@@ -40,7 +40,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "NEGRO",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "NEGRO",
@@ -53,7 +53,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "RAYADO 1",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "RAYADO 1",
@@ -70,7 +70,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "molde01",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "molde01",
@@ -87,7 +87,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "3 m/m",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "3 m/m",
@@ -104,7 +104,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "acabado_01",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "acabado_01",
@@ -121,7 +121,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     value: "acabado_01",
     type: "hybridSelect",
-    editable: true,
+    editable: false,
     visible: true,
     additionalStyles: "",
     defaultValue: "acabado_01",
@@ -136,12 +136,12 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     title: "STOCK",
     idInput: "stock",
     content: "",
-    value: 0,
+    value: 1,
     type: "text",
-    editable: false,
-    visible: false,
+    editable: true,
+    visible: true,
     additionalStyles: "",
-    defaultValue: 0,
+    defaultValue: 1,
     options:[],
     placeHolder: ""
   },
@@ -154,7 +154,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     editable: false,
     visible: true,
     defaultValue: 1,
-    additionalStyles: "",
+    additionalStyles: "w-full px-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     options: [""],
     placeHolder: ""
   },
@@ -165,16 +165,16 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     content: "",
     type: "text",
     editable: false,
-    visible: false,
+    visible: true,
     defaultValue: 1,
-    additionalStyles: "",
+    additionalStyles: "w-full px-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     options: [""],
     placeHolder: ""
   },
   {
-    title: "boton",
-    idInput: "agregarEntrada",
-    content: "Agregar",
+    title: "Guardar",
+    idInput: "guardar",
+    content: "Guardar",
     value: "",
     type: "button",
     editable: false,
@@ -182,7 +182,6 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     additionalStyles: "",
     options: [],
     placeHolder: ""
-    //agregarNuevoProductoOP(ordenReciente?.idParte,)
   }
   
 ]

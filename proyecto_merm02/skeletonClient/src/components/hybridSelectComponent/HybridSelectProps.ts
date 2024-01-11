@@ -1,7 +1,9 @@
 export interface HybridSelectProps {
     type: string
-    idInput:string
+    idInput:string,
+    editable:boolean,
     activeLabel:boolean,
+    additionalStyles:string,
     options: string[]
     value: string
     defaultValue: string

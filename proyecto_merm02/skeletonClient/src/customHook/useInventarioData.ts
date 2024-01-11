@@ -72,7 +72,7 @@ export const useInventarioData = () => {
     productoInventario: ProductoInventario
   ): Promise<boolean> => {
     try {
-      console.log(url)
+      //console.log(url)
       const response = await updateProductoInInventario(url, productoInventario)
       return response
 
@@ -167,7 +167,7 @@ export const useInventarioData = () => {
     }
   }
 
-  /*
+  
   const mapearProductoInventarioAColumnas = (
     columnasTemplate: ColumnDescriptor[],
     producto: ProductoInventario
@@ -188,7 +188,7 @@ export const useInventarioData = () => {
         : column
     })
   }
-  */
+  
 
   /*const actualizarInventario = async()
 
@@ -218,6 +218,7 @@ export const useInventarioData = () => {
     getInventarioSelected,
     crearNuevoInventario,
     mapColumnDescriptorsToProductoInventario,
+    mapearProductoInventarioAColumnas,
     updateColumnDescriptor,
     setCurrentInventari,
     deleteLineaInventario,

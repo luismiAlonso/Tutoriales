@@ -23,6 +23,9 @@ function EntradasInventarioPage() {
     handleCloseModal,
     handleOpenModal,
     handleDeleteProducto,
+    handleBackEditMod,
+    editMode,
+    datosModificacion,
     ResumenProductoInventario,
     resumeProduct,
     isOpen,
@@ -33,7 +36,6 @@ function EntradasInventarioPage() {
   } = useInventarioManager()
 
   useEffect(() => {
-    
     actualizaInvinterario()
 
   }, [])
@@ -48,11 +50,20 @@ function EntradasInventarioPage() {
           {/*<span>{obtenerFechaActual() + " - " + obtenerHoraActual()}</span>*/}
         </div>
         <div className="ml-3">
-          <BackButton />
+         {!editMode ? ( <BackButton />) : (<BackButton onClick={handleBackEditMod} useCustomOnClick={true} />) }
         </div>
       </div>
+     {editMode ? (
+          <div className="mt-3">
+          <ListInputsCard
+            columns={datosModificacion}
+            rowIndex={0}
+            onInputChange={handleInputChange}
+            onButtonClick={handleButtonClick}
+          />
+          </div>
+      ) : (
       <div >
-        {
           <div className="mt-3">
           <ListInputsCard
             columns={datosEntrada}
@@ -61,9 +72,9 @@ function EntradasInventarioPage() {
             onButtonClick={handleButtonClick}
           />
           </div>
-        }
+        
         {/*<FilterComponent filters={plantillaFiltersOrdenProduccion} />*/}
-
+       
         <div className="mb-10 mt-4">
           <InfiniteScroll
             dataLength={currentPage * itemsPerPage} //This is important field to render the next data
@@ -85,7 +96,7 @@ function EntradasInventarioPage() {
             />
           </InfiniteScroll>
         </div>
-      </div>
+      </div>)}
     { <ModalComponent
         title="¿DESEA ELIMINAR?"
         body={

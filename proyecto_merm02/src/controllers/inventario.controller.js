@@ -192,7 +192,7 @@ export const createInventarioAlmacen = async (req, res) => {
 export const updateInventarioAlmacenProduct = async (req, res) => {
   try {
     const { seccion, almacen } = req.params
-
+    /*
     // Suponiendo que 'req.body' contiene los datos del producto a añadir
     const claveCompuesta = generadorClaveCompuesta(req.body)
 
@@ -208,7 +208,7 @@ export const updateInventarioAlmacenProduct = async (req, res) => {
         message: "Producto ya existente en el inventario",
         productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
       })
-    }
+    }*/
 
     // Actualizar el inventario si el producto no existe
     const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
@@ -254,7 +254,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
     const { seccion, almacen } = req.params
 
     // Suponiendo que 'req.body' contiene los datos del producto a añadir
-    /*const claveCompuesta = generadorClaveCompuesta(
+    const claveCompuesta = generadorClaveCompuesta(
       req.body.inventario[req.body.inventario.length - 1]
     )
 
@@ -270,7 +270,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
         message: "Producto ya existente en el inventario",
         productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
       })
-    }*/
+    }
 
     // Actualizar el inventario si el producto no existe
     const inventarioActualizado = await InventarioAlmacen.findOneAndUpdate(
@@ -294,6 +294,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
       productoAgregado: req.body // Incluir los datos del producto agregado
     })
   } catch (error) {
+    
     if (error.name === "ValidationError") {
       // Captura errores de validación y devuelve un 400
       return res.status(400).json({

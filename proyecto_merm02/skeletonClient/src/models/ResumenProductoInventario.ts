@@ -28,6 +28,19 @@ export const ResumenProductoInventario: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "FECHASALIDA",
+    idInput: "fechaSalida",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
     title: "PLANCHA",
     idInput: "plancha",
     value: "",

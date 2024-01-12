@@ -15,6 +15,32 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "FECHAENTRADA",
+    idInput: "fechaEntrada",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
+    title: "FECHASALIDA",
+    idInput: "fechaSalida",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
     title: "PLANCHA",
     idInput: "plancha",
     value: "PL.B CREPELINA OSB 75",
@@ -136,12 +162,12 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     title: "STOCK",
     idInput: "stock",
     content: "",
-    value: 0,
+    value: 1,
     type: "text",
     editable: false,
-    visible: false,
+    visible: true,
     additionalStyles: "",
-    defaultValue: 0,
+    defaultValue: 1,
     options:[],
     placeHolder: ""
   },

@@ -84,14 +84,14 @@ export const fetchAllInventarioAlmacen = async (
 //actualizacion de producto
 export const updateProductoInInventario = async (
   route: string,
-  updatedProductoData: Partial<ProductoInventario>
+  updatedProductoData: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-    console.log("data")
+
     const response = await axios.put(route,
       updatedProductoData
     )
-    console.log(response.data)
+    console.log(response)
     return true
   } catch (error) {
     console.error("Error updating producto in inventario:", error)

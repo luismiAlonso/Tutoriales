@@ -69,13 +69,12 @@ export const useInventarioData = () => {
 
   const updateProductoIventario = async (
     url: string,
-    productoInventario: ProductoInventario
+    productoInventario: InventarioAlmacen
   ): Promise<boolean> => {
     try {
       //console.log(url)
       const response = await updateProductoInInventario(url, productoInventario)
       return response
-
     } catch (error) {
       return false
     }
@@ -109,7 +108,6 @@ export const useInventarioData = () => {
           producto[key] = Number(col.value)
         } else {
           // Mantiene como cadena
-          //console.log(key,col.value)
           producto[key] = col.value
         }
       }
@@ -167,7 +165,6 @@ export const useInventarioData = () => {
     }
   }
 
-  
   const mapearProductoInventarioAColumnas = (
     columnasTemplate: ColumnDescriptor[],
     producto: ProductoInventario
@@ -188,7 +185,29 @@ export const useInventarioData = () => {
         : column
     })
   }
-  
+
+  const getLastproductInventario = (
+    inventarioAlmacen: InventarioAlmacen
+  ): ProductoInventario => {
+    return inventarioAlmacen.inventario[inventarioAlmacen.inventario.length - 1]
+  }
+
+  const getLastProductInventarioByClaveComp = (
+    inventarioAlmacen: InventarioAlmacen,
+    clave: string
+  ): ProductoInventario | null => {
+    
+    // Recorrer el array de inventario en orden inverso
+    for (let i = inventarioAlmacen.inventario.length - 1; i >= 0; i--) {
+      console.log(inventarioAlmacen.inventario[i].claveComp,clave)
+      if (inventarioAlmacen.inventario[i].claveComp === clave) {
+        return inventarioAlmacen.inventario[i]
+      }
+    }
+
+    // Devolver null si no se encuentra ningún producto con la clave dada
+    return null
+  }
 
   /*const actualizarInventario = async()
 
@@ -224,6 +243,8 @@ export const useInventarioData = () => {
     deleteLineaInventario,
     updateInventario,
     updateProductoIventario,
+    getLastProductInventarioByClaveComp,
+    getLastproductInventario,
     currentInventario,
     productoInventarioInicial
   }

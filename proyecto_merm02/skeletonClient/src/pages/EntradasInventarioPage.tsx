@@ -37,7 +37,6 @@ function EntradasInventarioPage() {
 
   useEffect(() => {
     actualizaInvinterario()
-
   }, [])
 
   return (
@@ -94,6 +93,7 @@ function EntradasInventarioPage() {
               onInputChange={handleInputChange}
               onButtonClick={handleButtonClick}
             />
+            
           </InfiniteScroll>
         </div>
       </div>)}

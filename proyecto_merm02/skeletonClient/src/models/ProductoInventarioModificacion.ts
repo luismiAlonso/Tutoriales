@@ -15,6 +15,32 @@ export const ProducInventarioModificacion: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "FECHAENTRADA",
+    idInput: "fechaEntrada",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
+    title: "FECHASALIDA",
+    idInput: "fechaSalida",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
     title: "PLANCHA",
     idInput: "plancha",
     value: "PL.B CREPELINA OSB 75",
@@ -154,7 +180,7 @@ export const ProducInventarioModificacion: ColumnDescriptor[] = [
     editable: false,
     visible: true,
     defaultValue: 1,
-    additionalStyles: "w-full px-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+    additionalStyles: "w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     options: [""],
     placeHolder: ""
   },
@@ -165,9 +191,9 @@ export const ProducInventarioModificacion: ColumnDescriptor[] = [
     content: "",
     type: "text",
     editable: false,
-    visible: true,
+    visible: false,
     defaultValue: 1,
-    additionalStyles: "w-full px-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+    additionalStyles: "w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-blue-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     options: [""],
     placeHolder: ""
   },

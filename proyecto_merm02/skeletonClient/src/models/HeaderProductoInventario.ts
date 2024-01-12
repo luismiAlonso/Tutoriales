@@ -28,6 +28,19 @@ export const HeaderProductoInventario: ColumnDescriptor[] = [
     placeHolder: ""
   },
   {
+    title: "FECHASALIDA",
+    idInput: "fechaSalida",
+    value: "",
+    content: "",
+    type: "noInput",
+    editable: false,
+    visible: false,
+    defaultValue: "",
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+  },
+  {
     title: "PLANCHAS",
     idInput: "planchas",
     value: "",
@@ -151,7 +164,7 @@ export const HeaderProductoInventario: ColumnDescriptor[] = [
     content: "",
     type: "noInput",
     editable: false,
-    visible: true,
+    visible: false,
     defaultValue: "",
     additionalStyles: "",
     options: [""],
@@ -164,7 +177,7 @@ export const HeaderProductoInventario: ColumnDescriptor[] = [
     value: "",
     type: "button",
     editable: false,
-    visible: true,
+    visible: false,
     additionalStyles: "",
     options: [],
     placeHolder: ""

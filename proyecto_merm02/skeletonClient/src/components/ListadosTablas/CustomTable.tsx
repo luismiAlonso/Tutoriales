@@ -56,7 +56,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     console.log(column.idInput, rowIndex)
     onButtonClick(column.idInput, rowIndex)
   }
-  
+
   switch (dataColumn.type) {
     case "text":
       return (
@@ -195,7 +195,6 @@ const CustomTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
-
   //console.log(data)
   return (
     <>
@@ -203,27 +202,21 @@ const CustomTable: React.FC<TableProps<any>> = ({
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xxs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              
-              {
-              columns.map((column, index) => {
-                
-                if (!column.visible){
-                  console.log(column.title,column.visible)
+              {columns.map((column, index) => {
+                if (!column.visible) {
                   return null
                 }
 
                 return (
-                <th key={index} className="px-6 py-3">
-                  {column.title}
-                </th>)
-
-              }
-              )}
+                  <th key={index} className="px-6 py-3">
+                    {column.title}
+                  </th>
+                )
+              })}
             </tr>
           </thead>
           <tbody>
             {data.map((rowData, rowIndex) => {
-
               return (
                 <tr
                   key={rowIndex}
@@ -235,17 +228,23 @@ const CustomTable: React.FC<TableProps<any>> = ({
                 >
                   {dataColumn.map((column, columnIndex) => {
                     //const value = getPropertyValue(rowData, column.idInput);
-                    return (
-                      <TableCellComponent
-                        key={columnIndex}
-                        dataColumn={column}
-                        data={rowData}
-                        column={column}
-                        rowIndex={rowIndex}
-                        onInputChange={onInputChange}
-                        onButtonClick={onButtonClick}
-                      />
-                    )
+                    if (!column.visible) {
+                      return null
+                    } else {
+
+                      return (
+                        <TableCellComponent
+                          key={columnIndex}
+                          dataColumn={column}
+                          data={rowData}
+                          column={column}
+                          rowIndex={rowIndex}
+                          onInputChange={onInputChange}
+                          onButtonClick={onButtonClick}
+                        />
+                      )
+                      
+                    }
                   })}
                 </tr>
               )

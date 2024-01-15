@@ -17,6 +17,7 @@ import {ItextInputFilter} from "../components/inputTextFilterComponent/ItextInpu
 import {IcustomSelectProp} from "../components/selectComponent/IcustomSelectProp"
 import { ItoggleProps } from "../components/toggle/ItoggleProps"
 
+
 const useOrdenProduccionManager = () => {
   const {
     mapColumnDescriptors,
@@ -607,6 +608,8 @@ const useOrdenProduccionManager = () => {
       // Puedes realizar acciones adicionales basadas en el estado del toggle
     }
   }
+
+  
 
   const plantillaFiltersOrdenProduccion = [
     {

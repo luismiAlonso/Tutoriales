@@ -165,7 +165,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
     value: 1,
     type: "text",
     editable: false,
-    visible: true,
+    visible: false,
     additionalStyles: "",
     defaultValue: 1,
     options:[],

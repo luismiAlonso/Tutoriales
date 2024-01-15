@@ -3,12 +3,13 @@ import {
   parse,
   isWithinInterval,
   compareAsc,
+  endOfDay,
   compareDesc
 } from "date-fns"
 
 export const obtenerFechaActual = (formato: string = "dd/MM/yyyy") => {
-  const fechaActual = new Date();
-  return format(fechaActual, formato);
+  const fechaActual = new Date()
+  return format(fechaActual, formato)
 }
 
 export const convertDateToFormatString = (date: Date, formato: string) => {
@@ -16,7 +17,9 @@ export const convertDateToFormatString = (date: Date, formato: string) => {
 }
 
 export const convertStringDateToDate = (dateStr: string) => {
-  return parse(dateStr, "dd/MM/yyyy", new Date())
+  const hasTime = dateStr.includes(":") // Verifica si la cadena contiene una hora
+  const formatString = hasTime ? "dd/MM/yyyy HH:mm:ss" : "dd/MM/yyyy"
+  return parse(dateStr, formatString, new Date())
 }
 
 export const obtenerHoraActual = () => {
@@ -26,8 +29,8 @@ export const obtenerHoraActual = () => {
   const horas = ahora.getHours().toString().padStart(2, "0")
   const minutos = ahora.getMinutes().toString().padStart(2, "0")
   const segundos = ahora.getSeconds().toString().padStart(2, "0")
-  return `${horas}:${minutos}:${segundos}`*/
-
+  return `${horas}:${minutos}:${segundos}`
+  */
   return format(ahora, "HH:mm:ss")
 }
 
@@ -56,14 +59,20 @@ export const getIntervalDate = (
   fechaInicio: Date,
   fechaFin: Date
 ) => {
+  try {
+    // console.log(fechaInicio,fechaFin)
+    const adjustedFechaFin = endOfDay(fechaFin) // Ajusta fechaFin para el final del 15 de enero de 2024
+    
+    const resultInterval = isWithinInterval(date, {
+      start: fechaInicio,
+      end: adjustedFechaFin
+    })
 
-    try {
-      //console.log(date,fechaInicio,fechaFin)
-      return isWithinInterval(date, { start: fechaInicio, end: fechaFin })
+    //console.log(resultInterval)
+    return resultInterval
 
-    } catch (error) {
-      console.log(error)
-      return false
-    }
-
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }

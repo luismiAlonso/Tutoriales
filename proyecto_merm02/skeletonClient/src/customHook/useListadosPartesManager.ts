@@ -103,7 +103,7 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedStartDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      console.log("Fecha selectStartDate:", date)
+      console.log("ssnsshs")
       validateDates(date, selectedEndDate)
     }
   })
@@ -114,31 +114,14 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedEndDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      console.log("Fecha selectEndDate:", date)
+      console.log("ssnsshs")
       validateDates(selectedStartDate, date)
     }
   })
 
   const validateDates = (startDate: Date, endDate: Date) => {
     if (startDate && endDate) {
-      
       if (startDate <= endDate) {
-
-        /*if (listaPartesLaminacion) {
-          filterDateRange(
-            listaPartesLaminacion,
-            "fecha",
-            startDate,
-            endDate,
-            ordenData
-          ).then((result) => {
-            console.log(result)
-            setListaPartesLaminacion(result)
-          })
-        }*/
-
-        //console.log(convertDateToFormatString(startDate,"dd/MM/yyyy"),convertDateToFormatString(endDate,"dd/MM/yyyy"))
-
         if (fullData) {
           filterDateRange(
             fullData,
@@ -147,7 +130,7 @@ const useListadosPartesManager = () => {
             endDate,
             ordenData
           ).then((result) => {
-            console.log(result.length)
+           // console.log(result.length)
             setListaTotalProduccion(result)
             //setListaPartesLaminacion(result)
           })

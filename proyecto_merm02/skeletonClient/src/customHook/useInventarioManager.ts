@@ -16,7 +16,12 @@ import { ProducInventarioModificacion } from "../models/ProductoInventarioModifi
 import { ResumenProductoInventario } from "../models/ResumenProductoInventario"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useModal from "../components/modal/useModal"
-import { daysToWeeks } from "date-fns"
+import { DateFilterProps } from "../components/customDatePicker/DateFilterProps"
+import { IcustomSelectProp } from "../components/selectComponent/IcustomSelectProp"
+import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
+import { ItoggleProps } from "../components/toggle/ItoggleProps"
+import useFilterData from "../components/filters/useFilterData"
+import useCustomDatepicker from "../customHook/useCustomDatepicker"
 
 export const useInventarioManager = () => {
   const [resumeProduct, setResumeDataProduct] =
@@ -27,6 +32,28 @@ export const useInventarioManager = () => {
   const [url, setUrl] = useState<string>()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const [editMode, setEditMode] = useState<boolean>(false)
+  const { filterByWords, filterData, filterDateRange } = useFilterData()
+  const [fullData, setFullData] = useState<ProductoInventario[]>([])
+  const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
+
+  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
+    string[]
+  >([
+    "fechaEntrada",
+    "fechaSalida",
+    "dibujo",
+    "color",
+    "acabado01",
+    "acabado02",
+    "molde",
+    "planchas",
+    "cantidadEntrante",
+    "cantidadSalida",
+    "stock"
+  ])
+  const [selectPropiedades, setSelectedPropiedades] = useState<string>(
+    listadoTitulosPropiedades[0]
+  )
 
   const {
     getInventarioSelected,
@@ -108,17 +135,13 @@ export const useInventarioManager = () => {
     idInput: string | number,
     rowIndex: number
   ) => {
-
     const dataPrepareInventario = getDatosLocalStorage(
       "futureInventario"
     ) as PrepareDataInventario
 
     if (idInput === "agregarEntrada") {
-
       if (dataPrepareInventario) {
-
         try {
-
           const dbInventario = (await getInventarioSelected(
             dataPrepareInventario.url
           )) as InventarioAlmacen
@@ -136,26 +159,27 @@ export const useInventarioManager = () => {
           mapDatosEntrada.fechaSalida = obtenerFechaActual(
             "dd/MM/yyyy HH:mm:ss"
           )
-          
-          if (dbInventario) {
 
+          if (dbInventario) {
             mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
 
-            console.log("claveCompleta",mapDatosEntrada.claveComp)
+            console.log("claveCompleta", mapDatosEntrada.claveComp)
             const lastProductExist = getLastProductInventarioByClaveComp(
               dbInventario,
               mapDatosEntrada.claveComp
             )
-            
+
             const lastProduct = getLastproductInventario(dbInventario)
             mapDatosEntrada.idProducto = lastProduct.idProducto + 1
 
-            if (lastProductExist) { //en este caso obtenemos el ultimo producto que coincida con la clave compuesta
+            if (lastProductExist) {
+              //en este caso obtenemos el ultimo producto que coincida con la clave compuesta
 
-              mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante + lastProductExist.stock
-                console.log("stock cantidad existente",mapDatosEntrada.stock)
-              
-            }else{ // si no hay coincidencia es que el producto es nuevo
+              mapDatosEntrada.stock =
+                mapDatosEntrada.cantidadEntrante + lastProductExist.stock
+              console.log("stock cantidad existente", mapDatosEntrada.stock)
+            } else {
+              // si no hay coincidencia es que el producto es nuevo
               mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
             }
 
@@ -165,14 +189,13 @@ export const useInventarioManager = () => {
             updateProductoIventario(
               `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
               dbInventario
-            ).then((response)=>{
-              if(response){
+            ).then((response) => {
+              if (response) {
                 dataPrepareInventario.inventarioAlmacen = dbInventario
                 setDatosLocalStorage("futureInventario", dataPrepareInventario)
                 setListaTotalProductosInventario(dbInventario.inventario)
               }
             })
-
           } else {
             // El inventario no existe, creamos
             mapDatosEntrada.idProducto = 1
@@ -217,7 +240,6 @@ export const useInventarioManager = () => {
       })
       setResumeDataProduct(totalProductosInventario[rowIndex])
       handleOpenModal()
-      
     } else if (idInput === "Editar") {
       if (loadedData) {
         const productoEditar = mapearProductoInventarioAColumnas(
@@ -228,7 +250,6 @@ export const useInventarioManager = () => {
         setEditMode(true)
       }
     } else if (idInput === "guardar") {
-
       //GUARDAR PRODUCTO EDITADO
       const dbInventario = (await getInventarioSelected(
         dataPrepareInventario.url
@@ -259,9 +280,7 @@ export const useInventarioManager = () => {
             console.log("error")
           }
         })
-
       }
-
     }
   }
 
@@ -338,6 +357,7 @@ export const useInventarioManager = () => {
           datosTemporales.inventarioAlmacen.inventario = response.inventario
           setDatosLocalStorage("futureInventario", datosTemporales)
           setListaTotalProductosInventario(response.inventario)
+          setFullData(response.inventario)
         }
       } else {
         console.log(
@@ -351,6 +371,170 @@ export const useInventarioManager = () => {
     const compClave = `${producto.plancha}-${producto.molde}-${producto.dibujo}-${producto.color}-${producto.calibre}-${producto.acabado01}-${producto.acabado02}`
     return compClave
   }
+
+  const validateDates = (startDate: Date, endDate: Date) => {
+
+    if (startDate && endDate) {
+      if (startDate <= endDate) {
+
+        if (fullData) {
+          filterDateRange(
+            fullData,
+            "fechaEntrada",
+            startDate,
+            endDate,
+            ordenData
+          ).then((result) => {
+            //console.log(result.length)
+            setListaTotalProductosInventario(result)
+          })
+        }
+      }
+    }
+  }
+
+    // Hook para la fecha 'Desde'
+    const {
+      selectedDate: selectedStartDate,
+      changeSelectedDate: changeSelectedStartDate
+    } = useCustomDatepicker(new Date(), {
+      onSelectedDateChanged: (date: Date) => {
+        validateDates(date, selectedEndDate)
+      }
+    })
+  
+    // Hook para la fecha 'Hasta'
+    const {
+      selectedDate: selectedEndDate,
+      changeSelectedDate: changeSelectedEndDate
+    } = useCustomDatepicker(new Date(), {
+      onSelectedDateChanged: (date: Date) => {
+        validateDates(selectedStartDate, date)
+      }
+    })
+
+  //MANEJADORES EVENTOS
+
+  const handleInputTextChange = () => {}
+
+  const handleInputTextClick = () => {}
+
+  const handleFilterChange = (id: string, value: string) => {
+    if (id === "byWords") {
+      // if (ordenProduccion?.ordenesProduccion) {
+      filterByWords(value, selectPropiedades, "asc").then((result) => {
+        //setListaProductosOrdenReciente(result)
+        //setListaTotalProduccion(result)
+        console.log("entro")
+        setListaTotalProductosInventario(result)
+      })
+      //   }
+    }
+  }
+
+  //manejador del toogle
+  const handleToggleChange = (
+    idToggle: string,
+    toggleState: {
+      value: boolean
+      sortDirection: "asc" | "desc"
+    }
+  ) => {
+    console.log(idToggle)
+    if (idToggle === "Orden") {
+      setOrdenData(toggleState.sortDirection)
+    
+     // if (listadoTitulosPropiedades) {
+        filterData(
+          totalProductosInventario,
+          selectPropiedades,
+          toggleState.sortDirection
+        ).then((result) => {
+          console.log(result)
+          setListaTotalProductosInventario(result)
+        })
+      //}
+      // Puedes realizar acciones adicionales basadas en el estado del toggle
+    }
+  }
+
+  const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    setSelectedPropiedades(value) // Actualiza el estado con el valor seleccionado
+  }
+
+  // Opcional: Maneja el filtro si es necesario
+  const handleFilter = (filterValue: string) => {
+    console.log("Filtrar valores por:", filterValue)
+    // Implementar lógica de filtrado aquí si es necesario
+    filterData(totalProductosInventario, filterValue, "asc").then(
+      (result) => {
+        // setListaProductosOrdenReciente(result)
+        //setListaTotalProduccion(result)
+        setListaTotalProductosInventario(result)
+      }
+    )
+  }
+
+  const plantillaFiltersInventario = [
+    {
+      type: "text",
+      idInput: "byWords",
+      activeButton: false,
+      activeSearchIcon: true,
+      placeHolder: "write to search...",
+      activeLabel: true,
+      typeFill: "search",
+      style:
+        "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+      onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado
+      onClick: handleInputTextClick,
+      onFilter: handleFilterChange
+    } as ItextInputFilter,
+    {
+      idInput: "selectPropiedades",
+      type: "select",
+      activeLabel: true,
+      optionsSelect: listadoTitulosPropiedades,
+      idSelected: "selectPropiedades",
+      selectClassName: "mt-4 mb-4 w-1/4",
+      value: selectPropiedades, // Asegúrate de que estas variables estén definidas
+      defaultValue: listadoTitulosPropiedades[0], // o el valor que necesites
+      onSeleccion: handleSelection,
+      onFilter: handleFilter,
+      onChange: handleSelection
+    } as IcustomSelectProp,
+    {
+      idInput: "selectedStartDate",
+      activeLabel: true,
+      type: "date",
+      language: "ES",
+      formTarget: "dd/MM/yyyy",
+      labelClearButton: "Limpar",
+      name: "selectedStartDate",
+      onSelectedDateChanged: changeSelectedStartDate
+    } as DateFilterProps,
+    {
+      idInput: "selectedEndDate",
+      activeLabel: true,
+      type: "date",
+      language: "ES",
+      formTarget: "dd/MM/yyyy",
+      labelClearButton: "Limpar",
+      name: "selectedEndDate",
+      onSelectedDateChanged: changeSelectedEndDate
+    } as DateFilterProps,
+    {
+      idInput: "Orden",
+      type: "toggle",
+      activeLabel: true,
+      valueProp: ordenData || true,
+      trueText: "asc",
+      falseText: "desc",
+      onChange: handleToggleChange
+    } as ItoggleProps
+    // Puedes agregar más filtros según necesites
+  ]
 
   return {
     handleInputChange,
@@ -366,6 +550,10 @@ export const useInventarioManager = () => {
     setIsOpen,
     handleDeleteProducto,
     handleBackEditMod,
+    changeSelectedStartDate,
+    changeSelectedEndDate,
+    plantillaFiltersInventario,
+    selectedStartDate,
     datosModificacion,
     ResumenProductoInventario,
     resumeProduct,

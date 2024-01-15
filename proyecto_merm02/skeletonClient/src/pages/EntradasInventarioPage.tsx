@@ -24,6 +24,7 @@ function EntradasInventarioPage() {
     handleOpenModal,
     handleDeleteProducto,
     handleBackEditMod,
+    plantillaFiltersInventario,
     editMode,
     datosModificacion,
     ResumenProductoInventario,
@@ -72,7 +73,7 @@ function EntradasInventarioPage() {
           />
           </div>
         
-        {/*<FilterComponent filters={plantillaFiltersOrdenProduccion} />*/}
+        {<FilterComponent filters={plantillaFiltersInventario} />}
        
         <div className="mb-10 mt-4">
           <InfiniteScroll

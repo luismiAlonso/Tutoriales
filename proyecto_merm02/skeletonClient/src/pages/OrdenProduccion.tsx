@@ -59,9 +59,9 @@ function OrdenProduccion() {
     configurarOrdenProduccion()
   }, [])
 
-  useEffect(()=>{
+  /*useEffect(()=>{
       console.log(HeadersProducto.length,parteProducto.length)
-  },[loadedData])
+  },[loadedData])*/
 
   return (
     <form className="text-white">

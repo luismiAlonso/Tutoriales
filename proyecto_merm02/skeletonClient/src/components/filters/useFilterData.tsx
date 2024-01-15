@@ -8,6 +8,7 @@ import useNotification from "../../contextStore/useNotificationStore"
 import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 
 function useFilterData() {
+
   const [sortedDataProperties, setSortedDataProperties] = useState<any[]>([])
   const [property, setProperty] = useState<string>("")
   const [ordenProperties, setOrdenProperties] = useState<"desc" | "asc">("asc")
@@ -46,6 +47,7 @@ function useFilterData() {
       }
     })
   }
+
   /*
   const filterByWords = async (
     newData: any[],
@@ -127,9 +129,9 @@ function useFilterData() {
     dateFrom: Date,
     orden: "asc" | "desc"
   ): Promise<any[]> => {
-    try {
-      const filteredData = sortDateRange(newData, dateFrom, dateTo, orden)
 
+    try {
+      const filteredData = sortDateRange(newData, dateFrom, dateTo,propiedad,orden)
       setSortedDataProperties(filteredData)
       setFiltered(true)
 

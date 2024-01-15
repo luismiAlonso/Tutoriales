@@ -384,80 +384,51 @@ export const sortDateRange = (
   data: any[],
   from: Date,
   to: Date,
+  nameProperty:string,
   orden: "asc" | "desc"
 ): any[] => {
+
   const filteredDataDates = data.filter((objeto) => {
     // Asegúrate de que el objeto tiene una propiedad 'fecha' y es una cadena válida
-    if (!objeto.fecha) {
+    const fecha = objeto[nameProperty]
+
+    if (!fecha) {
       return false
     }
-
     // Convertir la cadena de fecha del objeto en un objeto Date
-    const fechaObjeto = convertStringDateToDate(objeto.fecha)
+    const fechaObjeto = convertStringDateToDate(fecha)
+
+    if(fechaObjeto){
+      const filterDates = getIntervalDate(fechaObjeto, to, from)
+      return filterDates
+    }
     //Verificar si la fecha del objeto está dentro del intervalo
-
-    const filterDates = getIntervalDate(fechaObjeto, to, from)
-
-    return filterDates
+    
+    return null
   })
-
-  //console.log(convertDateToFormatString(from,"dd/MM/yyyy"),convertDateToFormatString(to,"dd/MM/yyyy"))
+  
+ /* console.log(
+    convertDateToFormatString(from, "dd/MM/yyyy"),
+    convertDateToFormatString(to, "dd/MM/yyyy")
+  )*/
   return filteredDataDates.sort((a, b) => {
     const dateA = convertStringDateToDate(a.fecha)
     const dateB = convertStringDateToDate(b.fecha)
+    
+    console.log(dateA,dateB)
+    if (dateA && dateB) {
+      return dateA.getTime() - dateB.getTime()
+    } else {
+      return 0 // En caso de que alguna fecha sea nula, no altera el orden
+    }
 
+    /*
     return orden === "asc"
       ? compararFechasAscendente(dateA, dateB)
       : compararFechasDescendente(dateA, dateB)
+    */
   })
 }
-
-/*export const sortDateRange = (
-  data: any[],
-  from: Date,
-  to: Date,
-  orden: "asc" | "desc"
-): any[] => {
-  try {
-
-    const filteredData = data.filter(
-      (objeto) =>
-        "fecha" in objeto &&
-        isDateInRange(convertStringDateToDate(objeto.fecha), from, to)
-    )
-
-    //console.log(convertDateToFormatString(from,"dd/MM/yyyy"),convertDateToFormatString(to,"dd/MM/yyyy"))
-    return filteredData.sort((a, b) => {
-      const dateA = convertStringDateToDate(a.fecha)
-      const dateB = convertStringDateToDate(b.fecha)
-
-      return orden === "asc"
-        ? compararFechasAscendente(dateA, dateB)
-        : compararFechasDescendente(dateA, dateB)
-    })
-  } catch (error) {
-    console.error("Error al ordenar los datos: ", error)
-    return data
-  }
-}*/
-
-/*
-export const sortDateRange = (
-  data: any[],
-  from: Date,
-  to: Date,
-  orden: "asc" | "desc"
-): any[] => {
-
-  const inicio = from.setHours(0, 0, 0, 0)
-  const fin = to.setHours(23, 59, 59, 999)
-
-  return data.filter((objeto) => {
-    const fechaObjeto = new Date(objeto.fecha).setHours(0, 0, 0, 0)
-    return fechaObjeto >= inicio && fechaObjeto <= fin
-  })
-}
-*/
 
 export const sortDataByDateRange = (
   data: any[],
@@ -466,6 +437,7 @@ export const sortDataByDateRange = (
   to: Date,
   orden: "asc" | "desc"
 ): any[] => {
+  
   try {
     // Filtrar primero por rango de fechas
     const filteredData = filterDataInRange(data, from, to, propiedad)
@@ -483,6 +455,47 @@ export const sortDataByDateRange = (
     return data
   }
 }
+
+/*
+export const sortDateRange = (
+  data: any[],
+  from: Date,
+  to: Date,
+  orden: "asc" | "desc"
+): any[] => {
+  if (!(from instanceof Date && to instanceof Date)) {
+    console.error("Los parámetros 'from' y 'to' deben ser fechas válidas")
+    return data
+  }
+  
+  const filteredData = data.filter((objeto) => {
+    if (!objeto.fecha) {
+      return false
+    }
+
+    const fechaObjeto = convertStringDateToDate(objeto.fecha)
+    //console.log("fechaObjeto: "+fechaObjeto,"from: "+from,"to: "+fechaObjeto)
+    // Verifica si la fecha del objeto está dentro del intervalo
+    if (fechaObjeto) return fechaObjeto >= from && fechaObjeto <= to
+  })
+
+  // Ordenar los datos filtrados
+  return filteredData.sort((a, b) => {
+    const dateA = convertStringDateToDate(a.fecha)
+    const dateB = convertStringDateToDate(b.fecha)
+
+    if (dateA !== null && dateB !== null) {
+   
+      const timeA = dateA.getTime()
+      const timeB = dateB.getTime()
+
+      return orden === "asc" ? timeA - timeB : timeB - timeA
+      //return orden === "asc" ? dateA - dateB : dateB - dateA
+    }else{
+      return 0
+    }
+  })
+}*/
 
 /*
 function filtrarYOrdenarFechas(

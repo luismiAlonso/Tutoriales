@@ -109,7 +109,10 @@ export function sortDataByInputFill(
 ): string[] {
   // Llamar al método de ordenación correspondiente según el tipo de dato
   let copiaOrdenada: string[] = []
+
   try {
+
+    console.log("palabra a buscar: ",palabra)
     if (data === undefined || data.length === 0) {
       return copiaOrdenada
     }
@@ -411,22 +414,21 @@ export const sortDateRange = (
     convertDateToFormatString(from, "dd/MM/yyyy"),
     convertDateToFormatString(to, "dd/MM/yyyy")
   )*/
+
   return filteredDataDates.sort((a, b) => {
-    const dateA = convertStringDateToDate(a.fecha)
-    const dateB = convertStringDateToDate(b.fecha)
+    const dateA = convertStringDateToDate(a[nameProperty])
+    const dateB = convertStringDateToDate(b[nameProperty])
     
-    console.log(dateA,dateB)
-    if (dateA && dateB) {
+    /*if (dateA && dateB) {
       return dateA.getTime() - dateB.getTime()
     } else {
       return 0 // En caso de que alguna fecha sea nula, no altera el orden
-    }
+    }*/
 
-    /*
     return orden === "asc"
       ? compararFechasAscendente(dateA, dateB)
       : compararFechasDescendente(dateA, dateB)
-    */
+    
   })
 }
 

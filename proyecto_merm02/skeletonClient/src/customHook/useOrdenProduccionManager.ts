@@ -13,10 +13,9 @@ import { useParams, useNavigate } from "react-router-dom" // Importa useNavigate
 import useModal from "../components/modal/useModal"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ProductoInicial } from "../models/ProductoInicial"
-import {ItextInputFilter} from "../components/inputTextFilterComponent/ItextInputFilter"
-import {IcustomSelectProp} from "../components/selectComponent/IcustomSelectProp"
+import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
+import { IcustomSelectProp } from "../components/selectComponent/IcustomSelectProp"
 import { ItoggleProps } from "../components/toggle/ItoggleProps"
-
 
 const useOrdenProduccionManager = () => {
   const {
@@ -193,7 +192,6 @@ const useOrdenProduccionManager = () => {
     bamburi: string,
     excludes: string[]
   ) => {
-
     const mappedProduct = mapColumnDescriptorsToProducto(
       dataColum,
       idParte,
@@ -241,7 +239,6 @@ const useOrdenProduccionManager = () => {
     dataColum: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
-
     producto.indiceProducto = ordenProduccion.ordenesProduccion.length + 1
     const nuevoOrdenProduccion = {
       ...ordenProduccion,
@@ -252,7 +249,6 @@ const useOrdenProduccionManager = () => {
     setDatosLocalStorage("datosTemporales", dataColum)
 
     agregarNuevoProductoOP(ordenProduccion.idParte, producto).then(
-      
       (response) => {
         if (response) {
           setDatosLocalStorage("ordenesProduccion", dataColum)
@@ -282,7 +278,7 @@ const useOrdenProduccionManager = () => {
       //updateOrdenProduccion(ordenProduccion)
       //setListaProductosOrdenReciente(indexedProduct)
       setListaTotalProduccion(indexedProduct)
-      setDatosLocalStorage("datosTemporales",mappedProducto)
+      setDatosLocalStorage("datosTemporales", mappedProducto)
     }
   }
 
@@ -326,7 +322,6 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("datosTemporales", dataUpdated)
           setDatosColumna(dataUpdated)
         }
-
       } else {
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
@@ -347,9 +342,8 @@ const useOrdenProduccionManager = () => {
 
   const handleButtonClick = (idInput: string | number, rowIndex: number) => {
     const id = typeof idInput === "number" ? idInput.toString() : idInput
-    
-    if (id.toLowerCase() === "agregar") {
 
+    if (id.toLowerCase() === "agregar") {
       const productoActual = recuperarDatosTemporales()
 
       if (ordenProduccion) {
@@ -433,9 +427,7 @@ const useOrdenProduccionManager = () => {
         setDatosLineaMod(productoEditar)
       }
     } else if (id.toLowerCase() === "aceptaredicion") {
-
       if (datosLineaMod) {
-
         if (ordenProduccion) {
           const convertProduct = mapColumnDescriptorsToProducto(
             datosLineaMod,
@@ -494,7 +486,6 @@ const useOrdenProduccionManager = () => {
 
         setEditMode(false)
       }*/
-
     } else if (id.toLowerCase() === "borrar") {
       console.log(listaTotalProduccion[rowIndex])
       //setResumeDataProduct(listaTotalProduccion[rowIndex])
@@ -570,8 +561,12 @@ const useOrdenProduccionManager = () => {
 
   const handleFilterChange = (id: string, value: string) => {
     if (id === "byWords") {
-      if (ordenProduccion?.ordenesProduccion) {
+      if (value === "") {
+        if (ordenProduccion)
+          setListaTotalProduccion(ordenProduccion.ordenesProduccion)
+      } else {
         filterByWords(
+          listaTotalProduccion,
           value,
           selectPropiedades,
           "asc"
@@ -593,7 +588,7 @@ const useOrdenProduccionManager = () => {
   ) => {
     if (idToggle === "orden01") {
       setOrdenData(toggleState.sortDirection)
-    
+
       if (listaTotalProduccion) {
         filterData(
           listaTotalProduccion,
@@ -608,8 +603,6 @@ const useOrdenProduccionManager = () => {
       // Puedes realizar acciones adicionales basadas en el estado del toggle
     }
   }
-
-  
 
   const plantillaFiltersOrdenProduccion = [
     {

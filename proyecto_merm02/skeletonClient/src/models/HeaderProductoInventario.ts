@@ -172,12 +172,25 @@ export const HeaderProductoInventario: ColumnDescriptor[] = [
   },
   {
     title: "",
-    idInput: "editar",
-    content: "editar",
+    idInput: "entradas",
+    content: "E",
     value: "",
     type: "button",
     editable: false,
-    visible: false,
+    visible: true,
+    additionalStyles: "",
+    options: [],
+    placeHolder: ""
+    //agregarNuevoProductoOP(ordenReciente?.idParte,)
+  },
+  {
+    title: "",
+    idInput: "salidas",
+    content: "S",
+    value: "",
+    type: "button",
+    editable: false,
+    visible: true,
     additionalStyles: "",
     options: [],
     placeHolder: ""

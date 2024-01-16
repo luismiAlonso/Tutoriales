@@ -209,6 +209,14 @@ export const useInventarioData = () => {
     return null
   }
 
+  const muestraSoloLastProduct = (listado:ProductoInventario[]) =>{
+   /* 
+   if(listado){
+
+    }
+    */
+  }
+
   /*const actualizarInventario = async()
 
   const agregarNuevaEntrada = async (

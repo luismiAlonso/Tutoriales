@@ -103,7 +103,6 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedStartDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      console.log("ssnsshs")
       validateDates(date, selectedEndDate)
     }
   })
@@ -114,7 +113,6 @@ const useListadosPartesManager = () => {
     changeSelectedDate: changeSelectedEndDate
   } = useCustomDatepicker(new Date(), {
     onSelectedDateChanged: (date: Date) => {
-      console.log("ssnsshs")
       validateDates(selectedStartDate, date)
     }
   })
@@ -262,11 +260,17 @@ const useListadosPartesManager = () => {
   }
 
   const handleFilterChange = async (id: string, value: string) => {
+    
     if (id === "byWords") {
       try {
-        const result = await filterByWords(value, selectPropiedades, "asc")
-        //setListaPartesLaminacion(result);
-        setListaTotalProduccion(result)
+        if(value===""){
+          setListaTotalProduccion(fullData)
+        }else{
+          const result = await filterByWords(listaTotalProduccion,value, selectPropiedades, "asc")
+          //setListaPartesLaminacion(result);
+          setListaTotalProduccion(result)
+        }
+    
       } catch (error) {
         console.error("Error al filtrar por palabras: ", error)
         // Aquí puedes manejar el error como sea necesario

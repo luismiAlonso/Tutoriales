@@ -14,7 +14,7 @@ function useFilterData() {
   const [ordenProperties, setOrdenProperties] = useState<"desc" | "asc">("asc")
   const [isFiltered, setFiltered] = useState(false)
   const { addNotification } = useNotification()
-  const { listaProductosOrdenReciente } = useOrdenProductionStore()
+  //const { listaProductosOrdenReciente } = useOrdenProductionStore()
 
   const filterData = async (
     newData: any[],
@@ -93,6 +93,7 @@ function useFilterData() {
   */
 
   const filterByWords = async (
+    data: any[],
     searchWord: string,
     newProperty: string,
     newOrder: "desc" | "asc"
@@ -101,11 +102,12 @@ function useFilterData() {
 
       if (searchWord === "") {
         // Si la palabra de búsqueda está vacía, devuelve los datos como están
-        return listaProductosOrdenReciente
+        return  data//listaProductosOrdenReciente
       }
       // Filtra y ordena los datos
       const filteredData = sortDataByInputFill(
-        listaProductosOrdenReciente,
+        //listaProductosOrdenReciente,
+        data,
         searchWord,
         newProperty,
         newOrder

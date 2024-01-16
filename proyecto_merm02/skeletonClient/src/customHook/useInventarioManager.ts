@@ -13,6 +13,8 @@ import useInfiniteLoaderInventario from "../components/InfiniteLoaderComponent/u
 import { date, map, string } from "zod"
 import { ProductoInventario } from "../models/ProductoInventario"
 import { ProducInventarioModificacion } from "../models/ProductoInventarioModificacion"
+import { ProductoInventarioEntradasMod } from "../models/ProductoInventarioEntradasMod"
+import { ProductoInventarioSalidasMod } from "../models/ProductoInventarioSalidasMod"
 import { ResumenProductoInventario } from "../models/ResumenProductoInventario"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useModal from "../components/modal/useModal"
@@ -35,6 +37,7 @@ export const useInventarioManager = () => {
   const { filterByWords, filterData, filterDateRange } = useFilterData()
   const [fullData, setFullData] = useState<ProductoInventario[]>([])
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
+  const [mostrarData, setMostrarData] = useState<boolean>(false)
 
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
@@ -49,8 +52,10 @@ export const useInventarioManager = () => {
     "planchas",
     "cantidadEntrante",
     "cantidadSalida",
+    "clalibre",
     "stock"
   ])
+
   const [selectPropiedades, setSelectedPropiedades] = useState<string>(
     listadoTitulosPropiedades[0]
   )
@@ -249,6 +254,26 @@ export const useInventarioManager = () => {
         setDatosModificacion(productoEditar)
         setEditMode(true)
       }
+    }else if(idInput === "entradas"){
+     // console.log("entradas")
+      if (loadedData) {
+        const productoEditar = mapearProductoInventarioAColumnas(
+          ProductoInventarioEntradasMod,
+          loadedData[rowIndex]
+        )
+        setDatosModificacion(productoEditar)
+        setEditMode(true)
+      }
+    }else if(idInput === "salidas"){
+      //console.log("salidas")
+      if (loadedData) {
+        const productoEditar = mapearProductoInventarioAColumnas(
+          ProductoInventarioSalidasMod,
+          loadedData[rowIndex]
+        )
+        setDatosModificacion(productoEditar)
+        setEditMode(true)
+      }
     } else if (idInput === "guardar") {
       //GUARDAR PRODUCTO EDITADO
       const dbInventario = (await getInventarioSelected(
@@ -261,6 +286,7 @@ export const useInventarioManager = () => {
       ) as ProductoInventario
 
       if (dbInventario) {
+
         //dbInventario.inventario[mapDatosEntrada.idProducto] =  mapDatosEntrada
         const index = dbInventario.inventario.findIndex(
           (producto) => producto.idProducto === mapDatosEntrada.idProducto
@@ -373,10 +399,8 @@ export const useInventarioManager = () => {
   }
 
   const validateDates = (startDate: Date, endDate: Date) => {
-
     if (startDate && endDate) {
       if (startDate <= endDate) {
-
         if (fullData) {
           filterDateRange(
             fullData,
@@ -393,46 +417,54 @@ export const useInventarioManager = () => {
     }
   }
 
-    // Hook para la fecha 'Desde'
-    const {
-      selectedDate: selectedStartDate,
-      changeSelectedDate: changeSelectedStartDate
-    } = useCustomDatepicker(new Date(), {
-      onSelectedDateChanged: (date: Date) => {
-        validateDates(date, selectedEndDate)
-      }
-    })
-  
-    // Hook para la fecha 'Hasta'
-    const {
-      selectedDate: selectedEndDate,
-      changeSelectedDate: changeSelectedEndDate
-    } = useCustomDatepicker(new Date(), {
-      onSelectedDateChanged: (date: Date) => {
-        validateDates(selectedStartDate, date)
-      }
-    })
+  // Hook para la fecha 'Desde'
+  const {
+    selectedDate: selectedStartDate,
+    changeSelectedDate: changeSelectedStartDate
+  } = useCustomDatepicker(new Date(), {
+    onSelectedDateChanged: (date: Date) => {
+      validateDates(date, selectedEndDate)
+    }
+  })
+
+  // Hook para la fecha 'Hasta'
+  const {
+    selectedDate: selectedEndDate,
+    changeSelectedDate: changeSelectedEndDate
+  } = useCustomDatepicker(new Date(), {
+    onSelectedDateChanged: (date: Date) => {
+      validateDates(selectedStartDate, date)
+    }
+  })
 
   //MANEJADORES EVENTOS
-
   const handleInputTextChange = () => {}
 
   const handleInputTextClick = () => {}
 
   const handleFilterChange = (id: string, value: string) => {
+
     if (id === "byWords") {
-      // if (ordenProduccion?.ordenesProduccion) {
-      filterByWords(value, selectPropiedades, "asc").then((result) => {
-        //setListaProductosOrdenReciente(result)
-        //setListaTotalProduccion(result)
-        console.log("entro")
-        setListaTotalProductosInventario(result)
-      })
-      //   }
+      if (value === "") {
+        setListaTotalProductosInventario(fullData)
+      } else {
+        filterByWords(
+          totalProductosInventario,
+          value,
+          selectPropiedades,
+          "asc"
+        ).then((result) => {
+          //setListaProductosOrdenReciente(result)
+          //setListaTotalProduccion(result)
+          console.log("entro :", result)
+          setListaTotalProductosInventario(result)
+        })
+      }
     }
+
   }
 
-  //manejador del toogle
+  //manejador del togle
   const handleToggleChange = (
     idToggle: string,
     toggleState: {
@@ -440,22 +472,29 @@ export const useInventarioManager = () => {
       sortDirection: "asc" | "desc"
     }
   ) => {
-    console.log(idToggle)
+
     if (idToggle === "Orden") {
+
       setOrdenData(toggleState.sortDirection)
-    
-     // if (listadoTitulosPropiedades) {
-        filterData(
-          totalProductosInventario,
-          selectPropiedades,
-          toggleState.sortDirection
-        ).then((result) => {
-          console.log(result)
-          setListaTotalProductosInventario(result)
-        })
+      // if (listadoTitulosPropiedades) {
+      filterData(
+        totalProductosInventario,
+        selectPropiedades,
+        toggleState.sortDirection
+
+      ).then((result) => {
+        console.log(result)
+        setListaTotalProductosInventario(result)
+      })
       //}
       // Puedes realizar acciones adicionales basadas en el estado del toggle
+    }else if(idToggle === "Mostrar"){
+      setMostrarData(toggleState.value)
+      
+      console.log("ver solo ultima entrada del producto",mostrarData)
+      
     }
+
   }
 
   const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -467,13 +506,11 @@ export const useInventarioManager = () => {
   const handleFilter = (filterValue: string) => {
     console.log("Filtrar valores por:", filterValue)
     // Implementar lógica de filtrado aquí si es necesario
-    filterData(totalProductosInventario, filterValue, "asc").then(
-      (result) => {
-        // setListaProductosOrdenReciente(result)
-        //setListaTotalProduccion(result)
-        setListaTotalProductosInventario(result)
-      }
-    )
+    filterData(totalProductosInventario, filterValue, "asc").then((result) => {
+      // setListaProductosOrdenReciente(result)
+      //setListaTotalProduccion(result)
+      setListaTotalProductosInventario(result)
+    })
   }
 
   const plantillaFiltersInventario = [
@@ -531,6 +568,15 @@ export const useInventarioManager = () => {
       valueProp: ordenData || true,
       trueText: "asc",
       falseText: "desc",
+      onChange: handleToggleChange
+    } as ItoggleProps,
+    {
+      idInput: "Mostrar",
+      type: "toggle",
+      activeLabel: true,
+      valueProp: ordenData || true,
+      trueText: "unico",
+      falseText: "multiple",
       onChange: handleToggleChange
     } as ItoggleProps
     // Puedes agregar más filtros según necesites

@@ -190,7 +190,6 @@ export const createInventarioAlmacen = async (req, res) => {
 }
 
 export const updateInventarioAlmacenProduct = async (req, res) => {
-
   try {
     const { seccion, almacen } = req.params
 
@@ -232,9 +231,7 @@ export const updateInventarioAlmacenProduct = async (req, res) => {
       inventarioActualizado, // Incluir el inventario actualizado
       productoAgregado: req.body // Incluir los datos del producto agregado
     })
-
   } catch (error) {
-    
     if (error.name === "ValidationError") {
       // Captura errores de validación y devuelve un 400
       return res.status(400).json({
@@ -250,6 +247,44 @@ export const updateInventarioAlmacenProduct = async (req, res) => {
       productoRecibido: req.body // Incluir los datos recibidos para diagnóstico
     })
   }
+}
+
+export const getUltimosProductosPorClave = async (req, res) => {
+
+  const { seccion, almacen, tipoFecha } = req.params
+  const campoFecha = tipoFecha === "entrada" ? "fechaEntrada" : "fechaSalida"
+
+  try {
+    
+    const ultimosProductos = await InventarioAlmacen.aggregate([
+      { $unwind: "$inventario" },
+      {
+        $sort: { "inventario.claveComp": 1, [`inventario.${campoFecha}`]: -1 }
+      },
+      {
+        $group: {
+          _id: "$inventario.claveComp",
+          productos: { $push: "$inventario" }
+        }
+      }
+    ])
+
+    // Extrae solo el primer producto de cada grupo
+    const productosFinales = ultimosProductos.map((group) => group.productos[0])
+
+    if (productosFinales.length === 0) {
+      return res.status(404).json({ message: "No se encontraron productos" })
+    }
+
+    res.json(productosFinales)
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener los últimos productos",
+      error: error.message
+    })
+  }
+
 }
 
 export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
@@ -283,12 +318,10 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
     )
 
     if (!inventarioActualizado) {
-      return res
-        .status(404)
-        .json({
-          message: "Inventario no encontrado",
-          productoEnviado: req.body
-        })
+      return res.status(404).json({
+        message: "Inventario no encontrado",
+        productoEnviado: req.body
+      })
     }
 
     res.json({
@@ -296,9 +329,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
       inventarioActualizado, // Incluir el inventario actualizado
       productoAgregado: req.body // Incluir los datos del producto agregado
     })
-
   } catch (error) {
-    
     if (error.name === "ValidationError") {
       // Captura errores de validación y devuelve un 400
       return res.status(400).json({
@@ -317,9 +348,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
 
 // DELETE: Eliminar un inventario de almacén por sección y almacén
 export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
-
   try {
-
     const { seccion, almacen } = req.params
     const inventarioEliminado = await InventarioAlmacen.findOneAndDelete({
       seccion,
@@ -336,7 +365,6 @@ export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
 }
 
 export const deleteProductoInventarioById = async (req, res) => {
-
   const { seccion, almacen } = req.params
   const idProducto = parseInt(req.params.idProducto)
 
@@ -345,7 +373,6 @@ export const deleteProductoInventarioById = async (req, res) => {
   }
 
   try {
-    
     const inventarioAlmacen = await InventarioAlmacen.findOne({
       seccion,
       almacen
@@ -359,7 +386,7 @@ export const deleteProductoInventarioById = async (req, res) => {
     inventarioAlmacen.inventario = inventarioAlmacen.inventario.filter(
       (producto) => producto.idProducto !== idProducto
     )
-    
+
     // Guarda el inventario actualizado
     await inventarioAlmacen.save()
 

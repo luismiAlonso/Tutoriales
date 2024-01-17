@@ -11,7 +11,7 @@ import { getPropertyValue } from "../../utilidades/util.ts"
 
 interface TableProps<T> {
   columns: ColumnDescriptor[]
-  dataColumn: ColumnDescriptor[]
+  dataColumn: ColumnDescriptor[][]
   data: T[]
   onInputChange: (
     value: any,
@@ -190,69 +190,52 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   }
 }
 
-const CustomTable: React.FC<TableProps<any>> = ({
+const CustomFlexibleTable: React.FC<TableProps<any>> = ({
   columns,
-  dataColumn,
+  dataColumn, // Ahora es una matriz de matrices de ColumnDescriptor
   onInputChange,
   onButtonClick,
   data
 }) => {
-
-  //console.log(data)
-
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xxs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {columns.map((column, index) => {
-                if (!column.visible) {
-                  return null
-                }
-
-                return (
-                  <th key={index} className="px-6 py-3">
-                    {column.title}
-                  </th>
-                )
-              })}
+              {/* Renderizar los encabezados de las columnas */}
+              {columns.map((column, index) => (
+                <th key={index} className="px-6 py-3">
+                  {column.title}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {data.map((rowData, rowIndex) => {
-              return (
-                <tr
-                  key={rowIndex}
-                  className={`${
-                    rowIndex % 2 === 0
-                      ? "bg-white dark:bg-gray-900"
-                      : "bg-gray-50 dark:bg-gray-800"
-                  } border-b dark:border-gray-700`}
-                >
-                  {dataColumn.map((column, columnIndex) => {
-                    //const value = getPropertyValue(rowData, column.idInput);
-                    if (!column.visible) {
-                      return null
-                    } else {
-
-                      return (
-                        <TableCellComponent
-                          key={columnIndex}
-                          dataColumn={column}
-                          data={rowData}
-                          column={column}
-                          rowIndex={rowIndex}
-                          onInputChange={onInputChange}
-                          onButtonClick={onButtonClick}
-                        />
-                      )
-                      
-                    }
-                  })}
-                </tr>
-              )
-            })}
+            {data.map((rowData, rowIndex) => (
+              <tr
+                key={rowIndex}
+                className={`${
+                  rowIndex % 2 === 0
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-50 dark:bg-gray-800"
+                } border-b dark:border-gray-700`}
+              >
+                {dataColumn[rowIndex].map(
+                  (columnDescriptor, descriptorIndex) => (
+                    <TableCellComponent
+                      key={descriptorIndex}
+                      dataColumn={columnDescriptor}
+                      data={rowData}
+                      column={columnDescriptor}
+                      rowIndex={rowIndex}
+                      onInputChange={onInputChange}
+                      onButtonClick={onButtonClick}
+                    />
+                  )
+                )}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -260,4 +243,4 @@ const CustomTable: React.FC<TableProps<any>> = ({
   )
 }
 
-export default CustomTable
+export default CustomFlexibleTable

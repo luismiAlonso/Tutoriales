@@ -3,6 +3,7 @@ import {
   agregarInventarioAlmacen,
   fetchInventarioAlmacenBySeccionAlmacen,
   deleteInventarioAlmacen,
+  fetchUltimosProductosBySeccionAlmacen,
   deleteProductoInventario,
   updateInventario,
   updateProductoInInventario,
@@ -36,6 +37,25 @@ export const useInventarioData = () => {
       }
     } catch (error) {
       console.error("Error al obtener el inventario:", error)
+      return null
+    }
+  }
+
+  const getLastProductGroupInventario = async (
+    route: string,
+    tipoFecha: string
+  ): Promise<ProductoInventario[] | null> => {
+    try {
+      // Esperar el resultado de fetchUltimosProductosBySeccionAlmacen
+      const productos = await fetchUltimosProductosBySeccionAlmacen(
+        route,
+        tipoFecha
+      )
+
+      // Si productos es null o vacío, esto devolverá null. De lo contrario, devolverá los productos.
+      return productos
+    } catch (error) {
+      console.error("Error al obtener los últimos productos:", error)
       return null
     }
   }
@@ -165,6 +185,40 @@ export const useInventarioData = () => {
     }
   }
 
+  const generarMatrizColumnDescriptors = (
+    columnasTemplate: ColumnDescriptor[],
+    productosInventario: ProductoInventario[],
+    ultimasEntradasSalidas: ProductoInventario[]
+  ) => {
+    return productosInventario.map((producto) => {
+      // Mapear el producto a su representación de columna
+      const filaColumnDescriptors = mapearProductoInventarioAColumnas(
+        columnasTemplate,
+        producto
+      )
+
+      // Determinar si el producto actual es una última entrada/salida
+      const esUltimaEntradaSalida = ultimasEntradasSalidas.some(
+        (ultima) => ultima.idProducto === producto.idProducto
+      )
+
+      // Ajustar la visibilidad de los botones "Editar" y "Borrar"
+      return filaColumnDescriptors.map((descriptor) => {
+        if (
+          descriptor.idInput === "Editar" ||
+          descriptor.idInput === "Borrar" ||
+          descriptor.idInput === "salidas" ||
+          descriptor.idInput === "entradas"
+        ) {
+          //console.log( descriptor.idInput,esUltimaEntradaSalida)
+          return { ...descriptor, visible: esUltimaEntradaSalida }
+        }
+
+        return descriptor
+      })
+    })
+  }
+
   const mapearProductoInventarioAColumnas = (
     columnasTemplate: ColumnDescriptor[],
     producto: ProductoInventario
@@ -196,10 +250,9 @@ export const useInventarioData = () => {
     inventarioAlmacen: InventarioAlmacen,
     clave: string
   ): ProductoInventario | null => {
-    
     // Recorrer el array de inventario en orden inverso
     for (let i = inventarioAlmacen.inventario.length - 1; i >= 0; i--) {
-      console.log(inventarioAlmacen.inventario[i].claveComp,clave)
+      //console.log(inventarioAlmacen.inventario[i].claveComp, clave)
       if (inventarioAlmacen.inventario[i].claveComp === clave) {
         return inventarioAlmacen.inventario[i]
       }
@@ -207,14 +260,6 @@ export const useInventarioData = () => {
 
     // Devolver null si no se encuentra ningún producto con la clave dada
     return null
-  }
-
-  const muestraSoloLastProduct = (listado:ProductoInventario[]) =>{
-   /* 
-   if(listado){
-
-    }
-    */
   }
 
   /*const actualizarInventario = async()
@@ -246,6 +291,7 @@ export const useInventarioData = () => {
     crearNuevoInventario,
     mapColumnDescriptorsToProductoInventario,
     mapearProductoInventarioAColumnas,
+    generarMatrizColumnDescriptors,
     updateColumnDescriptor,
     setCurrentInventari,
     deleteLineaInventario,
@@ -253,6 +299,7 @@ export const useInventarioData = () => {
     updateProductoIventario,
     getLastProductInventarioByClaveComp,
     getLastproductInventario,
+    getLastProductGroupInventario,
     currentInventario,
     productoInventarioInicial
   }

@@ -10,8 +10,7 @@ import { obtenerFechaActual } from "../utilidades/dateUtil"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
 import useInfiniteLoaderInventario from "../components/InfiniteLoaderComponent/useInfiniteLoaderInventario"
-import { date, map, string } from "zod"
-import { ProductoInventario } from "../models/ProductoInventario"
+import { PlantillaProductoInventario } from "../models/PlantillaProductoInventario"
 import { ProducInventarioModificacion } from "../models/ProductoInventarioModificacion"
 import { ProductoInventarioEntradasMod } from "../models/ProductoInventarioEntradasMod"
 import { ProductoInventarioSalidasMod } from "../models/ProductoInventarioSalidasMod"
@@ -31,6 +30,8 @@ export const useInventarioManager = () => {
   const navigate = useNavigate() // Obtén la función navigate
   const { totalProductosInventario, setListaTotalProductosInventario } =
     useOrdenProductionStore()
+  const [lastProductInventario, setLastProductInventario] =
+    useState<ProductoInventario[]>()
   const [url, setUrl] = useState<string>()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const [editMode, setEditMode] = useState<boolean>(false)
@@ -38,6 +39,8 @@ export const useInventarioManager = () => {
   const [fullData, setFullData] = useState<ProductoInventario[]>([])
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
   const [mostrarData, setMostrarData] = useState<boolean>(false)
+
+  const [mappeddProductosInventario,setMappedProductosInventario] = useState<ColumnDescriptor[][]>()
 
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
@@ -65,8 +68,10 @@ export const useInventarioManager = () => {
     crearNuevoInventario,
     updateProductoIventario,
     updateInventario,
+    getLastProductGroupInventario,
     mapearProductoInventarioAColumnas,
     mapColumnDescriptorsToProductoInventario,
+    generarMatrizColumnDescriptors,
     updateColumnDescriptor,
     getLastproductInventario,
     deleteLineaInventario,
@@ -247,15 +252,15 @@ export const useInventarioManager = () => {
       handleOpenModal()
     } else if (idInput === "Editar") {
       if (loadedData) {
-        const productoEditar = mapearProductoInventarioAColumnas(
+        /*const productoEditar = mapearProductoInventarioAColumnas(
           ProducInventarioModificacion,
           loadedData[rowIndex]
         )
         setDatosModificacion(productoEditar)
-        setEditMode(true)
+        setEditMode(true)*/
       }
-    }else if(idInput === "entradas"){
-     // console.log("entradas")
+    } else if (idInput === "entradas") {
+      // console.log("entradas")
       if (loadedData) {
         const productoEditar = mapearProductoInventarioAColumnas(
           ProductoInventarioEntradasMod,
@@ -264,7 +269,7 @@ export const useInventarioManager = () => {
         setDatosModificacion(productoEditar)
         setEditMode(true)
       }
-    }else if(idInput === "salidas"){
+    } else if (idInput === "salidas") {
       //console.log("salidas")
       if (loadedData) {
         const productoEditar = mapearProductoInventarioAColumnas(
@@ -286,7 +291,6 @@ export const useInventarioManager = () => {
       ) as ProductoInventario
 
       if (dbInventario) {
-
         //dbInventario.inventario[mapDatosEntrada.idProducto] =  mapDatosEntrada
         const index = dbInventario.inventario.findIndex(
           (producto) => producto.idProducto === mapDatosEntrada.idProducto
@@ -377,20 +381,39 @@ export const useInventarioManager = () => {
 
     //console.log(datosTemporales)
     getInventarioSelected(datosTemporales.url).then((response) => {
-      if (response) {
-        if (response.inventario) {
-          //recibo respuesta porque el inventario ya existe
-          datosTemporales.inventarioAlmacen.inventario = response.inventario
-          setDatosLocalStorage("futureInventario", datosTemporales)
-          setListaTotalProductosInventario(response.inventario)
-          setFullData(response.inventario)
-        }
+      if (response && response.inventario) {
+        //recibo respuesta porque el inventario ya existe
+        datosTemporales.inventarioAlmacen.inventario = response.inventario
+        setDatosLocalStorage("futureInventario", datosTemporales)
+        setListaTotalProductosInventario(response.inventario)
+        setFullData(response.inventario)
       } else {
         console.log(
           "la base de datos no contiene inventario con esa definicion"
         )
       }
     })
+
+    getLastProductGroupInventario(datosTemporales.url, "entrada").then(
+      (response) => {
+        if (response) {
+          setLastProductInventario(response)
+        }
+      }
+    )
+  }
+
+  const update = () => {
+
+    if (totalProductosInventario && lastProductInventario) {
+     const mappedData = generarMatrizColumnDescriptors(
+          PlantillaProductoInventario,
+          totalProductosInventario,
+          lastProductInventario
+        )
+
+     // setListaTotalProductosInventario(mappedData)
+    }
   }
 
   const generadorClaveCompuesta = (producto: ProductoInventario) => {
@@ -443,7 +466,6 @@ export const useInventarioManager = () => {
   const handleInputTextClick = () => {}
 
   const handleFilterChange = (id: string, value: string) => {
-
     if (id === "byWords") {
       if (value === "") {
         setListaTotalProductosInventario(fullData)
@@ -461,7 +483,6 @@ export const useInventarioManager = () => {
         })
       }
     }
-
   }
 
   //manejador del togle
@@ -472,29 +493,53 @@ export const useInventarioManager = () => {
       sortDirection: "asc" | "desc"
     }
   ) => {
-
     if (idToggle === "Orden") {
-
       setOrdenData(toggleState.sortDirection)
       // if (listadoTitulosPropiedades) {
       filterData(
         totalProductosInventario,
         selectPropiedades,
         toggleState.sortDirection
-
       ).then((result) => {
         console.log(result)
         setListaTotalProductosInventario(result)
       })
       //}
       // Puedes realizar acciones adicionales basadas en el estado del toggle
-    }else if(idToggle === "Mostrar"){
-      setMostrarData(toggleState.value)
-      
-      console.log("ver solo ultima entrada del producto",mostrarData)
-      
-    }
+    } else if (idToggle === "Mostrar") {
+      const dataPrepareInventario = getDatosLocalStorage(
+        "futureInventario"
+      ) as PrepareDataInventario
 
+      if (dataPrepareInventario) {
+        try {
+          if (toggleState.value) {
+            getLastProductGroupInventario(
+              dataPrepareInventario.url,
+              "entrada"
+            ).then((result) => {
+              if (result) {
+                console.log("Tipo de datos:", result)
+                setListaTotalProductosInventario(result)
+              }
+            })
+          } else {
+            //console.log("Aqui devolveriamos todos los productos")
+            getInventarioSelected(dataPrepareInventario.url).then(
+              (inventario) => {
+                if (inventario) {
+                  setListaTotalProductosInventario(inventario.inventario)
+                }
+              }
+            )
+          }
+        } catch (error) {
+          console.error("Error al obtener los productos:", error)
+        }
+      }
+
+      console.log("ver solo ultima entrada del producto", mostrarData)
+    }
   }
 
   const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -598,6 +643,7 @@ export const useInventarioManager = () => {
     handleBackEditMod,
     changeSelectedStartDate,
     changeSelectedEndDate,
+    update,
     plantillaFiltersInventario,
     selectedStartDate,
     datosModificacion,

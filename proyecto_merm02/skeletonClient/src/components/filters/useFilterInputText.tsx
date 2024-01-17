@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { sortDataByInputFill } from './utilFiters'
-import useGlobalStore from '../../globaStore/GlobalStore'
+import useGlobalStore from '../../contextStore/GlobalStore'
 
 function useFilterInputText() {
   const [isFiltered, setFiltered] = useState(false) // Define el estado isFiltered
@@ -12,6 +12,7 @@ function useFilterInputText() {
     newProperty: string,
     newOrder: 'desc' | 'asc'
   ) => {
+    
     return new Promise((resolve, reject) => {
       try {
 

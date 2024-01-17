@@ -4,7 +4,7 @@ import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import { useInventarioManager } from "../customHook/useInventarioManager"
 import FilterComponent from "../components/filtersComponent/filtersComponent"
 import { HeaderProductoInventario } from "../models/HeaderProductoInventario"
-import {ProductoInventario} from "../models/ProductoInventario"
+import {PlantillaProductoInventario} from "../models/PlantillaProductoInventario"
 import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
 import CustomTable from "../components/ListadosTablas/CustomTable"
 import ModalComponent from "../components/modal/ModalComponent"
@@ -24,6 +24,7 @@ function EntradasInventarioPage() {
     handleOpenModal,
     handleDeleteProducto,
     handleBackEditMod,
+    update,
     plantillaFiltersInventario,
     editMode,
     datosModificacion,
@@ -39,6 +40,10 @@ function EntradasInventarioPage() {
   useEffect(() => {
     actualizaInvinterario()
   }, [])
+
+  useEffect(()=>{
+    update()
+  },[loadedData])
 
   return (
     <form className="text-white">
@@ -89,7 +94,7 @@ function EntradasInventarioPage() {
           >
             <CustomTable
               columns={HeaderProductoInventario}
-              dataColumn={ProductoInventario}
+              dataColumn={PlantillaProductoInventario}
               data={loadedData}
               onInputChange={handleInputChange}
               onButtonClick={handleButtonClick}

@@ -2,6 +2,7 @@ import express from "express"
 import {
   getAllInventarioAlmacen,
   createInventarioAlmacen,
+  getUltimosProductosPorClave,
   deleteProductoInventarioById,
   updateInventarioAlmacenProduct,
   getInventarioAlmacenBySeccionAlmacen,
@@ -20,6 +21,12 @@ inventarioRouter.get(
   "/EntradasInventarioPage/:seccion/:almacen",
   authRequire,
   getInventarioAlmacenBySeccionAlmacen
+)
+
+inventarioRouter.get(
+  "/EntradasInventarioPage/:seccion/:almacen/:tipoFecha",
+  authRequire,
+  getUltimosProductosPorClave
 )
 
 // POST: Crear un nuevo inventario de almacén

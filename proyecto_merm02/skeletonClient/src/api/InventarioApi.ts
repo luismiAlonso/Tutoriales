@@ -16,6 +16,24 @@ export const fetchInventarioAlmacenBySeccionAlmacen = async (
   }
 }
 
+export const fetchUltimosProductosBySeccionAlmacen = async (
+  route: string,
+  tipoFecha: string
+): Promise<ProductoInventario[] | null> => {
+  try {
+    const response = await axios.get<ProductoInventario[]>(
+      `${route}/${tipoFecha}`
+    )
+    return response.data
+  } catch (error) {
+    console.error(
+      "Error al obtener los últimos productos por sección y almacén:",
+      error
+    )
+    return null
+  }
+}
+
 export const deleteInventarioAlmacen = async (
   route: string
 ): Promise<boolean> => {
@@ -87,10 +105,7 @@ export const updateProductoInInventario = async (
   updatedProductoData: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-
-    const response = await axios.put(route,
-      updatedProductoData
-    )
+    const response = await axios.put(route, updatedProductoData)
     console.log(response)
     return true
   } catch (error) {

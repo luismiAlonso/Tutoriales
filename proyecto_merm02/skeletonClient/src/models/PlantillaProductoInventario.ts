@@ -1,6 +1,6 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
-export const ProductoInventario: ColumnDescriptor[] = [
+export const PlantillaProductoInventario: ColumnDescriptor[] = [
   {
     title: "idProducto",
     idInput: "idProducto",

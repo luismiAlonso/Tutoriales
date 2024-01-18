@@ -11,6 +11,10 @@ function MainInventario() {
     navigate("/EntradasInventarioConfiguracion")
   }
 
+  const handleButtonListarInventario = () =>{
+    navigate("/ListadoInventario")
+  }
+
   return (
     <form className="text-white">
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
@@ -35,10 +39,11 @@ function MainInventario() {
               }}
             />
             <CustomButton
-              buttonText={"SALIDAS"} // Aquí puedes cambiar "Mi Botón" por el texto que desees
+              buttonText={"VER INVENTARIO"} // Aquí puedes cambiar "Mi Botón" por el texto que desees
               className="clase-personalizada" // Aquí puedes cambiar o agregar más clases
               onClick={(e) => {
                 e.preventDefault()
+                handleButtonListarInventario()
               }}
             />
           </div>

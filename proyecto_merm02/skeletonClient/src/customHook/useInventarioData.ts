@@ -191,30 +191,28 @@ export const useInventarioData = () => {
     ultimasEntradasSalidas: ProductoInventario[]
   ) => {
     return productosInventario.map((producto) => {
-      // Mapear el producto a su representación de columna
       const filaColumnDescriptors = mapearProductoInventarioAColumnas(
         columnasTemplate,
         producto
       )
 
-      // Determinar si el producto actual es una última entrada/salida
       const esUltimaEntradaSalida = ultimasEntradasSalidas.some(
         (ultima) => ultima.idProducto === producto.idProducto
       )
 
-      // Ajustar la visibilidad de los botones "Editar" y "Borrar"
       return filaColumnDescriptors.map((descriptor) => {
+        // Crear una copia del descriptor para evitar modificar el original
+        const descriptorCopia = { ...descriptor }
+
         if (
-          descriptor.idInput === "Editar" ||
-          descriptor.idInput === "Borrar" ||
-          descriptor.idInput === "salidas" ||
-          descriptor.idInput === "entradas"
+          ["Editar", "Borrar", "salidas", "entradas"].includes(
+            descriptorCopia.idInput
+          )
         ) {
-          //console.log( descriptor.idInput,esUltimaEntradaSalida)
-          return { ...descriptor, visible: esUltimaEntradaSalida }
+          descriptorCopia.visible = esUltimaEntradaSalida
         }
 
-        return descriptor
+        return descriptorCopia
       })
     })
   }

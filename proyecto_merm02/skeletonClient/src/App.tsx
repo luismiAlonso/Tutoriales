@@ -9,7 +9,7 @@ import MainInventario from "./pages/MainInventario"
 import EntradasInventarioPage from "./pages/EntradasInventarioPage"
 import EntradasInventarioConfiguracion from "./pages/EntradasInventarioConfiguracion"
 import ListarParteProduccion from "./pages/ListarParteProduccion"
-
+import ListadoInventario from "./pages/ListadoInventario"
 /*
 import RegisterPage from "./pages/RegisterPage"
 import TaskPage from "./pages/TasksPage"
@@ -38,8 +38,8 @@ function App() {
             <Route path="/EntradasInventarioConfiguracion" element={<EntradasInventarioConfiguracion />} />
             <Route path="/EntradasInventarioPage/:seccion/:almacen" element={<EntradasInventarioPage />} />
             <Route path="/EntradasInventarioPage/:seccion/:almacen/:idProducto" element={<EntradasInventarioPage />} />
-            <Route path="/SalidasInventarioPage/:seccion/:almacen" element={<EntradasInventarioPage />} />
-            <Route path="/SalidasInventarioPage/:seccion/:almacen/:idProducto" element={<EntradasInventarioPage />} />
+            <Route path="/ListadoInventario/" element={<ListadoInventario />} />
+
           </Route> 
           {
           /*<Route path="/register" element={<RegisterPage />} />

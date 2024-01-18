@@ -13,9 +13,8 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/ListadoDataResponsive"
 import ButtonComponent from "../components/button/ButtonComponent"
 
-function EntradasInventarioPage() {
+function ListadoInventario() {
   // cargarDatosNuevoInventario("/EntradasInventarioPage",seccion,naveSeleccionada)
-
   const {
     handleInputChange,
     handleButtonClick,
@@ -28,26 +27,24 @@ function EntradasInventarioPage() {
     mappeddProductosInventario,
     plantillaFiltersInventario,
     editMode,
-    datosModificacion,
     ResumenProductoInventario,
     resumeProduct,
     isOpen,
     currentPage,
     itemsPerPage,
-    loadedData,
-    datosEntrada
+    loadedData
   } = useInventarioManager()
 
   useEffect(() => {
     actualizaInvinterario()
-   // console.log(mappeddProductosInventario)
-  }, [])
+  }, [loadedData])
+
 
   return (
     <form className="text-white">
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
         <div className="flex-grow text-left">
-          <h2>ENTRADA PRODUCTO</h2>
+          <h2>PRODUCTOS INVENTARIO</h2>
         </div>
         <div className="flex-grow text-right">
           {/*<span>{obtenerFechaActual() + " - " + obtenerHoraActual()}</span>*/}
@@ -60,28 +57,16 @@ function EntradasInventarioPage() {
           )}
         </div>
       </div>
-      {editMode ? (
-        <div className="mt-3">
-          <ListInputsCard
-            columns={datosModificacion}
-            rowIndex={0}
-            onInputChange={handleInputChange}
-            onButtonClick={handleButtonClick}
-          />
-        </div>
-      ) : (
         <div>
-          <div className="mt-3">
+          {/*<div className="mt-3">
             <ListInputsCard
               columns={datosEntrada}
               rowIndex={0}
               onInputChange={handleInputChange}
               onButtonClick={handleButtonClick}
             />
-          </div>
-
+          </div>*/}
           {<FilterComponent filters={plantillaFiltersInventario} />}
-
           <div className="mb-10 mt-4">
             <InfiniteScroll
               dataLength={currentPage * itemsPerPage} //This is important field to render the next data
@@ -94,17 +79,15 @@ function EntradasInventarioPage() {
                 </p>
               }
             >
-              {/*
-                <CustomTable
-                  columns={HeaderProductoInventario}
-                  dataColumn={PlantillaProductoInventario}
-                  data={loadedData}
-                  onInputChange={handleInputChange}
-                  onButtonClick={handleButtonClick}
-                />
-            */}
               {
-              mappeddProductosInventario && (
+              /*<CustomTable
+              columns={HeaderProductoInventario}
+              dataColumn={PlantillaProductoInventario}
+              data={loadedData}
+              onInputChange={handleInputChange}
+              onButtonClick={handleButtonClick}
+            />*/}
+              {mappeddProductosInventario && (
                 <CustomFlexibleTable
                   columns={HeaderProductoInventario}
                   dataColumn={mappeddProductosInventario}
@@ -112,12 +95,11 @@ function EntradasInventarioPage() {
                   onInputChange={handleInputChange}
                   onButtonClick={handleButtonClick}
                 />
-              )
-              }
+              )}
             </InfiniteScroll>
           </div>
         </div>
-      )}
+      
       {
         <ModalComponent
           title="¿DESEA ELIMINAR?"
@@ -144,4 +126,4 @@ function EntradasInventarioPage() {
   )
 }
 
-export default EntradasInventarioPage
+export default ListadoInventario

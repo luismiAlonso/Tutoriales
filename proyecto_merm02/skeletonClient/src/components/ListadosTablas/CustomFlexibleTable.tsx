@@ -53,9 +53,14 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   ) => {
     e.preventDefault()
 
-    console.log(column.idInput, rowIndex)
     onButtonClick(column.idInput, rowIndex)
   }
+
+  const hiddenClass = dataColumn.visible ? "" : "invisible"
+
+  /*if(!dataColumn.visible){
+    return null
+  }*/
 
   switch (dataColumn.type) {
     case "text":
@@ -136,57 +141,69 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
     case "button":
       return (
         <td className="text-center">
-          <CustomButton
-            buttonText={dataColumn.content as string}
-            onClick={(e) => {
-              // Llama a handleClick solo si dataColumn.value está definido
-              if (dataColumn.value !== undefined) {
-                handleClick(e, dataColumn.idInput, rowIndex)
-              }
-            }}
-          />
+          <div className={hiddenClass}>
+            <CustomButton
+              buttonText={dataColumn.content as string}
+              onClick={(e) => {
+                // Llama a handleClick solo si dataColumn.value está definido
+                if (dataColumn.value !== undefined) {
+                  handleClick(e, dataColumn.idInput, rowIndex)
+                }
+              }}
+            />
+          </div>
         </td>
       )
     case "svg":
       if (dataColumn.idInput === "Editar") {
         return (
           <td className="text-center">
-            <IconComponent
-              onClick={(e) => {
-                if (dataColumn.value != undefined) {
-                  handleClick(e, dataColumn.idInput, rowIndex)
-                }
-              }} // Asegúrate de que `props.value` sea el valor correcto
-              iconType="svg"
-              iconContent={<IconEditSvg />}
-            />
+            <div className={hiddenClass}>
+              <IconComponent
+                onClick={(e) => {
+                  if (dataColumn.value != undefined) {
+                    handleClick(e, dataColumn.idInput, rowIndex)
+                  }
+                }} // Asegúrate de que `props.value` sea el valor correcto
+                iconType="svg"
+                iconContent={<IconEditSvg />}
+              />
+            </div>
           </td>
         )
       } else if (dataColumn.idInput === "Borrar") {
         {
           return (
             <td>
-              <IconComponent
-                onClick={(e) => {
-                  if (dataColumn.value != undefined) {
-                    handleClick(e, dataColumn.idInput, rowIndex)
-                  }
-                }}
-                iconType="svg"
-                iconContent={<IconDeleteSvg />}
-              />
+              <div className={hiddenClass}>
+                <IconComponent
+                  onClick={(e) => {
+                    if (dataColumn.value != undefined) {
+                      handleClick(e, dataColumn.idInput, rowIndex)
+                    }
+                  }}
+                  iconType="svg"
+                  iconContent={<IconDeleteSvg />}
+                />
+              </div>
             </td>
           )
         }
       }
       return <td></td>
     case "noInput":
-      //console.log("fields",dataColumn.idInput,data[dataColumn.idInput])
+      //console.log("fields",dataColumn.idInput,dataColumn.visible)
       return (
-        <td className="text-center">{data[dataColumn.idInput] as string}</td>
+        <td className="text-center">
+          <div className={hiddenClass}>
+            {data[dataColumn.idInput] as string}
+          </div>
+        </td>
       )
     default:
-      return <td className="text-center">{dataColumn.content}</td>
+      return (
+        <td className={`text-center ${hiddenClass}`}>{dataColumn.content}</td>
+      )
   }
 }
 
@@ -197,6 +214,9 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
+  //console.log(dataColumn)
+  // console.log(data)
+
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -222,17 +242,19 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
                 } border-b dark:border-gray-700`}
               >
                 {dataColumn[rowIndex].map(
-                  (columnDescriptor, descriptorIndex) => (
-                    <TableCellComponent
-                      key={descriptorIndex}
-                      dataColumn={columnDescriptor}
-                      data={rowData}
-                      column={columnDescriptor}
-                      rowIndex={rowIndex}
-                      onInputChange={onInputChange}
-                      onButtonClick={onButtonClick}
-                    />
-                  )
+                  (columnDescriptor, descriptorIndex) => {
+                    return (
+                      <TableCellComponent
+                        key={descriptorIndex}
+                        dataColumn={columnDescriptor}
+                        data={rowData}
+                        column={columnDescriptor}
+                        rowIndex={rowIndex}
+                        onInputChange={onInputChange}
+                        onButtonClick={onButtonClick}
+                      />
+                    )
+                  }
                 )}
               </tr>
             ))}

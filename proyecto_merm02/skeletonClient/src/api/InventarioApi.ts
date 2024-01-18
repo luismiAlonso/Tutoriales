@@ -16,6 +16,17 @@ export const fetchInventarioAlmacenBySeccionAlmacen = async (
   }
 }
 
+export const getAllInventarios = async (
+  route: string
+): Promise<InventarioAlmacen[] | null> => {
+  try {
+    const response = await axios.get<InventarioAlmacen[]>(route)
+    return response.data
+  } catch (error) {
+    return null
+  }
+}
+
 export const fetchUltimosProductosBySeccionAlmacen = async (
   route: string,
   tipoFecha: string

@@ -5,6 +5,7 @@ const productoInventarioSchema = new mongoose.Schema({
   fechaEntrada: String,
   fechaSalida: String,
   idProducto: Number,
+  ultimoRegistro:Boolean,
   claveComp:String,
   stock: Number,
   cantidadSalida: Number,

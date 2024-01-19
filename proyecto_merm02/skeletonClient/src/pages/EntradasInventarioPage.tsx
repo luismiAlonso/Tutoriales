@@ -25,6 +25,7 @@ function EntradasInventarioPage() {
     handleOpenModal,
     handleDeleteProducto,
     handleBackEditMod,
+    mappedStyleTable,
     mappeddProductosInventario,
     plantillaFiltersInventario,
     editMode,
@@ -102,18 +103,18 @@ function EntradasInventarioPage() {
                   onInputChange={handleInputChange}
                   onButtonClick={handleButtonClick}
                 />
-            */}
-              {
-              mappeddProductosInventario && (
+              */}
+              
+              {mappeddProductosInventario && mappedStyleTable && (
                 <CustomFlexibleTable
                   columns={HeaderProductoInventario}
+                  tableStyle={mappedStyleTable}
                   dataColumn={mappeddProductosInventario}
                   data={loadedData}
                   onInputChange={handleInputChange}
                   onButtonClick={handleButtonClick}
                 />
-              )
-              }
+              )}
             </InfiniteScroll>
           </div>
         </div>

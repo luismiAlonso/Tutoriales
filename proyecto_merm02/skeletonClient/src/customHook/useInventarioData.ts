@@ -13,7 +13,8 @@ import {
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { productoInventarioInicial } from "../models/productoInventarioInicial"
-import id from "date-fns/esm/locale/id/index.js"
+import { generateRandomColor } from "../utilidades/util"
+import { TableStyle } from "../interfaces/TableStyles"
 
 export const useInventarioData = () => {
   // console.log("luego de ser seteado",HeaderInventario)
@@ -102,12 +103,26 @@ export const useInventarioData = () => {
 
   const mapColumnDescriptorsToProductoInventario = (
     columns: ColumnDescriptor[],
-    exclude: string[] = [] // Array de propiedades a excluir
+    exclude: string[] = []
   ): ProductoInventario => {
-    const producto: any = {}
-
-    /*cantidadSalida:number,
-    cantidadEntrante:number,*/
+    const producto: any = {
+      fechaEntrada: "",
+      fechaSalida: "",
+      idProducto: 1,
+      ultimaEntrada: false,
+      ultimaSalida: false,
+      claveComp: "",
+      stock: 0,
+      cantidadSalida: 0,
+      cantidadEntrante: 0,
+      plancha: "",
+      color: "",
+      dibujo: "",
+      molde: "",
+      acabado01: "",
+      acabado02: "",
+      calibre: ""
+    }
 
     columns.forEach((col) => {
       if (
@@ -115,25 +130,31 @@ export const useInventarioData = () => {
         col.value !== undefined &&
         !exclude.includes(col.idInput)
       ) {
-        const key = col.idInput
-        //parseo de tipos numericos
+        const key = col.idInput as keyof ProductoInventario
 
+        // Parseo de tipos numéricos
         if (
-          key === "idProducto" ||
-          key === "stock" ||
-          key === "cantidadSalida" ||
-          key === "cantidadEntrante"
+          [
+            "idProducto",
+            "stock",
+            "cantidadSalida",
+            "cantidadEntrante"
+          ].includes(key)
         ) {
-          // Convierte a número
           producto[key] = Number(col.value)
-        } else {
-          // Mantiene como cadena
+        }
+        // Parseo de tipos booleanos
+        else if (["ultimoRegistro"].includes(key)) {
+          producto[key] = Boolean(col.value)
+        }
+        // Mantiene como cadena para el resto
+        else {
           producto[key] = col.value
         }
       }
     })
 
-    return producto as ProductoInventario
+    return producto
   }
 
   const updateColumnDescriptor = (
@@ -185,19 +206,43 @@ export const useInventarioData = () => {
     }
   }
 
+  const generarMatrizStyle = (
+    productosInventario: ProductoInventario[]
+  ): TableStyle[] => {
+    // Crear un mapa para almacenar colores para cada claveCompuesta
+    const colorMap = new Map<string, string>()
+
+    // Asignar colores a cada claveCompuesta única
+    productosInventario.forEach((producto) => {
+      if (!colorMap.has(producto.claveComp)) {
+        colorMap.set(producto.claveComp, generateRandomColor())
+      }
+    })
+
+    return productosInventario.map((producto) => {
+      // Obtener el color para la claveCompuesta actual
+      const color = colorMap.get(producto.claveComp) || ""
+
+      // Crear y devolver un estilo para la fila actual
+      const filaEstilo: TableStyle = {
+        tableFull: "",
+        thContent: "",
+        trContent: `bg-[${color}]`, // Tailwind CSS para aplicar el color de fondo
+        tdContent: ""
+      }
+
+      return filaEstilo // Devolver como objeto para cada fila
+    })
+  }
+
   const generarMatrizColumnDescriptors = (
     columnasTemplate: ColumnDescriptor[],
-    productosInventario: ProductoInventario[],
-    ultimasEntradasSalidas: ProductoInventario[]
-  ) => {
+    productosInventario: ProductoInventario[]
+  ): ColumnDescriptor[][] => {
     return productosInventario.map((producto) => {
       const filaColumnDescriptors = mapearProductoInventarioAColumnas(
         columnasTemplate,
         producto
-      )
-
-      const esUltimaEntradaSalida = ultimasEntradasSalidas.some(
-        (ultima) => ultima.idProducto === producto.idProducto
       )
 
       return filaColumnDescriptors.map((descriptor) => {
@@ -205,11 +250,12 @@ export const useInventarioData = () => {
         const descriptorCopia = { ...descriptor }
 
         if (
-          ["Editar", "Borrar", "salidas", "entradas"].includes(
+          ["Editar", "Borrar", "entradas", "salidas"].includes(
             descriptorCopia.idInput
           )
         ) {
-          descriptorCopia.visible = esUltimaEntradaSalida
+          // La visibilidad de Editar y Borrar depende de si es la última entrada o salida
+          descriptorCopia.visible = producto.ultimoRegistro
         }
 
         return descriptorCopia
@@ -260,7 +306,8 @@ export const useInventarioData = () => {
     return null
   }
 
-  /*const actualizarInventario = async()
+  /*
+  const actualizarInventario = async()
 
   const agregarNuevaEntrada = async (
     seccion: string,
@@ -282,7 +329,8 @@ export const useInventarioData = () => {
     }
 
     return false
-  }*/
+  }
+  */
 
   return {
     getInventarioSelected,
@@ -298,6 +346,7 @@ export const useInventarioData = () => {
     getLastProductInventarioByClaveComp,
     getLastproductInventario,
     getLastProductGroupInventario,
+    generarMatrizStyle,
     currentInventario,
     productoInventarioInicial
   }

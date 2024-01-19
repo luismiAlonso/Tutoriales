@@ -70,6 +70,20 @@ export const deleteProductoInventario = async (
   }
 }
 
+export const getAllProductsByClaveComp = async (
+  route: string,
+  claveComp: string
+): Promise<ProductoInventario[] | null> => {
+  try {
+    const response = await axios.get<ProductoInventario[]>(
+      `${route}/${claveComp}`
+    )
+    return response.data
+  } catch (error) {
+    return null
+  }
+}
+
 export const agregarInventarioAlmacen = async (
   route: string,
   nuevoInventarioAlmacen: InventarioAlmacen

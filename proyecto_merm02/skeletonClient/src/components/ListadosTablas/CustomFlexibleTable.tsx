@@ -8,10 +8,12 @@ import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
 import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
 import { getPropertyValue } from "../../utilidades/util.ts"
+import { TableStyle } from "../../interfaces/TableStyles.ts"
 
 interface TableProps<T> {
   columns: ColumnDescriptor[]
   dataColumn: ColumnDescriptor[][]
+  tableStyle: TableStyle[]
   data: T[]
   onInputChange: (
     value: any,
@@ -25,6 +27,7 @@ interface CustomTableProps<T> {
   data: T
   column: ColumnDescriptor
   dataColumn: ColumnDescriptor
+  tableStyle: TableStyle
   rowIndex: number
   onInputChange: (
     value: any,
@@ -39,6 +42,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   column,
   rowIndex,
   dataColumn,
+  tableStyle,
   onInputChange,
   onButtonClick
 }) => {
@@ -209,7 +213,8 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
 
 const CustomFlexibleTable: React.FC<TableProps<any>> = ({
   columns,
-  dataColumn, // Ahora es una matriz de matrices de ColumnDescriptor
+  dataColumn,
+  tableStyle=[],
   onInputChange,
   onButtonClick,
   data
@@ -233,19 +238,26 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
           </thead>
           <tbody>
             {data.map((rowData, rowIndex) => (
-              <tr
+             /*<tr
                 key={rowIndex}
                 className={`${
                   rowIndex % 2 === 0
                     ? "bg-white dark:bg-gray-900"
                     : "bg-gray-50 dark:bg-gray-800"
                 } border-b dark:border-gray-700`}
-              >
+              >*/
+    
+            <tr
+              key={rowIndex}
+              className={`${tableStyle[rowIndex].trContent} border-b dark:border-gray-700`} 
+            >
+
                 {dataColumn[rowIndex].map(
                   (columnDescriptor, descriptorIndex) => {
                     return (
                       <TableCellComponent
                         key={descriptorIndex}
+                        tableStyle={tableStyle[rowIndex]}
                         dataColumn={columnDescriptor}
                         data={rowData}
                         column={columnDescriptor}

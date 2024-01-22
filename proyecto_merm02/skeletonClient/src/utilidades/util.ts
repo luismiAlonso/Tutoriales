@@ -14,8 +14,35 @@ export const getPropertyValue = <T>(obj: T, propName: string): any => {
   )
 }
 
-export const generateRandomColor = (): string => {
-  // Generar un número aleatorio y convertirlo a hexadecimal
-  const color = Math.floor(Math.random() * 16777215).toString(16)
-  return `#${color}`
+export enum TipoColor {
+  Oscuro = 1,
+  Claro = 2,
+  Indistinto = 3
+}
+
+export const generateRandomColor = (tipo: TipoColor): string => {
+  let r: number, g: number, b: number
+
+  if (tipo === TipoColor.Oscuro) {
+    // Genera componentes de color oscuros en el rango [0, 127]
+    r = Math.floor(Math.random() * 128)
+    g = Math.floor(Math.random() * 128)
+    b = Math.floor(Math.random() * 128)
+  } else if (tipo === TipoColor.Claro) {
+    // Genera componentes de color claros en el rango [128, 255]
+    r = Math.floor(Math.random() * 128) + 128
+    g = Math.floor(Math.random() * 128) + 128
+    b = Math.floor(Math.random() * 128) + 128
+  } else {
+    // Genera componentes de color indistintamente en el rango [0, 255]
+    r = Math.floor(Math.random() * 256)
+    g = Math.floor(Math.random() * 256)
+    b = Math.floor(Math.random() * 256)
+  }
+
+  // Convierte componentes a formato hexadecimal
+  return `#${r.toString(16).padStart(2, "0")}${g
+    .toString(16)
+    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`
+    
 }

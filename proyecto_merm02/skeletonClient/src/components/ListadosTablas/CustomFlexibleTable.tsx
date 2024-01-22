@@ -214,13 +214,13 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
 const CustomFlexibleTable: React.FC<TableProps<any>> = ({
   columns,
   dataColumn,
-  tableStyle=[],
+  tableStyle = [],
   onInputChange,
   onButtonClick,
   data
 }) => {
-  //console.log(dataColumn)
-  // console.log(data)
+
+  //console.log(data)
 
   return (
     <>
@@ -238,7 +238,7 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
           </thead>
           <tbody>
             {data.map((rowData, rowIndex) => (
-             /*<tr
+              /*<tr
                 key={rowIndex}
                 className={`${
                   rowIndex % 2 === 0
@@ -246,12 +246,12 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
                     : "bg-gray-50 dark:bg-gray-800"
                 } border-b dark:border-gray-700`}
               >*/
-    
-            <tr
-              key={rowIndex}
-              className={`${tableStyle[rowIndex].trContent} border-b dark:border-gray-700`} 
-            >
 
+             <tr
+                key={rowIndex}
+                className={`${tableStyle[rowIndex].trContent} border-b dark:border-gray-700`}
+              >
+            
                 {dataColumn[rowIndex].map(
                   (columnDescriptor, descriptorIndex) => {
                     return (

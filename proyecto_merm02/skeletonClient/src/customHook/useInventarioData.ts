@@ -14,6 +14,7 @@ import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { productoInventarioInicial } from "../models/productoInventarioInicial"
 import { generateRandomColor } from "../utilidades/util"
+import { TipoColor } from "../utilidades/util"
 import { TableStyle } from "../interfaces/TableStyles"
 
 export const useInventarioData = () => {
@@ -211,15 +212,21 @@ export const useInventarioData = () => {
   ): TableStyle[] => {
     // Crear un mapa para almacenar colores para cada claveCompuesta
     const colorMap = new Map<string, string>()
+    const color1 = "bg-white dark:bg-gray-900"
+    const color2 = "bg-gray-50 dark:bg-gray-800"
 
-    // Asignar colores a cada claveCompuesta única
-    productosInventario.forEach((producto) => {
-      if (!colorMap.has(producto.claveComp)) {
-        colorMap.set(producto.claveComp, generateRandomColor())
-      }
-    })
+    let indiceColor = 0
 
     return productosInventario.map((producto) => {
+      // Si la claveComp no tiene un color asignado, asignar uno y actualizar el índice
+      if (!colorMap.has(producto.claveComp)) {
+        colorMap.set(
+          producto.claveComp,
+          indiceColor % 2 === 0 ? color1 : color2
+        )
+        indiceColor++
+      }
+
       // Obtener el color para la claveCompuesta actual
       const color = colorMap.get(producto.claveComp) || ""
 
@@ -227,7 +234,7 @@ export const useInventarioData = () => {
       const filaEstilo: TableStyle = {
         tableFull: "",
         thContent: "",
-        trContent: `bg-[${color}]`, // Tailwind CSS para aplicar el color de fondo
+        trContent: color, // Tailwind CSS para aplicar el color de fondo
         tdContent: ""
       }
 

@@ -187,7 +187,7 @@ export const productoInventarioInicial: ColumnDescriptor[] = [
   {
     title: "cantidadSalida",
     idInput: "cantidadSalida",
-    value: 1,
+    value: 0,
     content: "",
     type: "text",
     editable: false,

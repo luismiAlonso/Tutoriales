@@ -26,7 +26,6 @@ import useCustomDatepicker from "../customHook/useCustomDatepicker"
 import { TableStyle } from "../interfaces/TableStyles"
 
 export const useInventarioManager = () => {
-
   const [resumeProduct, setResumeDataProduct] =
     useState<ProductoInventario>(null)
   const navigate = useNavigate() // Obtén la función navigate
@@ -37,6 +36,8 @@ export const useInventarioManager = () => {
   const [url, setUrl] = useState<string>()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const [editMode, setEditMode] = useState<boolean>(false)
+  const [tipoEdicion, setTipoEdicion] = useState<string>("")
+
   const { filterByWords, filterData, filterDateRange } = useFilterData()
   const [fullData, setFullData] = useState<ProductoInventario[]>([])
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
@@ -44,7 +45,7 @@ export const useInventarioManager = () => {
 
   const [mappeddProductosInventario, setMappedProductosInventario] =
     useState<ColumnDescriptor[][]>()
-  const [mappedStyleTable,setmappedStyleTable] = useState<TableStyle[]>()
+  const [mappedStyleTable, setmappedStyleTable] = useState<TableStyle[]>()
   const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
     string[]
   >([
@@ -155,37 +156,34 @@ export const useInventarioManager = () => {
     ) as PrepareDataInventario
 
     if (idInput === "agregarEntrada") {
-
       if (dataPrepareInventario) {
-
         try {
-
           const mapDatosEntrada = mapColumnDescriptorsToProductoInventario(
             datosEntrada,
             ["agregarEntrada"]
           )
 
-          //console.log(mapDatosEntrada)
-
           const dbInventario = (await getInventarioSelected(
             dataPrepareInventario.url
           )) as InventarioAlmacen
 
-          //obtenemos todos los productos que coincidan con la claveCompuesta          
+          //obtenemos todos los productos que coincidan con la claveCompuesta
           const claveCompuesta = generadorClaveCompuesta(mapDatosEntrada)
 
           //relllenamos fechas y hora de salida
           mapDatosEntrada.fechaEntrada = obtenerFechaActual(
             "dd/MM/yyyy HH:mm:ss"
           )
-          mapDatosEntrada.fechaSalida = obtenerFechaActual(
+
+          /*
+         mapDatosEntrada.fechaSalida = obtenerFechaActual(
             "dd/MM/yyyy HH:mm:ss"
           )
+          */
 
           if (dbInventario) {
-
             mapDatosEntrada.claveComp = claveCompuesta
-           // console.log("claveCompleta", mapDatosEntrada.claveComp)
+            // console.log("claveCompleta", mapDatosEntrada.claveComp)
             const lastProductExist = getLastProductInventarioByClaveComp(
               dbInventario,
               mapDatosEntrada.claveComp
@@ -199,13 +197,13 @@ export const useInventarioManager = () => {
 
               mapDatosEntrada.stock =
                 mapDatosEntrada.cantidadEntrante + lastProductExist.stock
-              mapDatosEntrada.ultimoRegistro = true 
+              mapDatosEntrada.ultimoRegistro = true
               lastProductExist.ultimoRegistro = false
               //console.log("stock cantidad existente", mapDatosEntrada.stock)
             } else {
               // si no hay coincidencia es que el producto es nuevo
               mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
-              mapDatosEntrada.ultimoRegistro=true
+              mapDatosEntrada.ultimoRegistro = true
             }
 
             dbInventario.inventario.push(mapDatosEntrada)
@@ -217,23 +215,26 @@ export const useInventarioManager = () => {
             ).then((response) => {
               if (response) {
                 dataPrepareInventario.inventarioAlmacen = dbInventario
+                console.log("antes", dataPrepareInventario)
                 setDatosLocalStorage("futureInventario", dataPrepareInventario)
                 setListaTotalProductosInventario(dbInventario.inventario)
                 const mappedData = generarMatrizColumnDescriptors(
                   PlantillaProductoInventario,
-                  dbInventario.inventario,
+                  dbInventario.inventario
                 )
                 setMappedProductosInventario(mappedData)
+                //actualizo stilo de filas
+                const mappedStyle = generarMatrizStyle(dbInventario.inventario)
+                setmappedStyleTable(mappedStyle)
               }
             })
-
           } else {
             // El inventario no existe, creamos
             mapDatosEntrada.idProducto = 1
             mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
             //la cantidad de stock al iniciar es lo mismo que la cantidad entrante inicial
             mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
-            mapDatosEntrada.ultimoRegistro=true
+            mapDatosEntrada.ultimoRegistro = true
 
             //console.log("mapeodatos", mapDatosEntrada)
 
@@ -249,23 +250,24 @@ export const useInventarioManager = () => {
             )
 
             if (creacionExitosa) {
-              console.log(
+              /* 
+             console.log(
                 "Se ha creado un nuevo inventario con la entrada",
                 nuevoInventario
               )
+              */
               dataPrepareInventario.inventarioAlmacen = nuevoInventario
               setDatosLocalStorage("futureInventario", dataPrepareInventario)
               setListaTotalProductosInventario(nuevoInventario.inventario)
-              setListaTotalProductosInventario(nuevoInventario.inventario)
-                const mappedData = generarMatrizColumnDescriptors(
-                  PlantillaProductoInventario,
-                  nuevoInventario.inventario,
-                )
-                setMappedProductosInventario(mappedData)
+              const mappedData = generarMatrizColumnDescriptors(
+                PlantillaProductoInventario,
+                nuevoInventario.inventario
+              )
+              setMappedProductosInventario(mappedData)
             }
           }
 
-          actualizaInvinterario()
+          //actualizaInvinterario()
         } catch (error) {
           console.error("Error en handleButtonClick:", error)
         }
@@ -282,7 +284,6 @@ export const useInventarioManager = () => {
       setResumeDataProduct(totalProductosInventario[rowIndex])
       handleOpenModal()
     } else if (idInput === "Editar") {
-
       if (loadedData) {
         /*const productoEditar = mapearProductoInventarioAColumnas(
           ProducInventarioModificacion,
@@ -291,20 +292,22 @@ export const useInventarioManager = () => {
         setDatosModificacion(productoEditar)
         setEditMode(true)*/
       }
-
     } else if (idInput === "entradas") {
-      // console.log("entradas")
+
       if (loadedData) {
+        setTipoEdicion("entradas")
         const productoEditar = mapearProductoInventarioAColumnas(
           ProductoInventarioEntradasMod,
           loadedData[rowIndex]
         )
+
         setDatosModificacion(productoEditar)
         setEditMode(true)
       }
     } else if (idInput === "salidas") {
-      //console.log("salidas")
+
       if (loadedData) {
+        setTipoEdicion("salidas")
         const productoEditar = mapearProductoInventarioAColumnas(
           ProductoInventarioSalidasMod,
           loadedData[rowIndex]
@@ -313,37 +316,227 @@ export const useInventarioManager = () => {
         setEditMode(true)
       }
     } else if (idInput === "guardar") {
-
       //GUARDAR PRODUCTO EDITADO
-      const dbInventario = (await getInventarioSelected(
-        dataPrepareInventario.url
-      )) as InventarioAlmacen
+      console.log(tipoEdicion)
+      const dataPrepareInventario = getDatosLocalStorage(
+        "futureInventario"
+      ) as PrepareDataInventario
 
       const mapDatosEntrada = mapColumnDescriptorsToProductoInventario(
         datosModificacion,
         ["guardar"]
       ) as ProductoInventario
 
-      if (dbInventario) {
+      //console.log(mapDatosEntrada)
+
+      /*  if (dbInventario) {
         //dbInventario.inventario[mapDatosEntrada.idProducto] =  mapDatosEntrada
         const index = dbInventario.inventario.findIndex(
-          (producto) => producto.idProducto === mapDatosEntrada.idProducto
-        )
+          (producto) => producto.idProducto === mapDatosEntrada.idProducto)*/
 
+      if (tipoEdicion === "entradas") {
+        console.log("jdjdjdjh")
+        agregarEntrada(dataPrepareInventario, mapDatosEntrada)
+      } else if (tipoEdicion === "salidas") {
+        agregarSalida(dataPrepareInventario, mapDatosEntrada)
+      }
+      /*  
+        mapDatosEntrada.claveComp = dbInventario.inventario[index].claveComp
+        mapDatosEntrada.ultimoRegistro = dbInventario.inventario[index].ultimoRegistro
         dbInventario.inventario[index] = mapDatosEntrada
-
-        updateProductoIventario(
+        dbInventario.inventario[index].stock+=mapDatosEntrada.cantidadEntrante
+        
+       updateProductoIventario(
           `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
           dbInventario
         ).then((result) => {
+
           if (result) {
-            setDatosLocalStorage("futureInventario", dbInventario)
+
+            dataPrepareInventario.inventarioAlmacen=dbInventario
+            setDatosLocalStorage("futureInventario", dataPrepareInventario)
             setListaTotalProductosInventario(dbInventario.inventario)
+
+            const mappedData = generarMatrizColumnDescriptors(
+              PlantillaProductoInventario,
+              dbInventario.inventario
+            )
+
+            //actualizo descriptor
+            setMappedProductosInventario(mappedData)
+            //actualizo stilo de filas
+            const mappedStyle = generarMatrizStyle(dbInventario.inventario)
+            setmappedStyleTable(mappedStyle)
+
+           // actualizaInvinterario()
             setEditMode(false)
+            console.log("exito")
           } else {
             console.log("error")
           }
         })
+        */
+      // }
+    }
+  }
+
+  const agregarSalida = async (
+    dataPrepareInventario: PrepareDataInventario,
+    mapDatosEntrada: ProductoInventario
+  ) => {
+    /* const mapDatosEntrada = mapColumnDescriptorsToProductoInventario(
+      datosEntrada,
+      ["agregarEntrada"]
+    )*/
+
+    const dbInventario = (await getInventarioSelected(
+      dataPrepareInventario.url
+    )) as InventarioAlmacen
+
+    mapDatosEntrada.fechaSalida = obtenerFechaActual("dd/MM/yyyy HH:mm:ss")
+    //obtenemos todos los productos que coincidan con la claveCompuesta
+    const claveCompuesta = generadorClaveCompuesta(mapDatosEntrada)
+
+    mapDatosEntrada.claveComp = claveCompuesta
+    // console.log("claveCompleta", mapDatosEntrada.claveComp)
+    const lastProductExist = getLastProductInventarioByClaveComp(
+      dbInventario,
+      mapDatosEntrada.claveComp
+    )
+
+    const lastProduct = getLastproductInventario(dbInventario)
+    mapDatosEntrada.idProducto = lastProduct.idProducto + 1
+
+    if (lastProductExist) {
+      //en este caso obtenemos el ultimo producto que coincida con la clave compuesta
+
+      mapDatosEntrada.stock =
+        lastProductExist.stock - mapDatosEntrada.cantidadSalida
+      mapDatosEntrada.ultimoRegistro = true
+      lastProductExist.ultimoRegistro = false
+      //console.log("stock cantidad existente", mapDatosEntrada.stock)
+    }
+
+    dbInventario.inventario.push(mapDatosEntrada)
+    //actualizamos inventario con los nuevos datos
+
+    updateProductoIventario(
+      `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
+      dbInventario
+    ).then((response) => {
+      if (response) {
+        dataPrepareInventario.inventarioAlmacen = dbInventario
+        //console.log("antes", dataPrepareInventario)
+        setDatosLocalStorage("futureInventario", dataPrepareInventario)
+        setListaTotalProductosInventario(dbInventario.inventario)
+        const mappedData = generarMatrizColumnDescriptors(
+          PlantillaProductoInventario,
+          dbInventario.inventario
+        )
+        setMappedProductosInventario(mappedData)
+        //actualizo stilo de filas
+        const mappedStyle = generarMatrizStyle(dbInventario.inventario)
+        setmappedStyleTable(mappedStyle)
+      }
+    })
+  }
+
+  const agregarEntrada = async (
+    dataPrepareInventario: PrepareDataInventario,
+    mapDatosEntrada: ProductoInventario
+  ) => {
+
+    const dbInventario = (await getInventarioSelected(
+      dataPrepareInventario.url
+    )) as InventarioAlmacen
+
+    if (dbInventario) {
+      mapDatosEntrada.fechaEntrada = obtenerFechaActual("dd/MM/yyyy HH:mm:ss")
+      //obtenemos todos los productos que coincidan con la claveCompuesta
+      const claveCompuesta = generadorClaveCompuesta(mapDatosEntrada)
+
+      mapDatosEntrada.claveComp = claveCompuesta
+      // console.log("claveCompleta", mapDatosEntrada.claveComp)
+      const lastProductExist = getLastProductInventarioByClaveComp(
+        dbInventario,
+        mapDatosEntrada.claveComp
+      )
+
+      console.log(dbInventario.inventario.length)
+      const lastProduct = getLastproductInventario(dbInventario)
+      mapDatosEntrada.idProducto = lastProduct.idProducto + 1
+
+      if (lastProductExist) {
+        //en este caso obtenemos el ultimo producto que coincida con la clave compuesta
+
+        mapDatosEntrada.stock =
+          mapDatosEntrada.cantidadEntrante + lastProductExist.stock
+        mapDatosEntrada.ultimoRegistro = true
+        lastProductExist.ultimoRegistro = false
+        //console.log("stock cantidad existente", mapDatosEntrada.stock)
+      } else {
+        // si no hay coincidencia es que el producto es nuevo
+        mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
+        mapDatosEntrada.ultimoRegistro = true
+      }
+
+      dbInventario.inventario.push(mapDatosEntrada)
+      //actualizamos inventario con los nuevos datos
+      console.log(dbInventario.inventario.length)
+
+      updateProductoIventario(
+        `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
+        dbInventario
+      ).then((response) => {
+
+        if (response) {
+
+          dataPrepareInventario.inventarioAlmacen = dbInventario
+          //console.log("antes", dataPrepareInventario)
+          setDatosLocalStorage("futureInventario", dataPrepareInventario)
+          setListaTotalProductosInventario(dbInventario.inventario)
+          const mappedData = generarMatrizColumnDescriptors(
+            PlantillaProductoInventario,
+            dbInventario.inventario
+          )
+          setMappedProductosInventario(mappedData)
+          //actualizo stilo de filas
+          const mappedStyle = generarMatrizStyle(dbInventario.inventario)
+          setmappedStyleTable(mappedStyle)
+        }
+      })
+    } else {
+      // El inventario no existe, creamos
+      mapDatosEntrada.idProducto = 1
+      mapDatosEntrada.claveComp = generadorClaveCompuesta(mapDatosEntrada)
+      //la cantidad de stock al iniciar es lo mismo que la cantidad entrante inicial
+      mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
+      mapDatosEntrada.ultimoRegistro = true
+
+      //console.log("mapeodatos", mapDatosEntrada)
+
+      const nuevoInventario = {
+        seccion: dataPrepareInventario.inventarioAlmacen.seccion,
+        almacen: dataPrepareInventario.inventarioAlmacen.almacen, // Asegúrate de que esto sea correcto
+        inventario: [mapDatosEntrada]
+      }
+
+      const creacionExitosa = await crearNuevoInventario(
+        dataPrepareInventario.url,
+        nuevoInventario
+      )
+
+      if (creacionExitosa) {
+
+        dataPrepareInventario.inventarioAlmacen = nuevoInventario
+        setDatosLocalStorage("futureInventario", dataPrepareInventario)
+        setListaTotalProductosInventario(nuevoInventario.inventario)
+        const mappedData = generarMatrizColumnDescriptors(
+          PlantillaProductoInventario,
+          nuevoInventario.inventario
+        )
+
+        setMappedProductosInventario(mappedData)
       }
     }
   }
@@ -353,7 +546,6 @@ export const useInventarioManager = () => {
     seccion: string,
     naveSeleccionada: string
   ) => {
-    
     const dataInventario = {
       url: url,
       inventarioAlmacen: {
@@ -367,12 +559,10 @@ export const useInventarioManager = () => {
     setUrl(url)
 
     if (response) {
-
       if (response.inventario) {
         // Recibo respuesta porque el inventario ya existe
         dataInventario.inventarioAlmacen.inventario = response.inventario
       }
-
     }
 
     setDatosLocalStorage("futureInventario", dataInventario)
@@ -412,17 +602,18 @@ export const useInventarioManager = () => {
   }
 
   const actualizaInvinterario = async () => {
-
     const datosTemporales = getDatosLocalStorage(
       "futureInventario"
     ) as PrepareDataInventario
 
     try {
+      const muestraDatos = getDatosLocalStorage("mostrarDatos")
+      console.log(muestraDatos)
 
       const responseInventario = await getInventarioSelected(
         datosTemporales.url
       )
-      
+
       const responseUltimosProductos = await getLastProductGroupInventario(
         datosTemporales.url,
         "entrada"
@@ -440,17 +631,15 @@ export const useInventarioManager = () => {
         responseInventario.inventario &&
         responseUltimosProductos
       ) {
-
         const mappedData = generarMatrizColumnDescriptors(
           PlantillaProductoInventario,
-          responseInventario.inventario,
+          responseInventario.inventario
         )
 
-
         if (responseInventario && responseInventario.inventario) {
-          
           datosTemporales.inventarioAlmacen.inventario =
             responseInventario.inventario
+          console.log(datosTemporales)
           setDatosLocalStorage("futureInventario", datosTemporales)
           setListaTotalProductosInventario(responseInventario.inventario)
           setFullData(responseInventario.inventario)
@@ -458,11 +647,11 @@ export const useInventarioManager = () => {
 
           const mappedStyle = generarMatrizStyle(responseInventario.inventario)
           setmappedStyleTable(mappedStyle)
-
         } else {
-          console.log("La base de datos no contiene inventario con esa definición")
+          console.log(
+            "La base de datos no contiene inventario con esa definición"
+          )
         }
-        
       }
     } catch (error) {
       console.error("Error al actualizar el inventario:", error)
@@ -519,7 +708,6 @@ export const useInventarioManager = () => {
   const handleInputTextClick = () => {}
 
   const handleFilterChange = (id: string, value: string) => {
-
     if (id === "byWords") {
       if (value === "") {
         setListaTotalProductosInventario(fullData)
@@ -565,65 +753,41 @@ export const useInventarioManager = () => {
         "futureInventario"
       ) as PrepareDataInventario
 
+      //almaceno en cookies el valor
+      console.log(toggleState.value)
+      setDatosLocalStorage("mostrarDatos", toggleState.value)
+
       if (dataPrepareInventario) {
-
         try {
-
           if (toggleState.value) {
-
-           /*
-            const groupProducts = getDatosLocalStorage(
-              "groupProducts"
-            ) as ProductoInventario[]
-
-            const mappedData = generarMatrizColumnDescriptors(
-              PlantillaProductoInventario,
-              groupProducts,
-              groupProducts
-            )
-
-            console.log("Sincrona: ",mappedData,groupProducts)
-            setMappedProductosInventario(mappedData)
-            setListaTotalProductosInventario(groupProducts)
-            */
-
-           getLastProductGroupInventario(
+            getLastProductGroupInventario(
               dataPrepareInventario.url,
               "entrada"
             ).then((result) => {
-
               if (result) {
-
-              /*  const mappedData = generarMatrizColumnDescriptors(
+                const mappedData = generarMatrizColumnDescriptors(
                   PlantillaProductoInventario,
-                  result,
                   result
                 )
+                setMappedProductosInventario(mappedData)
+                const mappedStyle = generarMatrizStyle(result)
+                setmappedStyleTable(mappedStyle)
 
-                setMappedProductosInventario(mappedData)*/
                 setListaTotalProductosInventario(result)
               }
             })
-        
           } else {
-
             //console.log("Aqui devolveriamos todos los productos")
-             getInventarioSelected(dataPrepareInventario.url).then(
-
+            getInventarioSelected(dataPrepareInventario.url).then(
               (inventario) => {
-
                 if (inventario) {
-
-                /*  const ultimasEntradasSalidas = getDatosLocalStorage("groupProducts")
-
                   const mappedData = generarMatrizColumnDescriptors(
                     PlantillaProductoInventario,
-                    inventario.inventario,
-                    ultimasEntradasSalidas
+                    inventario.inventario
                   )
-  
-                  setMappedProductosInventario(mappedData)*/
-                 //console.log(inventario.inventario)
+                  setMappedProductosInventario(mappedData)
+                  const mappedStyle = generarMatrizStyle(inventario.inventario)
+                  setmappedStyleTable(mappedStyle)
                   setListaTotalProductosInventario(inventario.inventario)
                 }
               }
@@ -636,7 +800,6 @@ export const useInventarioManager = () => {
 
       //console.log("ver solo ultima entrada del producto", mostrarData)
     }
-
   }
 
   /*
@@ -713,7 +876,7 @@ export const useInventarioManager = () => {
       idInput: "Orden",
       type: "toggle",
       activeLabel: true,
-      valueProp: ordenData || true,
+      valueProp: false,
       trueText: "asc",
       falseText: "desc",
       onChange: handleToggleChange
@@ -722,7 +885,7 @@ export const useInventarioManager = () => {
       idInput: "Mostrar",
       type: "toggle",
       activeLabel: true,
-      valueProp: ordenData || true,
+      valueProp: true,
       trueText: "unico",
       falseText: "multiple",
       onChange: handleToggleChange

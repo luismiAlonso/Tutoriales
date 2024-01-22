@@ -10,6 +10,7 @@ function ToggleComponent({
   trueText,
   falseText
 }: ItoggleProps) {
+  
   const { toggle, getToggleState } = useToggle(valueProp, {
     trueText,
     falseText

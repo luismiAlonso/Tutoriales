@@ -24,12 +24,11 @@ inventarioRouter.get(
   getInventarioAlmacenBySeccionAlmacen
 )
 
-/*
 inventarioRouter.get(
   "/EntradasInventarioPage/:seccion/:almacen/:tipoFecha",
   authRequire,
   getUltimosProductosPorClave
-)*/
+)
 
 inventarioRouter.get(
   "/EntradasInventarioPage/:seccion/:almacen/ultimoRegistro",

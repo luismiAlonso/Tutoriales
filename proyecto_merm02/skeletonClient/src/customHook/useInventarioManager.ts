@@ -345,12 +345,15 @@ export const useInventarioManager = () => {
         lastProductExist.producto.ultimoRegistro = false
         //console.log("stock cantidad existente", mapDatosEntrada.stock)
         dbInventario.inventario.splice(lastProductExist.indice+1, 0, mapDatosEntrada)
+
       } else {
+
         // si no hay coincidencia es que el producto es nuevo
         console.log("la clave compuesta no existe")
         mapDatosEntrada.stock = mapDatosEntrada.cantidadEntrante
         mapDatosEntrada.ultimoRegistro = true
         dbInventario.inventario.push(mapDatosEntrada)
+        
       }
       //actualizamos inventario con los nuevos datos
 
@@ -358,7 +361,9 @@ export const useInventarioManager = () => {
         `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
         dbInventario
       ).then((response) => {
+
         if (response) {
+
           dataPrepareInventario.inventarioAlmacen = dbInventario
           //console.log("antes", dataPrepareInventario)
           setDatosLocalStorage("futureInventario", dataPrepareInventario)
@@ -459,7 +464,6 @@ export const useInventarioManager = () => {
           resumeProduct.idProducto
         ).then((response) => {
           if (response) {
-            
             console.log(
               "el producto se ha eliminadocon exito ",
               dataPrepareInventario.url

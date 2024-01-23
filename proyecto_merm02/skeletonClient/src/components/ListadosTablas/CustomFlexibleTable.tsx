@@ -254,6 +254,7 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
             
                 {dataColumn[rowIndex].map(
                   (columnDescriptor, descriptorIndex) => {
+                    //console.log(rowData)
                     return (
                       <TableCellComponent
                         key={descriptorIndex}

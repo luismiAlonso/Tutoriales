@@ -249,13 +249,39 @@ export const updateInventarioAlmacenProduct = async (req, res) => {
   }
 }
 
-export const getUltimosProductosPorClave = async (req, res) => {
-
-  const { seccion, almacen, tipoFecha } = req.params
-  const campoFecha = tipoFecha === "entrada" ? "fechaEntrada" : "fechaSalida"
+export const getUltimosProductosPorUltimoRegistro = async (req, res) => {
+  const { seccion, almacen } = req.params;
 
   try {
-    
+    const productosConUltimoRegistro = await InventarioAlmacen.aggregate([
+      { $unwind: "$inventario" },
+      { $match: { "inventario.ultimoRegistro": true, seccion, almacen } },
+      { $project: { producto: "$inventario" } } // Proyectar solo los datos necesarios
+    ]);
+
+    // Extraer los productos del resultado de la agregación
+    const productosFinales = productosConUltimoRegistro.map(item => item.producto);
+
+    if (productosFinales.length === 0) {
+      return res.status(404).json({ message: "No se encontraron productos con último registro" });
+    }
+
+    res.json(productosFinales);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener los productos con último registro",
+      error: error.message
+    });
+  }
+};
+
+
+export const getUltimosProductosPorClave = async (req, res) => {
+  const { seccion, almacen, tipoFecha } = req.params
+  const campoFecha =
+    tipoFecha === "fechaEntrada" ? "fechaEntrada" : "fechaSalida"
+
+  try {
     const ultimosProductos = await InventarioAlmacen.aggregate([
       { $unwind: "$inventario" },
       {
@@ -277,14 +303,12 @@ export const getUltimosProductosPorClave = async (req, res) => {
     }
 
     res.json(productosFinales)
-
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener los últimos productos",
       error: error.message
     })
   }
-
 }
 
 export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {

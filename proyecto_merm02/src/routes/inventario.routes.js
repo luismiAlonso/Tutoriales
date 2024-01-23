@@ -3,6 +3,7 @@ import {
   getAllInventarioAlmacen,
   createInventarioAlmacen,
   getUltimosProductosPorClave,
+  getUltimosProductosPorUltimoRegistro,
   deleteProductoInventarioById,
   updateInventarioAlmacenProduct,
   getInventarioAlmacenBySeccionAlmacen,
@@ -23,10 +24,17 @@ inventarioRouter.get(
   getInventarioAlmacenBySeccionAlmacen
 )
 
+/*
 inventarioRouter.get(
   "/EntradasInventarioPage/:seccion/:almacen/:tipoFecha",
   authRequire,
   getUltimosProductosPorClave
+)*/
+
+inventarioRouter.get(
+  "/EntradasInventarioPage/:seccion/:almacen/ultimoRegistro",
+  authRequire,
+  getUltimosProductosPorUltimoRegistro
 )
 
 // POST: Crear un nuevo inventario de almacén

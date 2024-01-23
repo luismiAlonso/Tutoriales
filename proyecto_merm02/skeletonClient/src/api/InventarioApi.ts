@@ -29,12 +29,14 @@ export const getAllInventarios = async (
 
 export const fetchUltimosProductosBySeccionAlmacen = async (
   route: string,
-  tipoFecha: string
 ): Promise<ProductoInventario[] | null> => {
+  
   try {
     const response = await axios.get<ProductoInventario[]>(
-      `${route}/${tipoFecha}`
+      `${route}/ultimoRegistro`
     )
+    
+    console.log(response)
     return response.data
   } catch (error) {
     console.error(

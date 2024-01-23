@@ -44,15 +44,11 @@ export const useInventarioData = () => {
   }
 
   const getLastProductGroupInventario = async (
-    route: string,
-    tipoFecha: string
+    route: string
   ): Promise<ProductoInventario[] | null> => {
     try {
       // Esperar el resultado de fetchUltimosProductosBySeccionAlmacen
-      const productos = await fetchUltimosProductosBySeccionAlmacen(
-        route,
-        tipoFecha
-      )
+      const productos = await fetchUltimosProductosBySeccionAlmacen(route)
 
       // Si productos es null o vacío, esto devolverá null. De lo contrario, devolverá los productos.
       return productos
@@ -110,10 +106,9 @@ export const useInventarioData = () => {
       fechaEntrada: "",
       fechaSalida: "",
       idProducto: 1,
-      ultimaEntrada: false,
-      ultimaSalida: false,
       claveComp: "",
       stock: 0,
+      ultimoRegistro: false,
       cantidadSalida: 0,
       cantidadEntrante: 0,
       plancha: "",
@@ -143,13 +138,9 @@ export const useInventarioData = () => {
           ].includes(key)
         ) {
           producto[key] = Number(col.value)
-        }
-        // Parseo de tipos booleanos
-        else if (["ultimoRegistro"].includes(key)) {
+        } else if (["ultimoRegistro"].includes(key)) {
           producto[key] = Boolean(col.value)
-        }
-        // Mantiene como cadena para el resto
-        else {
+        } else {
           producto[key] = col.value
         }
       }
@@ -300,12 +291,12 @@ export const useInventarioData = () => {
   const getLastProductInventarioByClaveComp = (
     inventarioAlmacen: InventarioAlmacen,
     clave: string
-  ): ProductoInventario | null => {
+  ): { producto: ProductoInventario; indice: number } | null => {
     // Recorrer el array de inventario en orden inverso
     for (let i = inventarioAlmacen.inventario.length - 1; i >= 0; i--) {
-      //console.log(inventarioAlmacen.inventario[i].claveComp, clave)
       if (inventarioAlmacen.inventario[i].claveComp === clave) {
-        return inventarioAlmacen.inventario[i]
+        // Devolver el producto y su índice
+        return { producto: inventarioAlmacen.inventario[i], indice: i }
       }
     }
 

@@ -1,34 +1,27 @@
-import axios from "axios"
+import axios from "../axiosConfig"
 
-interface IndiceInventarioResponse {
-  indice: number
-}
 
-export const obtenerIndiceActual = async (
-  seccion: string,
-  almacen: string
+
+export const obtenerIndiceActualAlmacen = async (
+  route: string
 ): Promise<number | null> => {
   try {
-    const response = await axios.get<IndiceInventarioResponse>(
-      `/EntradasInventarioPage/indice/${seccion}/${almacen}`
-    )
-    return response.data.indice
+    const response = await axios.get<number>(route)
+    return response.data
   } catch (error) {
     console.error("Error al obtener el índice de inventario:", error)
     return null
   }
 }
 
-export const actualizarIndiceInventario = async (
-  seccion: string,
-  almacen: string
+export const crearIndiceAlmacen = async (
+  route: string
 ): Promise<number | null> => {
   try {
-    const response = await axios.put<IndiceInventarioResponse>(
-      `/EntradasInventarioPage/indice/${seccion}/${almacen}`
-    )
-    return response.data.indice
+    const response = await axios.put<number>(route)
+    return response.data
   } catch (error) {
+    console.log(route)
     console.error("Error al actualizar el índice de inventario:", error)
     return null
   }

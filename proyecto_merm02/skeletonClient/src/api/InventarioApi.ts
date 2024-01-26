@@ -28,15 +28,12 @@ export const getAllInventarios = async (
 }
 
 export const fetchUltimosProductosBySeccionAlmacen = async (
-  route: string,
+  route: string
 ): Promise<ProductoInventario[] | null> => {
-  
   try {
     const response = await axios.get<ProductoInventario[]>(
       `${route}/ultimoRegistro`
     )
-    
-    console.log(response)
     return response.data
   } catch (error) {
     console.error(
@@ -68,6 +65,23 @@ export const deleteProductoInventario = async (
     return true
   } catch (error) {
     console.error("Error deleting inventario almacen:", error)
+    return false
+  }
+}
+
+export const deleteProductosByClaveComp = async (
+  route: string,
+  claveComp: string
+): Promise<boolean> => {
+
+  try {
+    console.log(`${route}/${claveComp}`)
+    const response = await axios.delete(`${route}/${claveComp}`)
+    console.log(response)
+
+    return true
+  } catch (error) {
+    console.error("Error al eliminar productos por claveCompuesta", error)
     return false
   }
 }
@@ -132,8 +146,7 @@ export const updateProductoInInventario = async (
   updatedProductoData: InventarioAlmacen
 ): Promise<boolean> => {
   try {
-    const response = await axios.put(route, updatedProductoData)
-    console.log(response)
+    await axios.put(route, updatedProductoData)
     return true
   } catch (error) {
     console.error("Error updating producto in inventario:", error)

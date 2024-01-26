@@ -5,6 +5,7 @@ import {
   getUltimosProductosPorClave,
   getUltimosProductosPorUltimoRegistro,
   deleteProductoInventarioById,
+  deleteProductosInventarioPorClaveComp,
   updateInventarioAlmacenProduct,
   getInventarioAlmacenBySeccionAlmacen,
   updateInventarioAlmacenBySeccionAlmacen,
@@ -70,6 +71,12 @@ inventarioRouter.delete(
 inventarioRouter.delete(
   "/EntradasInventarioPage/:seccion/:almacen/:idProducto",
   deleteProductoInventarioById
+)
+
+//DELETE: eliminar linea de inventario en un inventario especifico
+inventarioRouter.delete(
+  "/EntradasInventarioPage/:seccion/:almacen/completo/:claveCompuesta",
+  deleteProductosInventarioPorClaveComp
 )
 
 // ...más rutas según sea necesario

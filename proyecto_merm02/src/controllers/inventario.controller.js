@@ -250,31 +250,34 @@ export const updateInventarioAlmacenProduct = async (req, res) => {
 }
 
 export const getUltimosProductosPorUltimoRegistro = async (req, res) => {
-  const { seccion, almacen } = req.params;
+  const { seccion, almacen } = req.params
 
   try {
     const productosConUltimoRegistro = await InventarioAlmacen.aggregate([
       { $unwind: "$inventario" },
       { $match: { "inventario.ultimoRegistro": true, seccion, almacen } },
       { $project: { producto: "$inventario" } } // Proyectar solo los datos necesarios
-    ]);
+    ])
 
     // Extraer los productos del resultado de la agregación
-    const productosFinales = productosConUltimoRegistro.map(item => item.producto);
+    const productosFinales = productosConUltimoRegistro.map(
+      (item) => item.producto
+    )
 
     if (productosFinales.length === 0) {
-      return res.status(404).json({ message: "No se encontraron productos con último registro" });
+      return res
+        .status(404)
+        .json({ message: "No se encontraron productos con último registro" })
     }
 
-    res.json(productosFinales);
+    res.json(productosFinales)
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener los productos con último registro",
       error: error.message
-    });
+    })
   }
-};
-
+}
 
 export const getUltimosProductosPorClave = async (req, res) => {
   const { seccion, almacen, tipoFecha } = req.params
@@ -372,6 +375,7 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
 
 // DELETE: Eliminar un inventario de almacén por sección y almacén
 export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
+
   try {
     const { seccion, almacen } = req.params
     const inventarioEliminado = await InventarioAlmacen.findOneAndDelete({
@@ -385,6 +389,50 @@ export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
     res.sendStatus(204)
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el inventario" })
+  }
+}
+
+// DELETE: Eliminar productos de inventario por claveComp en una sección y almacén específicos
+export const deleteProductosInventarioPorClaveComp = async (req, res) => {
+  const { seccion, almacen, claveComp } = req.params
+
+  try {
+
+    const formatClave = decodeURIComponent(claveComp)
+
+    if (formatClave) {
+      const documentos = await InventarioAlmacen.find({seccion, almacen})
+      // Apuntar al campo 'claveComp' dentro de los objetos en el array 'inventario'
+      const resultado = await InventarioAlmacen.updateMany(
+        { seccion, almacen },
+        { $pull: { inventario: { claveComp: formatClave }}})
+
+      if (resultado.nModified === 0) {
+        return res.status(404).json({
+          message:
+            "No se encontraron productos para eliminar o InventarioAlmacen no encontrado"
+        })
+      }
+
+      res.status(200).json({
+        message: "Productos eliminados con éxito",
+        eliminados: resultado.nModified,
+        resultado: resultado,
+        params: documentos
+      })
+
+    } else {
+      // Si claveComp no está presente en los parámetros
+      return res.status(400).json({
+        message:
+          "La clave compuesta 'claveComp' es requerida para la eliminación",
+        params: claveComp
+      })
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al eliminar productos de inventario" })
   }
 }
 

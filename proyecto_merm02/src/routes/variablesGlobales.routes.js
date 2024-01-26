@@ -1,12 +1,18 @@
-import express from 'express';
-import { obtenerIndiceValido, actualizarIndice } from '../controllers/indiceInventario.controller';
+// routes/variablesGlobalesRoutes.js
+import express from "express"
+import {
+  getIndice,
+  createOrUpdateIndice
+} from "../controllers/variablesGlobales.controller.js"
 
-const inventarioRouter = express.Router();
+const indicesLocalRouter = express.Router()
 
-// GET: Obtener el índice actual para una sección y almacén específicos
-inventarioRouter.get('/EntradasInventarioPage/indice/:seccion/:almacen', obtenerIndiceValido);
+// Obtener un índice específico
+indicesLocalRouter.get("/indice/:seccion/:almacen", getIndice)
 
-// PUT: Incrementar y obtener el nuevo índice para una sección y almacén específicos
-inventarioRouter.put('/EntradasInventarioPage/indice/:seccion/:almacen', actualizarIndice);
+// Crear o actualizar un índice
+indicesLocalRouter.put("/indice/:seccion/:almacen", createOrUpdateIndice)
 
-export default inventarioRouter;
+// Agrega más rutas según necesites
+
+export default indicesLocalRouter

@@ -5,6 +5,7 @@ import {
   deleteInventarioAlmacen,
   fetchUltimosProductosBySeccionAlmacen,
   deleteProductoInventario,
+  deleteProductosByClaveComp,
   updateInventario,
   updateProductoInInventario,
   fetchAllInventarioAlmacen,
@@ -49,12 +50,24 @@ export const useInventarioData = () => {
     try {
       // Esperar el resultado de fetchUltimosProductosBySeccionAlmacen
       const productos = await fetchUltimosProductosBySeccionAlmacen(route)
-
       // Si productos es null o vacío, esto devolverá null. De lo contrario, devolverá los productos.
       return productos
     } catch (error) {
       console.error("Error al obtener los últimos productos:", error)
       return null
+    }
+  }
+
+  const deleteByClaveComp = async (
+    route: string,
+    claveComp: string
+  ): Promise<boolean> => {
+    try {
+      //console.log(claveComp)
+      const response = await deleteProductosByClaveComp(route, claveComp)
+      return response
+    } catch (error) {
+      return false
     }
   }
 
@@ -345,6 +358,7 @@ export const useInventarioData = () => {
     getLastproductInventario,
     getLastProductGroupInventario,
     generarMatrizStyle,
+    deleteByClaveComp,
     currentInventario,
     productoInventarioInicial
   }

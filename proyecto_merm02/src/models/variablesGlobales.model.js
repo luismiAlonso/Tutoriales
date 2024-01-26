@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
-const indiceInventario = new mongoose.Schema({
-    seccion:string,
-    almacen:string,
-    indice:number
+const indiceInventarioSchema = new mongoose.Schema({
+    seccion:String,
+    almacen:String,
+    indice:Number
 })
 
-export default  indiceInventario = mongoose.model("IndiceInventario",indiceInventario)
+const IndiceInventario = mongoose.model("IndiceInventario",indiceInventarioSchema)
+export default IndiceInventario;

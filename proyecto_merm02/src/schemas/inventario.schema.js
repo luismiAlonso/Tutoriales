@@ -1,6 +1,8 @@
 import { z } from "zod"
 
 export const productoInventarioSchema = z.object({
+  seccion: z.string(),
+  almacen: z.string(),
   fechaEntrada: z.string(),
   fechaSalida: z.string(), // Suponiendo que puede ser opcional
   idProducto: z.number(),

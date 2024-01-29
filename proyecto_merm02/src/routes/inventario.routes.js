@@ -18,6 +18,12 @@ import { inventarioAlmacenSchema } from "../schemas/inventario.schema.js"
 
 const inventarioRouter = express.Router()
 
+
+inventarioRouter.get(
+  "/ListadoInventario",
+  authRequire,
+  getAllInventarioAlmacen
+)
 // GET: Obtener un inventario de almacén por sección y almacén
 inventarioRouter.get(
   "/EntradasInventarioPage/:seccion/:almacen",
@@ -75,7 +81,7 @@ inventarioRouter.delete(
 
 //DELETE: eliminar linea de inventario en un inventario especifico
 inventarioRouter.delete(
-  "/EntradasInventarioPage/:seccion/:almacen/completo/:claveCompuesta",
+  "/EntradasInventarioPage/:seccion/:almacen/completo/:claveComp",
   deleteProductosInventarioPorClaveComp
 )
 

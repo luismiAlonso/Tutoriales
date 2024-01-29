@@ -41,7 +41,6 @@ function EntradasInventarioPage() {
 
   useEffect(() => {
     actualizaInvinterario()
-   // console.log(mappeddProductosInventario)
   }, [])
 
   return (
@@ -105,7 +104,7 @@ function EntradasInventarioPage() {
                 />
               */}
               
-              {mappeddProductosInventario && mappedStyleTable && (
+              {mappeddProductosInventario && mappeddProductosInventario.length > 0 && mappedStyleTable && (
                 <CustomFlexibleTable
                   columns={HeaderProductoInventario}
                   tableStyle={mappedStyleTable}

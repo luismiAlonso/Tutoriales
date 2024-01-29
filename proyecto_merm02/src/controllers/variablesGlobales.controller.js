@@ -27,7 +27,7 @@ export const getIndice = async (req, res) => {
 export const createOrUpdateIndice = async (req, res) => {
   const { seccion, almacen } = req.params
   // Establecer un valor predeterminado para 'indice' si no se proporciona
-  const indice = req.body.indice || 1
+  const indice = 1//req.body.indice || 1
 
   try {
     const nuevoIndice = await indiceInventario.findOneAndUpdate(

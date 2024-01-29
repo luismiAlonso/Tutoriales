@@ -406,7 +406,7 @@ export const deleteProductosInventarioPorClaveComp = async (req, res) => {
       const resultado = await InventarioAlmacen.updateMany(
         { seccion, almacen },
         { $pull: { inventario: { claveComp: formatClave }}})
-
+      
       if (resultado.nModified === 0) {
         return res.status(404).json({
           message:
@@ -418,7 +418,7 @@ export const deleteProductosInventarioPorClaveComp = async (req, res) => {
         message: "Productos eliminados con éxito",
         eliminados: resultado.nModified,
         resultado: resultado,
-        params: documentos
+        params: req.params
       })
 
     } else {

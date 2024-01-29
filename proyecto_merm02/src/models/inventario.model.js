@@ -2,6 +2,8 @@ import mongoose from "mongoose"
 
 // Primero define productoInventarioSchema
 const productoInventarioSchema = new mongoose.Schema({
+  seccion: String,
+  almacen: String,
   fechaEntrada: String,
   fechaSalida: String,
   idProducto: Number,

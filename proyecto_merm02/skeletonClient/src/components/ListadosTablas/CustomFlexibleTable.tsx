@@ -219,9 +219,7 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
   onButtonClick,
   data
 }) => {
-
-  //console.log(data)
-
+  
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -247,11 +245,10 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
                 } border-b dark:border-gray-700`}
               >*/
 
-             <tr
+              <tr
                 key={rowIndex}
                 className={`${tableStyle[rowIndex].trContent} border-b dark:border-gray-700`}
               >
-            
                 {dataColumn[rowIndex].map(
                   (columnDescriptor, descriptorIndex) => {
                     //console.log(rowData)

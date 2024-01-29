@@ -9,6 +9,7 @@ import {
   updateInventario,
   updateProductoInInventario,
   fetchAllInventarioAlmacen,
+  getAllInventarios,
   addProductoInventario
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
@@ -21,6 +22,33 @@ import { TableStyle } from "../interfaces/TableStyles"
 export const useInventarioData = () => {
   // console.log("luego de ser seteado",HeaderInventario)
   const [currentInventario, setCurrentInventari] = useState<InventarioAlmacen>()
+
+  const getAllInvetariosAlmacen = async (
+    route: string
+  ): Promise<ProductoInventario[] | null> => {
+
+    try {
+      const inventariosAlmacen = await getAllInventarios(route)
+
+      if (inventariosAlmacen) {
+        // Combina todos los productos en un solo vector
+        const todosLosProductos = inventariosAlmacen.reduce<ProductoInventario[]>(
+          (acumulador, inventario) => {
+            // Asumiendo que 'inventario.inventario' es el array de productos
+            return acumulador.concat(inventario.inventario)
+          },
+          []
+        )
+        return todosLosProductos
+      }
+
+      return null
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+
+  }
 
   const getInventarioSelected = async (
     route: string
@@ -214,6 +242,7 @@ export const useInventarioData = () => {
   const generarMatrizStyle = (
     productosInventario: ProductoInventario[]
   ): TableStyle[] => {
+    
     // Crear un mapa para almacenar colores para cada claveCompuesta
     const colorMap = new Map<string, string>()
     const color1 = "bg-white dark:bg-gray-900"
@@ -338,7 +367,6 @@ export const useInventarioData = () => {
         return false
       }
     }
-
     return false
   }
   */
@@ -359,6 +387,7 @@ export const useInventarioData = () => {
     getLastProductGroupInventario,
     generarMatrizStyle,
     deleteByClaveComp,
+    getAllInvetariosAlmacen,
     currentInventario,
     productoInventarioInicial
   }

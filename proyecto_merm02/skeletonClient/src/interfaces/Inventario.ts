@@ -5,6 +5,8 @@ export interface InventarioAlmacen {
 }
 
 export interface ProductoInventario {
+  seccion: string
+  almacen: string
   fechaEntrada: string
   fechaSalida: string
   idProducto: number

@@ -19,13 +19,15 @@ function ListadoInventario() {
     handleInputChange,
     handleButtonClick,
     loadMoreData,
-    actualizaInvinterario,
     handleCloseModal,
     handleOpenModal,
     handleDeleteProducto,
     handleBackEditMod,
+    actualizaAllinventarios,
+    mappedStyleTable,
     mappeddProductosInventario,
     plantillaFiltersInventario,
+    plantillaProductoInventarioListado,
     editMode,
     ResumenProductoInventario,
     resumeProduct,
@@ -36,9 +38,10 @@ function ListadoInventario() {
   } = useInventarioManager()
 
   useEffect(() => {
-    actualizaInvinterario()
-  }, [loadedData])
-
+    
+    actualizaAllinventarios()
+      console.log(plantillaProductoInventarioListado.length,loadedData)
+  }, [])
 
   return (
     <form className="text-white">
@@ -57,8 +60,8 @@ function ListadoInventario() {
           )}
         </div>
       </div>
-        <div>
-          {/*<div className="mt-3">
+      <div>
+        {/*<div className="mt-3">
             <ListInputsCard
               columns={datosEntrada}
               rowIndex={0}
@@ -66,40 +69,40 @@ function ListadoInventario() {
               onButtonClick={handleButtonClick}
             />
           </div>*/}
-          {<FilterComponent filters={plantillaFiltersInventario} />}
-          <div className="mb-10 mt-4">
-            <InfiniteScroll
-              dataLength={currentPage * itemsPerPage} //This is important field to render the next data
-              next={loadMoreData}
-              hasMore={true}
-              loader={<h4></h4>}
-              endMessage={
-                <p style={{ textAlign: "center" }}>
-                  <b>Yay! You have seen it all</b>
-                </p>
-              }
-            >
-              {
-              /*<CustomTable
+        {<FilterComponent filters={plantillaFiltersInventario} />}
+        <div className="mb-10 mt-4">
+          <InfiniteScroll
+            dataLength={currentPage * itemsPerPage} //This is important field to render the next data
+            next={loadMoreData}
+            hasMore={true}
+            loader={<h4></h4>}
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+          >
+            {/*<CustomTable
               columns={HeaderProductoInventario}
               dataColumn={PlantillaProductoInventario}
               data={loadedData}
               onInputChange={handleInputChange}
               onButtonClick={handleButtonClick}
             />*/}
-              {mappeddProductosInventario && (
-                <CustomFlexibleTable
-                  columns={HeaderProductoInventario}
-                  dataColumn={mappeddProductosInventario}
-                  data={loadedData}
-                  onInputChange={handleInputChange}
-                  onButtonClick={handleButtonClick}
-                />
-              )}
-            </InfiniteScroll>
-          </div>
+            {mappeddProductosInventario && mappedStyleTable && (
+              <CustomFlexibleTable
+                tableStyle={mappedStyleTable}
+                columns={plantillaProductoInventarioListado}
+                dataColumn={mappeddProductosInventario}
+                data={loadedData}
+                onInputChange={handleInputChange}
+                onButtonClick={handleButtonClick}
+              />
+            )}
+          </InfiniteScroll>
         </div>
-      
+      </div>
+
       {
         <ModalComponent
           title="¿DESEA ELIMINAR?"

@@ -380,6 +380,7 @@ export const useInventarioManager = () => {
         `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
         dbInventario
       ).then((response) => {
+
         if (response) {
           dataPrepareInventario.inventarioAlmacen = dbInventario
           //console.log("antes", dataPrepareInventario)
@@ -395,6 +396,7 @@ export const useInventarioManager = () => {
           const mappedStyle = generarMatrizStyle(dbInventario.inventario)
           setmappedStyleTable(mappedStyle)
         }
+        
       })
     } else {
       // const muestraDatos = getDatosLocalStorage("mostrarDatos")
@@ -426,9 +428,11 @@ export const useInventarioManager = () => {
       )
 
       if (creacionExitosa) {
+
         dataPrepareInventario.inventarioAlmacen = nuevoInventario
         setDatosLocalStorage("futureInventario", dataPrepareInventario)
         setListaTotalProductosInventario(nuevoInventario.inventario)
+
         const mappedData = generarMatrizColumnDescriptors(
           PlantillaProductoInventario,
           nuevoInventario.inventario
@@ -436,7 +440,8 @@ export const useInventarioManager = () => {
 
         setMappedProductosInventario(mappedData)
       }
-      actualizaInvinterario()
+
+      //actualizaInvinterario()
     }
   }
 

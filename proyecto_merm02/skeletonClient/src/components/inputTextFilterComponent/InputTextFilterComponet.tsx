@@ -9,11 +9,11 @@ function InputTextFilterComponent({
   activeSearchIcon,
   typeFill,
   placeHolder,
+  readonly,
   onChange,
   onClick,
   onFilter
 }: ItextInputFilter) {
-  
   const [valueInput, setValueInput] = useState("")
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,15 +29,18 @@ function InputTextFilterComponent({
 
   const handleOnClick = () => {
     // Aquí tu lógica para manejar el clic
-    onClick(idInput,valueInput)
+    onClick(idInput, valueInput)
   }
 
+ // console.log(readonly)
   return (
     <div>
       <label
         htmlFor="default-search"
-        className={`mb-2 text-sm font-medium text-gray-900 dark:text-white ${activeLabel ? '' : 'sr-only'}`}
-        >
+        className={`mb-2 text-sm font-medium text-gray-900 dark:text-white ${
+          activeLabel ? "" : "sr-only"
+        }`}
+      >
         Search
       </label>
       <div className="relative">
@@ -67,6 +70,7 @@ function InputTextFilterComponent({
           id={idInput}
           className={style}
           placeholder={placeHolder}
+          readOnly={readonly}
         />
         {activeButton && (
           <button

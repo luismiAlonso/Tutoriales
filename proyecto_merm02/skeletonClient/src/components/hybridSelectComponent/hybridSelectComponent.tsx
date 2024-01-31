@@ -46,6 +46,8 @@ const HybridSelect: FC<HybridSelectProps> = ({
     setInternalValue(option)
     if (onChange) onChange(option)
   }
+
+  //console.log("valor",internalValue)
   const defaultClass="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 
   return (

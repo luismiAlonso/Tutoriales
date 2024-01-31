@@ -5,6 +5,7 @@ export interface ItextInputFilter {
     activeSearchIcon: boolean,
     placeHolder: string,
     activeLabel: boolean,
+    readonly:boolean,
     style: string,
     typeFill: "search" | "text" | "number",
     // Actualiza las funciones para recibir el 'id' y el 'value'

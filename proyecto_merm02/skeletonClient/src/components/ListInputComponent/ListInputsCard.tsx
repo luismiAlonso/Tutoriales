@@ -66,8 +66,8 @@ const InputComponent: React.FC<InputProps> = (props) => {
       //console.log(options, idInput)
       return (
         <SelectComponent
-          type = "select"
-          idInput= {props.idInput}
+          type="select"
+          idInput={props.idInput}
           activeLabel={false}
           selectClassName=""
           idSelected={props.idInput}
@@ -81,11 +81,10 @@ const InputComponent: React.FC<InputProps> = (props) => {
         />
       )
     case "hybridSelect":
-      //console.log(props.value)
       return (
         <HybridSelect
-          type = "hybrid"
-          idInput= {props.idInput}
+          type="hybrid"
+          idInput={props.idInput}
           editable={props.editable}
           activeLabel={false}
           additionalStyles={props.additionalStyles}
@@ -150,6 +149,8 @@ const CustomCard: React.FC<CustomCardProps> = ({
   onButtonClick
 }) => {
 
+  //console.log(columns)
+  
   return (
     <div className="flex flex-col space-y-4 w-full md:flex-row md:space-x-4 md:space-y-0">
       {columns.map((column, index) => {

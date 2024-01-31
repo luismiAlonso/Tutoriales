@@ -40,7 +40,6 @@ const CustomTextInput: React.FC<Itext> = ({
     setInputValue(newValue) // Actualiza el estado local
     onChange?.(valueToEmit, idInput) // Notifica al padre
   }
-
   return (
     <input
       type={type}

@@ -20,6 +20,16 @@ export enum TipoColor {
   Indistinto = 3
 }
 
+export const generadorClaveCompuesta = (
+  objeto: any,
+  propiedadesExcluidas: string[]
+) => {
+  const partesClave = Object.keys(objeto)
+    .filter((key) => !propiedadesExcluidas.includes(key)) // Excluir las propiedades especificadas
+    .map((key) => objeto[key] || "")
+  return partesClave.join("-").slice(0,-1)
+}
+
 export const generateRandomColor = (tipo: TipoColor): string => {
   let r: number, g: number, b: number
 
@@ -44,5 +54,4 @@ export const generateRandomColor = (tipo: TipoColor): string => {
   return `#${r.toString(16).padStart(2, "0")}${g
     .toString(16)
     .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`
-    
 }

@@ -38,7 +38,6 @@ const useInfiniteLoaderParteProducion = (itemsPerPage = 100) => {
 
   useEffect(()=>{
    setLoadedData(calculateItemToDisplay())
-   //console.log(listaTotalProduccion)
   },[listaTotalProduccion])
 
   return {

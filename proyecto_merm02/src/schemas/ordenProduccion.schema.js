@@ -5,6 +5,7 @@ import { z } from "zod"
   fecha: z.string(),
   bamburi: z.string(),
   indiceProducto: z.number(),
+  claveComp: z.string(),
   operario: z.number(),
   pasada: z.number(),
   tipoGoma: z.string(),

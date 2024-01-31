@@ -5,6 +5,7 @@ const productoSchema = new mongoose.Schema({
   fecha: String,
   bamburi: String,
   indiceProducto: Number,
+  claveComp: String,
   operario: Number,
   pasada: Number,
   tipoGoma: String,

@@ -18,7 +18,6 @@ import { inventarioAlmacenSchema } from "../schemas/inventario.schema.js"
 
 const inventarioRouter = express.Router()
 
-
 inventarioRouter.get(
   "/ListadoInventario",
   authRequire,

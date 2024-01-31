@@ -65,6 +65,7 @@ export const updateOrdenProduccionById = async (req, res) => {
   const body = req.body
 
   try {
+    
     const ordenActualizada = await OrdenProduccion.findOneAndUpdate(
       { idParte: idParte }, // Busca por idParte en lugar de _id
       { $set: { ordenesProduccion: body.ordenesProduccion } },

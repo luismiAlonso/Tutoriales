@@ -15,6 +15,7 @@ import ListadoDataResponsive from "../components/listadoDataResponsiveComponent/
 import ButtonComponent from "../components/button/ButtonComponent"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import FilterComponent from "../components/filtersComponent/filtersComponent"
+import { getDatosLocalStorage } from "../utilidades/util"
 
 //import {Tabla} from "../components/ListadosTablas/Tabla"
 function OrdenProduccion() {
@@ -32,6 +33,7 @@ function OrdenProduccion() {
     ResumenProducto,
     resumeProduct,
     plantillaFiltersOrdenProduccion,
+    visibleList,
     handleCloseModal,
     handleOpenModal,
     loadMoreData,
@@ -44,24 +46,13 @@ function OrdenProduccion() {
 
   const { getTempCurrenOrderProduccion, recuperarDatosTemporales } =
     useOrdenProduccionData()
-
+  const preOrden = getDatosLocalStorage("preOrden")
+  
   useEffect(() => {
-    if (!ordenProduccion) return
-    const productoActual = recuperarDatosTemporales()
-
-    if (productoActual) {
-      actualizarDatos(productoActual, ordenProduccion)
-    }
-  }, [ordenProduccion])
-
-  useEffect(() => {
-    //console.log(ProductoInicial)
-    configurarOrdenProduccion()
+    actualizarDatos()
+    console.log("test",loadedData)
   }, [])
 
-  /*useEffect(()=>{
-      console.log(HeadersProducto.length,parteProducto.length)
-  },[loadedData])*/
 
   return (
     <form className="text-white">
@@ -79,17 +70,17 @@ function OrdenProduccion() {
       <div className="flex items-center p-4 border-b border-gray-200">
         <div className="flex-1">
           <span className="font-bold">
-            OP nº {ordenProduccion ? ordenProduccion.idParte : "1"}
+          OP nº {preOrden && preOrden.idParte ? preOrden.idParte : "1"}
           </span>
         </div>
         <div className="flex-1">
           <span className="font-bold">
-            Tipo: {ordenProduccion ? ordenProduccion.TipoGoma : ""}
+            Tipo: {preOrden && preOrden.TipoGoma ? preOrden.TipoGoma : ""}
           </span>
         </div>
         <div className="flex-1">
           <span className="font-bold">
-            Bamburi: {ordenProduccion ? ordenProduccion.bamburi : ""}
+            Bamburi: {preOrden && preOrden.bamburi ? preOrden.bamburi : ""}
           </span>
         </div>
       </div>
@@ -110,70 +101,12 @@ function OrdenProduccion() {
               onInputChange={handleInputChange}
               onButtonClick={handleButtonClick}
             />
-          </div>
-          {
-            /*
-          <div className="flex mt-4 items-center gap-4">
-            <div className="w-1/7">
-              {
-                <InputTextFilterComponent
-                  idInput={"byWords"}
-                  activeButton={false}
-                  activeSearchIcon={true}
-                  isLabelVisible={true}
-                  typeFill={"search"}
-                  style={
-                    "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  }
-                  placeHolder={"write to search..."}
-                  onChange={handleInputTextChange}
-                  onClick={handleInputTextClick}
-                  onFilter={handleFilterChange}
-                />
-              }
-            </div>
-            <div className="w-1/7">
-              <div>
-                <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Propiedad
-                </label>
-                <div className="relative">
-                  <SelectComponent
-                    optionsSelect={listadoTitulosPropiedades}
-                    value={selectPropiedades} // valor actual seleccionado
-                    defaultValue={listadoTitulosPropiedades[0]} // valor por defecto mostrado
-                    selectClassName={"mt-4 mb-4 w-1/4"}
-                    idSelected={"selectPropiedades"} // identificador para el select, útil si manejas múltiples selects
-                    onSeleccion={handleSelection} // callback para manejar la selección
-                    onFilter={handleFilter} // opcional: callback para manejar el filtrado
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-1/7">
-              <div>
-                <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Propiedad
-                </label>
-                <div className="relative">
-                  <ToggleComponent
-                    idToggle={"orden01"}
-                    valueProp={ordenData ? ordenData : true}
-                    onChange={handleToggleChange}
-                    trueText="asc"
-                    falseText="desc"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          */
-          }                
+          </div>             
         </>
       )}
-      {!editMode && loadedData && loadedData.length > 0 && (
+      {!editMode /*&& loadedData && loadedData.length > 0*/ && (
         <div className="mb-10 mt-4">
-          {ordenProduccion && (
+          {ordenProduccion && visibleList && (
             <InfiniteScroll
               dataLength={currentPage * itemsPerPage} //This is important field to render the next data
               next={loadMoreData}

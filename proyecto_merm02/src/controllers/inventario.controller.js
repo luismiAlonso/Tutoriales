@@ -315,9 +315,10 @@ export const getUltimosProductosPorClave = async (req, res) => {
 }
 
 export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
-  try {
-    const { seccion, almacen } = req.params
 
+  try {
+    
+    const { seccion, almacen } = req.params
     // Suponiendo que 'req.body' contiene los datos del producto a añadir
     const claveCompuesta = generadorClaveCompuesta(
       req.body.inventario[req.body.inventario.length - 1]

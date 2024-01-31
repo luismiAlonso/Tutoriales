@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom" // Importa useNavigate
 import { createTaskRequest, updateTaskRequest } from "../api/tasks"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import { OrdenProduccion } from "../interfaces/OrdenProduccion"
+import { setDatosLocalStorage } from "../utilidades/util"
 
 function Produccion() {
   const opcionesProduccion = ["EVA", "GOMA"]
@@ -59,11 +60,16 @@ function Produccion() {
     } as OrdenProduccion
 
     cargarDatosOrdenProduccion(nuevaOrdeProducion).then((response) => {
+
       if (response) {
         const idParte = response.idParte
+        nuevaOrdeProducion.idParte = response.idParte
+        setDatosLocalStorage("preOrden",nuevaOrdeProducion)
         navigate(`/ordenProduccion/${idParte}`)
       }
+      
     })
+
   }
 
   const consultarOrdenesProducion = () => {

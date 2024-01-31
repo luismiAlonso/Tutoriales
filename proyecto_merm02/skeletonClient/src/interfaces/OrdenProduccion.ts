@@ -11,6 +11,7 @@ export interface Producto {
   bamburi: string
   fecha: string
   indiceProducto: number
+  claveComp:string
   operario: number
   pasada: number
   tipoGoma:string

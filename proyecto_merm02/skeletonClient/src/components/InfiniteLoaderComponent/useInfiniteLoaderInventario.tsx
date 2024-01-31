@@ -10,36 +10,33 @@ const useInfiniteLoaderInventario = (itemsPerPage = 100) => {
   const [loadedData, setLoadedData] = useState<ProductoInventario[]>([])
 
   const loadMoreData = useCallback(() => {
-
     const totalItems = totalProductosInventario.length
     const nextEndIndex = currentPage * itemsPerPage
 
     //console.log(nextEndIndex,totalItems)
-    
-    if (nextEndIndex < totalItems) {
 
+    if (nextEndIndex < totalItems) {
       setCurrentPage((prevPage) => prevPage + 1)
-     
     } else {
       console.log("Reached the end of data")
     }
 
     const itemsDisplay = calculateItemToDisplay()
     setLoadedData(itemsDisplay)
-
   }, [currentPage, itemsPerPage, totalProductosInventario])
 
   // Calcula el índice del último elemento a mostrar
-  const lastItemIndex = currentPage * itemsPerPage < totalProductosInventario.length
+  const lastItemIndex =
+    currentPage * itemsPerPage < totalProductosInventario.length
 
-  const calculateItemToDisplay = () =>{
-    return totalProductosInventario.slice(0, currentPage * itemsPerPage);
+  const calculateItemToDisplay = () => {
+    return totalProductosInventario.slice(0, currentPage * itemsPerPage)
   }
 
-  useEffect(()=>{
-   setLoadedData(calculateItemToDisplay())
-  // console.log(totalProductosInventario)
-  },[totalProductosInventario])
+  useEffect(() => {
+    setLoadedData(calculateItemToDisplay())
+    //console.log(totalProductosInventario)
+  }, [totalProductosInventario])
 
   return {
     loadMoreData,
@@ -54,4 +51,3 @@ const useInfiniteLoaderInventario = (itemsPerPage = 100) => {
 }
 
 export default useInfiniteLoaderInventario
-

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
-import { setDatosLocalStorage,getDatosLocalStorage } from "../utilidades/util"
+import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import {
   fetchOrdenesProduccionDB,
@@ -43,7 +43,7 @@ export const useOrdenProduccionData = () => {
 
       //console.log(datosSerializados)
       // Guarda la cadena JSON en localStorage con una clave específica
-      setDatosLocalStorage("ordenesProduccion",ordenesProduccion)
+      setDatosLocalStorage("ordenesProduccion", ordenesProduccion)
       return nuevaOrdenProduccion
     } catch (error) {
       console.error("Error al cargar o agregar orden de producción:", error)
@@ -81,21 +81,18 @@ export const useOrdenProduccionData = () => {
   const recuperarDatosTemporales = (): ColumnDescriptor[] | null => {
     // Intenta recuperar la cadena JSON de localStorage usando la misma clave
     const datosSerializados = getDatosLocalStorage("datosTemporales")
-
     if (datosSerializados !== null) {
-      
       // Si los datos existen, deserializa la cadena JSON de vuelta a un array de objetos
       return datosSerializados
     }
     // Si no hay datos, devuelve null
     return null
-
   }
 
   const guardarDatosTemporales = (columnas: ColumnDescriptor[]) => {
     // Serializa el array de columnas a una cadena JSON
     // Guarda la cadena JSON en localStorage con una clave específica
-    setDatosLocalStorage("datosTemporales",columnas)
+    setDatosLocalStorage("datosTemporales", columnas)
   }
 
   const obtenerUltimoProducto = (idParte: number) => {
@@ -108,6 +105,7 @@ export const useOrdenProduccionData = () => {
       Tipo: "",
       Color: "",
       Molde: "",
+      claveComp: "",
       PlanchaObtenidas: 0,
       Peso: 0,
       Formulas: 0,
@@ -278,7 +276,6 @@ export const useOrdenProduccionData = () => {
     idParte: number,
     producto: Producto
   ): ColumnDescriptor[] => {
-
     return columnas.map((column) => {
       let updatedColumn = column // Variable para almacenar la columna actualizada.
       switch (column.title) {
@@ -408,7 +405,6 @@ export const useOrdenProduccionData = () => {
   //const saveProductInOrder = () => {}
 
   const getAllProductAndAllOrder = async () => {
-
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
@@ -421,7 +417,6 @@ export const useOrdenProduccionData = () => {
       })
 
       return superList
-
     } catch (error) {
       console.error(
         "Error al obtener todos los productos y órdenes de producción:",
@@ -440,7 +435,6 @@ export const useOrdenProduccionData = () => {
   }
 
   const getCurrentOrderProduccion = async () => {
-    
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
@@ -489,6 +483,7 @@ export const useOrdenProduccionData = () => {
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
+    
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
       const index = datosActuales.findIndex((columna) => columna.idInput === id)
@@ -586,16 +581,24 @@ export const useOrdenProduccionData = () => {
     return await addOrdenProduccionDB(nuevaOrdenProduccion)
   }
 
+  const checkIfClaveCompExist = (
+    producto: Producto,
+    ordenesProduccion: Producto[]
+  ): boolean => {
+    return ordenesProduccion.some(
+      (orden) => orden.claveComp === producto.claveComp
+    )
+  }
+
   const agregarNuevoProductoOP = async (
     idParte: number,
     nuevoProducto: Producto
   ) => {
-    setIsLoading(true)
-
     try {
+      setIsLoading(true)
+
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
-
       // Encontrar el índice de la orden de producción específica
       const ordenIndex = ordenesProduccion.findIndex(
         (op) => op.idParte === idParte
@@ -607,14 +610,17 @@ export const useOrdenProduccionData = () => {
         // Actualizar la orden de producción en la base de datos
         //console.log(ordenesProduccion[ordenIndex])
 
-        await updateOrdenByIdDB(idParte, ordenesProduccion[ordenIndex]).then(
-          (response) => {
-            if (response) {
-              // Devuelve las órdenes de producción actualizadas
-              return ordenesProduccion
-            }
-          }
+        const response = await updateOrdenByIdDB(
+          idParte,
+          ordenesProduccion[ordenIndex]
         )
+
+        if (response) {
+          console.log(response)
+          return ordenesProduccion
+        } else {
+          return null
+        }
 
         // Actualizar el estado local si es necesario
         // setOrdenReciente(ordenesProduccion[ordenIndex])
@@ -622,6 +628,7 @@ export const useOrdenProduccionData = () => {
         console.error(
           `No se encontró la orden de producción con idParte ${idParte}.`
         )
+
         return null // Devuelve null si no se encuentra la orden de producción
       }
     } catch (error) {
@@ -704,6 +711,7 @@ export const useOrdenProduccionData = () => {
     getAllProductAndAllOrder,
     getAllOrdenProduction,
     checkOrdenIdOnTemp,
+    checkIfClaveCompExist,
     saveParteLaminadoActual,
     recuperarDatosTemporales,
     guardarDatosTemporales,

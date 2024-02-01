@@ -37,16 +37,13 @@ function OrdenProduccion() {
     handleCloseModal,
     handleOpenModal,
     loadMoreData,
-    configurarOrdenProduccion,
     actualizarDatos,
     handleInputChange,
     handleButtonClick,
     handleDeleteProducto
   } = useOrdenProduccionManager()
 
-  const { getTempCurrenOrderProduccion, recuperarDatosTemporales } =
-    useOrdenProduccionData()
-  const preOrden = getDatosLocalStorage("preOrden")
+  const preOrden = getDatosLocalStorage("preOrden") //sustituir
   
   useEffect(() => {
     actualizarDatos()

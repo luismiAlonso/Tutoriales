@@ -61,7 +61,6 @@ const useColumnDescriptor = () => {
     attributeNames: T[],
     newValues: ColumnDescriptor[T][]
   ): ColumnDescriptor[] => {
-    
     if (attributeNames.length !== newValues.length) {
       throw new Error(
         "Los vectores attributeNames y newValues deben tener la misma longitud"
@@ -85,10 +84,21 @@ const useColumnDescriptor = () => {
   }
 
   const getValueOfAttributeFromColumnDescriptor = (
-    attributeName: keyof ColumnDescriptor,
-    descriptor: ColumnDescriptor
+    descriptor: ColumnDescriptor[],
+    titleName: string,
+    attributeName: keyof ColumnDescriptor
   ) => {
-    return descriptor[attributeName]
+
+    // Buscar el descriptor por el título
+    const foundDescriptor = descriptor.find((item) => item.idInput === titleName)
+
+    // Si se encuentra el descriptor y tiene el atributo especificado, devolver su valor
+    if (foundDescriptor && attributeName in foundDescriptor) {
+      return foundDescriptor[attributeName]
+    }
+
+    // Devolver undefined o un valor predeterminado si no se encuentra
+    return undefined
   }
 
   return {

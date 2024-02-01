@@ -10,6 +10,7 @@ import {
   updateProductInOrdenProduccionDB,
   deleteProductFromOrdenProduccionDB
 } from "../api/ordenProduccionApi"
+import { ProductoInventario } from "../interfaces/Inventario"
 
 export const useOrdenProduccionData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -390,21 +391,19 @@ export const useOrdenProduccionData = () => {
 
   const deleteOrdenProducion = (idParte: number, idProducto: number) => {
     //console.log(producto)
-    return deleteProductFromOrdenProduccionDB(idParte, idProducto)
+    return deleteProductFromOrdenProduccionDB(idParte, idProducto) 
   }
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
     return updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
-  const updateProductInOrden = (producto: Producto, idParte: number) => {
-    //console.log(producto)
-    updateProductInOrdenProduccionDB(idParte, producto.indiceProducto, producto)
+  const updateProductInOrden = (producto: Producto )=> {
+    return updateProductInOrdenProduccionDB(producto.idParte, producto.indiceProducto, producto)
   }
 
-  //const saveProductInOrder = () => {}
-
   const getAllProductAndAllOrder = async () => {
+
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
@@ -616,7 +615,6 @@ export const useOrdenProduccionData = () => {
         )
 
         if (response) {
-          console.log(response)
           return ordenesProduccion
         } else {
           return null

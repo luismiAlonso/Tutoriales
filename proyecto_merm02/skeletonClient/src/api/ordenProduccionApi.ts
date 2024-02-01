@@ -39,7 +39,6 @@ export const updateOrdenByIdDB = async (
   updatedOrden: Partial<OrdenProduccion>
 ) => {
   try {
-
     //console.log(`/ordenProduccion/${idParte}`,updatedOrden)
     const response = await axios.put(
       `/ordenProduccion/${idParte}`,
@@ -52,39 +51,45 @@ export const updateOrdenByIdDB = async (
   }
 }
 
-// Actualizar un producto en una orden de producción
 export const updateProductInOrdenProduccionDB = async (
   idParte: number,
   idProducto: number,
   updatedProductData: Partial<Producto>
-) => {
+):Promise<OrdenProduccion | null> => {
   try {
-    await axios.put(
+
+    const { data, status } = await axios.put(
       `/ordenProduccion/${idParte}/productos/${idProducto}`,
       updatedProductData
     )
+
+    if (status === 200) {
+      return data
+    } else {
+      // Manejar otros códigos de estado según sea necesario
+      return null
+    }
+
   } catch (error) {
     console.error("Error updating producto in orden de producción:", error)
+    // Devolver un objeto de error para manejarlo en el componente que llama a esta función
+    return null
   }
-}
-
-interface DeleteResponse {
-  success: boolean;
-  message?: string;
 }
 
 export const deleteProductFromOrdenProduccionDB = async (
   idParte: number, // ID de la orden de producción
   idProducto: number // ID del producto a eliminar
-): Promise<DeleteResponse> => {
+): Promise<OrdenProduccion | null> => {
   try {
+    const response = await axios.delete(
+      `/ordenProduccion/${idParte}/productos/${idProducto}`
+    )
 
-    await axios.delete(`/ordenProduccion/${idParte}/productos/${idProducto}`)
-    return { success: true, message: "Producto eliminado con éxito" };
-
+    return response.data
   } catch (error) {
-    console.error("ERROR",error)
-    return { success: false, message: error+""};
+    console.error("ERROR", error)
+    throw error
   }
 }
 

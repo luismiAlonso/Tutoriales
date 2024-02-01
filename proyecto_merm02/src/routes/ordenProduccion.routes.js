@@ -4,6 +4,7 @@ import {
   createOrdenProduccion,
   getOrdenProduccionById,
   updateOrdenProduccionById,
+  updateProductoEnOrdenProduccion,
   deleteOrdenProduccionById,
   deleteOrdenProductoInOrdenById
 } from "../controllers/ordenProducion.controller.js";
@@ -39,6 +40,13 @@ ordenProduccionRouter.put(
   authRequire,
   validateSchema(ordenProduccionSchema),
   updateOrdenProduccionById
+)
+
+// PUT: Actualizar una orden de producción por ID
+ordenProduccionRouter.put(
+  "/ordenProduccion/:idParte/productos/:indiceProducto",
+  authRequire,
+  updateProductoEnOrdenProduccion
 )
 
 // DELETE: Eliminar una orden de producción por ID

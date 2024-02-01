@@ -18,6 +18,7 @@ import { ProductoInicial } from "../models/ProductoInicial"
 import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
 import { IcustomSelectProp } from "../components/selectComponent/IcustomSelectProp"
 import { ItoggleProps } from "../components/toggle/ItoggleProps"
+import { number } from "zod"
 
 const useOrdenProduccionManager = () => {
   const {
@@ -101,110 +102,6 @@ const useOrdenProduccionManager = () => {
   // Aquí puedes agregar cualquier lógica o funciones que manipulen estos estados
   // Por ejemplo, una función para actualizar 'datosColumna'
 
-  const configurarOrdenProduccion = () => {
-    // console.log(getDatosLocalStorage("datosTemporales"))
-    const currentTempOrder = getTempCurrenOrderProduccion() //recuperamos la utima ordenProduccion de temporal
-    //const currentOrder = getCurrentOrderProduccion()
-    const ordenesProduccion = getAllOrdenProduction() //recuperamos todas las ordenesProduccion de BD
-
-    if (currentTempOrder) {
-      //checkeamos que tenemos datos en local
-      if (ordenesProduccion) {
-        //checkeamos que
-
-        ordenesProduccion.then((response) => {
-          if (response) {
-            //la operacion parece que tiene exito
-
-            if (response.length > 0) {
-              //comprobamos que tenemos al menos una ordeProdcuccion creada
-              const currentOrder = response[response.length - 1] //seleccionamos la ultima orden creada
-              //console.log("temporal:",currentTempOrder,"bd:",currentOrder)
-              if (currentOrder.idParte === currentTempOrder.idParte) {
-                //comprobamos si la ultima orden de la BD coincide con la que hay en temporal
-                //console.log("contienen mismo id")
-                setOrdenProduccion(currentOrder)
-
-                const setCurrentProductoInicial =
-                  setAttributesInColumnDescriptor(
-                    ProductoInicial,
-                    "idParte",
-                    ["value"],
-                    [3]
-                  )
-                console.log(setCurrentProductoInicial)
-
-                ProductoInicial[0].value = currentOrder.idParte
-                ProductoInicial[0].defaultValue = currentOrder.idParte
-
-                setDatosColumna(ProductoInicial)
-                setListaTotalProduccion(currentOrder.ordenesProduccion)
-                //console.log("guardo datos mal ",response)
-                const datosSerializados = JSON.stringify(response)
-                localStorage.setItem("ordenesProduccion", datosSerializados)
-                //guardamos ajustandonos a la plantilla
-              } else {
-                //console.log(currentTempOrder)
-                setOrdenProduccion(currentTempOrder)
-                ProductoInicial[0].value = currentTempOrder.idParte
-                ProductoInicial[0].defaultValue = currentTempOrder.idParte
-                setDatosColumna(ProductoInicial)
-                setListaTotalProduccion(currentTempOrder.ordenesProduccion)
-              }
-            } else {
-              //no tenemos orden en BD
-              setOrdenProduccion(currentTempOrder)
-              ProductoInicial[0].value = currentTempOrder.idParte
-              ProductoInicial[0].defaultValue = currentTempOrder.idParte
-              setDatosColumna(ProductoInicial)
-            }
-          } else {
-            //algo ha fallado al obte
-            console.log("Algo ha fallado en la obtencion de los datos")
-          }
-        })
-      } else {
-        console.log("sin orden en bd")
-        setOrdenProduccion(currentTempOrder)
-        ProductoInicial[0].value = currentTempOrder.idParte
-        ProductoInicial[0].defaultValue = currentTempOrder.idParte
-        setDatosColumna(ProductoInicial)
-      }
-
-      //updateOrdenProduccion(orden)
-    } else {
-      //no hay dtos en local
-
-      if (ordenesProduccion) {
-        //comobamos si existen datos en BD
-        ordenesProduccion.then((response) => {
-          if (response && response.length > 0) {
-            const currentOrder = response[response.length - 1]
-            setOrdenProduccion(currentOrder)
-            ProductoInicial[0].value = currentOrder.idParte
-            ProductoInicial[0].defaultValue = currentOrder.idParte
-            setDatosColumna(ProductoInicial)
-            setListaTotalProduccion(currentOrder.ordenesProduccion)
-            //console.log("guardo datos mal ",response)
-            const datosSerializados = JSON.stringify(response)
-            localStorage.setItem("ordenesProduccion", datosSerializados)
-          } else {
-            console.log(
-              "hay un error en almacenamiento temporal, no existe una orden precreada"
-            )
-          }
-        })
-      } else {
-        //no tenemos nada en BD
-        console.log("nada en BD ni en temporales no existe orden precreada")
-      }
-
-      //no tenemos nada almacenado en temporal
-      console.log(
-        "entro aqui porque no tengo o no he podido acceder al temporal"
-      )
-    }
-  }
 
   const mapearYConfigurarProducto = (
     dataColum: ColumnDescriptor[],
@@ -232,7 +129,8 @@ const useOrdenProduccionManager = () => {
   }
 
   // Función para actualizar la orden de producción
-  const actualizarYAgregarProducto = (
+  /*
+ const actualizarYAgregarProducto = (
     mappedProduct: Producto,
     dataColum: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
@@ -244,6 +142,7 @@ const useOrdenProduccionManager = () => {
     actualizarOrdenProduccion(mappedProduct, dataColum, ordenProduccion)
     setListaTotalProduccion(ordenProduccion.ordenesProduccion)
   }
+  */
 
   /*
   const actualizarProductoEnOrden = (
@@ -267,6 +166,8 @@ const useOrdenProduccionManager = () => {
     dataColum: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
+    console.log("este es producto que voy a agregar:", producto)
+
     if (ordenProduccion) {
       ordenProduccion.ordenesProduccion.push(producto)
       crearNuevaOrdenProduccion(ordenProduccion).then((response) => {
@@ -275,25 +176,33 @@ const useOrdenProduccionManager = () => {
           setDatosLocalStorage("ordenesProduccion", dataColum)
           setOrdenProduccion(ordenProduccion)
           setDatosLocalStorage("datosTemporales", dataColum)
+          setVisibleList(true)
         }
       })
     }
   }
 
-  const actualizarOrdenProduccion = (
+  const actualizarOrdenActual = (nuevoProducto: Producto) => {
+    updateProductInOrden(nuevoProducto).then((response) => {
+      if (response) {
+        setListaTotalProduccion(response.ordenesProduccion)
+      } else {
+        console.log("error al actualizar")
+      }
+    })
+  }
+
+  const agregarNuevoProductoAorden = (
     producto: Producto,
     dataColum: ColumnDescriptor[],
     ordenProduccion: OrdenProduccion
   ) => {
-    //console.log(producto, dataColum, ordenProduccion)
     producto.indiceProducto = ordenProduccion.ordenesProduccion.length + 1
 
     const nuevoOrdenProduccion = {
       ...ordenProduccion,
       ordenesProduccion: [...ordenProduccion.ordenesProduccion, producto]
     }
-
-    console.log(nuevoOrdenProduccion)
 
     agregarNuevoProductoOP(ordenProduccion.idParte, producto).then(
       (response) => {
@@ -302,6 +211,7 @@ const useOrdenProduccionManager = () => {
           setListaTotalProduccion(nuevoOrdenProduccion.ordenesProduccion)
           setOrdenProduccion(nuevoOrdenProduccion)
           setDatosLocalStorage("datosTemporales", dataColum)
+          setVisibleList(true)
         } else {
           console.log("no se agrego con exito")
         }
@@ -310,32 +220,30 @@ const useOrdenProduccionManager = () => {
   }
 
   const actualizarDatos = async () => {
+
     const ordenProduccionActual = await getCurrentOrderProduccion()
     const tempProduct = getDatosLocalStorage("datosTemporales")
-    const todasLasOrdenes = getDatosLocalStorage(
-      "ordenesProduccion"
-    ) as OrdenProduccion[]
+    const preOrden = getDatosLocalStorage("preOrden") as OrdenProduccion
 
-    const ultimaPreOrden = todasLasOrdenes[
+    /*const ultimaPreOrden = todasLasOrdenes[
       todasLasOrdenes.length - 1
-    ] as OrdenProduccion
+    ] as OrdenProduccion*/
 
     if (ordenProduccionActual) {
       const producto = ProductoInicial || tempProduct
-      // console.log("seteoOrden",producto)
 
       let settingProductoInicial = setAttributesInColumnDescriptor(
         producto,
         "idParte",
         ["value", "defaultValue"],
-        [ordenProduccionActual.idParte, ordenProduccionActual.idParte]
+        [preOrden.idParte, preOrden.idParte]
       )
 
       settingProductoInicial = setAttributesInColumnDescriptor(
         settingProductoInicial,
         "bamburi",
         ["value", "defaultValue"],
-        [ordenProduccionActual.bamburi, ordenProduccionActual.bamburi]
+        [preOrden.bamburi, preOrden.bamburi]
       )
 
       //const mappedProducto = mapColumnDescriptors(ProductoInicial, settingProductoInicial, [])
@@ -347,63 +255,60 @@ const useOrdenProduccionManager = () => {
       ordenProduccionActual.ordenesProduccion = indexedProduct
       //updateOrdenProduccion(ordenProduccion)
       //setListaProductosOrdenReciente(indexedProduct)
-      console.log(ordenProduccionActual.idParte, ultimaPreOrden.idParte)
-      if (ordenProduccionActual.idParte !== ultimaPreOrden.idParte) {
+      if (ordenProduccionActual.idParte !== preOrden.idParte) {
         setVisibleList(false)
-      }else{
+      } else {
         setVisibleList(true)
       }
 
+      //ordenProduccionActual.idParte = preOrden.idParte
       setListaTotalProduccion(indexedProduct)
       setOrdenProduccion(ordenProduccionActual)
       setDatosLocalStorage("datosTemporales", settingProductoInicial)
       setDatosColumna(settingProductoInicial)
       setOrdenProduccion(ordenProduccionActual)
-
-      //console.log()
     } else {
       //console.log("setOrdenProduccion",ultimaPreOrden)
+      setVisibleList(false)
 
       if (tempProduct) {
         let settingProductoInicial = setAttributesInColumnDescriptor(
           tempProduct,
           "idParte",
           ["value", "defaultValue"],
-          [ultimaPreOrden.idParte, ultimaPreOrden.idParte]
+          [preOrden.idParte, preOrden.idParte]
         )
         settingProductoInicial = setAttributesInColumnDescriptor(
           settingProductoInicial,
           "bamburi",
           ["value", "defaultValue"],
-          [ultimaPreOrden.bamburi, ultimaPreOrden.bamburi]
+          [preOrden.bamburi, preOrden.bamburi]
         )
 
         setDatosLocalStorage("datosTemporales", settingProductoInicial)
         setDatosColumna(settingProductoInicial)
-        setOrdenProduccion(ultimaPreOrden)
+        setOrdenProduccion(preOrden)
       } else {
         // console.log("setOrdenProduccion",ultimaPreOrden)
-        setOrdenProduccion(ultimaPreOrden)
 
         let settingProductoInicial = setAttributesInColumnDescriptor(
           ProductoInicial,
           "idParte",
           ["value", "defaultValue"],
-          [ultimaPreOrden.idParte, ultimaPreOrden.idParte]
+          [preOrden.idParte, preOrden.idParte]
         )
 
         settingProductoInicial = setAttributesInColumnDescriptor(
           settingProductoInicial,
           "bamburi",
           ["value", "defaultValue"],
-          [ultimaPreOrden.bamburi, ultimaPreOrden.bamburi]
+          [preOrden.bamburi, preOrden.bamburi]
         )
 
         setDatosLocalStorage("datosTemporales", settingProductoInicial)
         setDatosColumna(settingProductoInicial)
+        setOrdenProduccion(preOrden)
       }
-      setVisibleList(true)
-      //configurarOrdenProduccion()
     }
   }
 
@@ -433,8 +338,10 @@ const useOrdenProduccionManager = () => {
 
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
+        setDatosLocalStorage("datosTemporales",dataUpdated)
       }
     } else {
+
       const currentData = getDatosLocalStorage("datosTemporales") //recuperarDatosTemporales()
 
       if (currentData) {
@@ -445,11 +352,13 @@ const useOrdenProduccionManager = () => {
           ProductoInicial
         )
 
-        // console.log(currentData)
+       
         if (dataUpdated) {
+          console.log("actualizamos")
           setDatosLocalStorage("datosTemporales", dataUpdated)
           setDatosColumna(dataUpdated)
         }
+
       } else {
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
@@ -459,7 +368,7 @@ const useOrdenProduccionManager = () => {
         )
 
         if (dataUpdated) {
-          //console.log("actualizamos")
+          console.log("actualizamos")
           setDatosLocalStorage("datosTemporales", dataUpdated)
           //console.log(dataUpdated)
           setDatosColumna(dataUpdated)
@@ -472,80 +381,10 @@ const useOrdenProduccionManager = () => {
     idInput: string | number,
     rowIndex: number
   ) => {
-    const id = typeof idInput === "number" ? idInput.toString() : idInput
 
+    const id = typeof idInput === "number" ? idInput.toString() : idInput    
     if (id.toLowerCase() === "agregar") {
       agregarEntrada()
-      //
-      /* const productoActual = recuperarDatosTemporales()
-
-      if (ordenProduccion) {
-        const productoParaMapear = productoActual
-          ? productoActual
-          : ProductoInicial
-
-        const indiceProducto = ordenProduccion.ordenesProduccion.length + 1
-
-        const mappedProduct = mapearYConfigurarProducto(
-          productoParaMapear,
-          ordenProduccion.idParte,
-          indiceProducto,
-          ordenProduccion.fecha,
-          ordenProduccion.TipoGoma,
-          ordenProduccion.bamburi,
-          ["Agregar", "editar"]
-        )
-
-        //no agrega a la ordenProduccion
-        const gestionarOrdenProduccion = () => {
-          actualizarYAgregarProducto(
-            mappedProduct,
-            productoParaMapear,
-            ordenProduccion
-          )
-        }
-
-        //comprobamos que si existe una ordenProduccion ya creada
-        getAllOrdenProduction().then((resp) => {
-          if (resp && resp.length > 0) {
-            const currentOrdenDB = resp[resp.length - 1]
-            //console.log(currentOrdenDB.idParte,ordenProduccion.idParte)
-            if (currentOrdenDB.idParte === ordenProduccion.idParte) {
-              gestionarOrdenProduccion()
-              //console.log("entro mientras son iguales")
-            } else {
-              crearNuevaOrdenProduccion(ordenProduccion).then((response) => {
-                if (response?.status === 200) {
-                  //agregamos nueva linea produccion
-                  //console.log("he agregado una nueva orden de Produccion")
-                  gestionarOrdenProduccion()
-                  //modificamos el estado porque la orden de produccion ha sido creada
-                } else {
-                  console.error("Error al crear la orden de producción")
-                }
-              })
-            }
-          } else {
-            
-            crearNuevaOrdenProduccion(ordenProduccion)
-              .then((response) => {
-                if (response?.status === 200) {
-                  //agregamos nueva linea produccion
-                  //console.log("he agregado una nueva orden de Produccion")
-                  gestionarOrdenProduccion()
-                  //modificamos el estado porque la orden de produccion ha sido creada
-                } else {
-                  console.error("Error al crear la orden de producción")
-                }
-              })
-              .catch((error) => {
-                console.error("Error al crear la orden de producción:", error)
-              })
-          }
-        })
-      } else {
-        console.log("No hay orden de producción definida")
-      }*/
     } else if (id.toLowerCase() === "editar") {
       //console.log(listaTotalProduccion[rowIndex])
 
@@ -563,160 +402,102 @@ const useOrdenProduccionManager = () => {
     } else if (id.toLowerCase() === "aceptaredicion") {
       if (datosLineaMod) {
         const idProducto = getValueOfAttributeFromColumnDescriptor(
-          "value",
-          datosLineaMod[0]
+          datosLineaMod,
+          "indiceProducto",
+          "value"
         )
 
-        console.log(idProducto, rowIndex)
-        if (ordenProduccion) {
+        if (ordenProduccion && idProducto) {
           const mappedProduct = mapearYConfigurarProducto(
             datosLineaMod,
             ordenProduccion.idParte,
-            rowIndex,
+            Number(idProducto),
             ordenProduccion.fecha,
             ordenProduccion.TipoGoma,
             ordenProduccion.bamburi,
-            []
+            ["aceptarEdicion"]
           )
 
-          actualizarOrdenProduccion(
-            mappedProduct,
-            datosColumna,
-            ordenProduccion
-          )
+          actualizarOrdenActual(mappedProduct)
+          setEditMode(false)
         } else {
           console.log("no encuentra la orden de produccion")
         }
-
-        /*
-        if (ordenProduccion) {
-          const convertProduct = mapColumnDescriptorsToProducto(
-            datosLineaMod,
-            ordenProduccion.idParte
-          )
-
-          convertProduct.fecha = ordenProduccion.fecha
-          convertProduct.tipoGoma = ordenProduccion.TipoGoma
-          //modifico el producto de la ordenProduccion
-          ordenProduccion.ordenesProduccion =
-            ordenProduccion.ordenesProduccion.map((product) => {
-              if (product.indiceProducto === convertProduct.indiceProducto) {
-                return convertProduct
-              }
-              return product
-            })
-
-          //updateProductInOrden(convertProduct, ordenProduccion.idParte)
-          //console.log(ordenProduccion)
-          updateOrdenProduccion(ordenProduccion).then((response) => {
-            if (response) {
-              setOrdenProduccion(ordenProduccion)
-              setListaTotalProduccion(ordenProduccion.ordenesProduccion)
-            }
-          })
-          setEditMode(false)
-        }*/
       }
-
-      /* if (datosLineaMod && ordenProduccion) {
-
-          console.log(datosLineaMod)
-          
-        const productoModificado = mapearYConfigurarProducto(
-          datosLineaMod,
-          ordenProduccion.idParte,
-          rowIndex,
-          ordenProduccion.fecha,
-          ordenProduccion.TipoGoma,
-          ordenProduccion.bamburi,
-          []
-        )
-
-        const ordenActualizada = actualizarProductoEnOrden(
-          productoModificado,
-          ordenProduccion
-        )
-
-        updateOrdenProduccion(ordenActualizada).then((response) => {
-          if (response) {
-            setOrdenProduccion(ordenActualizada)
-            setListaTotalProduccion(ordenActualizada.ordenesProduccion)
-          }
-        })
-
-        setEditMode(false)
-      }*/
     } else if (id.toLowerCase() === "borrar") {
-      console.log(listaTotalProduccion[rowIndex])
       setResumeDataProduct(listaTotalProduccion[rowIndex])
-      /* navigate(
-        `/ordenProduccion/${listaTotalProduccion[rowIndex].idParte}/productos/${listaTotalProduccion[rowIndex].indiceProducto}`
-      )*/
       handleOpenModal()
     }
   }
 
   const agregarEntrada = async () => {
-    //const productoActual = getDatosLocalStorage("datosTemporales")
-    /*const todasLasOrdenes = getDatosLocalStorage("ordenesProduccion") as OrdenProduccion[]
-    const preOrden = todasLasOrdenes[todasLasOrdenes.length-1]*/
-    //datosColumna
-
     const ultimaOrdenCreada = await getCurrentOrderProduccion()
+    const preOrden = getDatosLocalStorage("preOrden")
 
     if (ordenProduccion) {
-      const indiceProducto = ordenProduccion.ordenesProduccion.length + 1
-
-      const mappedProduct = mapearYConfigurarProducto(
-        datosColumna,
-        ordenProduccion.idParte,
-        indiceProducto,
-        ordenProduccion.fecha,
-        ordenProduccion.TipoGoma,
-        ordenProduccion.bamburi,
-        []
-      )
-
-      /*console.log(
-        "productoActual",
-        ordenProduccion.idParte,
-        "ultimaOrdeCreada",
-        ultimaOrdenCreada?.idParte
-      )*/
-
       if (ultimaOrdenCreada) {
-        console.log(" entro a actualizar ", ordenProduccion)
         //comprobamos que los idde parte coincidan
-        if (ordenProduccion.idParte === ultimaOrdenCreada.idParte) {
+        if (ordenProduccion.idParte === preOrden.idParte) {
           //comprobamos que se haya producido alguna modificacion del producto
+          const indiceProducto = ordenProduccion.ordenesProduccion.length + 1
+          const mappedProduct = mapearYConfigurarProducto(
+            datosColumna,
+            preOrden.idParte,
+            indiceProducto,
+            preOrden.fecha,
+            preOrden.TipoGoma,
+            preOrden.bamburi,
+            []
+          )
+
           if (
             !checkIfClaveCompExist(
               mappedProduct,
               ordenProduccion.ordenesProduccion
             )
           ) {
-            actualizarOrdenProduccion(
+            console.log(" actualizamos ")
+            agregarNuevoProductoAorden(
               mappedProduct,
               datosColumna,
               ordenProduccion
             )
           }
         } else {
-          console.log(" entro a crear nuevo ", ordenProduccion)
-          agregarNuevaOrdenProduccion(
-            mappedProduct,
+          const indiceProducto = preOrden.ordenesProduccion.length + 1
+          const mappedProduct = mapearYConfigurarProducto(
             datosColumna,
-            ordenProduccion
+            preOrden.idParte,
+            indiceProducto,
+            preOrden.fecha,
+            preOrden.TipoGoma,
+            preOrden.bamburi,
+            []
           )
+
+          //console.log(" entro a crear nuevo ", preOrden)
+          agregarNuevaOrdenProduccion(mappedProduct, datosColumna, preOrden)
         }
         //setListaTotalProduccion(ordenProduccion.ordenesProduccion)
       } else {
+        //comprobamos que se haya producido alguna modificacion del producto
+        const indiceProducto = ordenProduccion.ordenesProduccion.length + 1
+        const mappedProduct = mapearYConfigurarProducto(
+          datosColumna,
+          preOrden.idParte,
+          indiceProducto,
+          preOrden.fecha,
+          preOrden.TipoGoma,
+          preOrden.bamburi,
+          []
+        )
+
         console.log("entro a crear por primera vez ", ordenProduccion)
         //crear una nuevo Parte
         crearNuevaOrdenProduccion(ordenProduccion).then((response) => {
           if (response?.status === 200) {
             //agregamos nueva linea produccion
-            actualizarOrdenProduccion(
+            agregarNuevoProductoAorden(
               mappedProduct,
               datosColumna,
               ordenProduccion
@@ -729,6 +510,8 @@ const useOrdenProduccionManager = () => {
           }
         })
       }
+
+      //setVisibleList(true)
     } else {
       //ordenProducion no existe
       console.log(ordenProduccion)
@@ -740,17 +523,17 @@ const useOrdenProduccionManager = () => {
     idInput: string | number | undefined
   ) => {
     if (idInput === "btDelete") {
-      console.log(resumeProduct)
       if (ordenProduccion && resumeProduct) {
         deleteOrdenProducion(
           ordenProduccion.idParte,
           resumeProduct.indiceProducto
         ).then((response) => {
-          if (response.success) {
-            //console.log(response.message)
+          if (response) {
             setIsOpen(false)
+            setListaTotalProduccion(response.ordenesProduccion)
+            setOrdenProduccion(response)
           } else {
-            console.log(response.message)
+            console.log(response)
           }
         })
       }
@@ -825,7 +608,7 @@ const useOrdenProduccionManager = () => {
       sortDirection: "asc" | "desc"
     }
   ) => {
-    if (idToggle === "orden01") {
+    if (idToggle === "orden") {
       setOrdenData(toggleState.sortDirection)
 
       if (listaTotalProduccion) {
@@ -849,6 +632,7 @@ const useOrdenProduccionManager = () => {
       idInput: "byWords",
       activeButton: false,
       activeSearchIcon: true,
+      readonly:false,
       placeHolder: "write to search...",
       activeLabel: true,
       typeFill: "search",
@@ -911,12 +695,10 @@ const useOrdenProduccionManager = () => {
     setOrdenProduccion,
     setOrdenData,
     setEditMode,
-    // setListaProductosOrdenReciente,
     setLoadedData,
     calculateItemToDisplay,
     loadMoreData,
     actualizarDatos,
-    configurarOrdenProduccion,
     handleSelection,
     handleFilter,
     handleInputTextChange,

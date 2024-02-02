@@ -279,6 +279,33 @@ export const getUltimosProductosPorUltimoRegistro = async (req, res) => {
   }
 }
 
+export const getTodosUltimosPorClave = async (req, res) => {
+  try {
+    const ultimosRegistros = await InventarioAlmacen.aggregate([
+      { $unwind: "$inventario" },
+      { $match: { "inventario.ultimoRegistro": true } }, // Buscar documentos donde inventario.ultimoRegistro es true
+      { $group: { _id: "$_id", productos: { $push: "$inventario" } } }, // Agrupar por ID de InventarioAlmacen y agrupar los productos
+      { $project: { productos: 1, _id: 0 } } // Proyectar solo los productos
+    ])
+
+    // Aplanar los resultados para obtener una lista única de productos
+    const productosFinales = ultimosRegistros.flatMap((item) => item.productos)
+
+    if (productosFinales.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron productos con último registro" })
+    }
+
+    res.json(productosFinales)
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener los productos con último registro",
+      error: error.message
+    })
+  }
+}
+
 export const getUltimosProductosPorClave = async (req, res) => {
   const { seccion, almacen, tipoFecha } = req.params
   const campoFecha =
@@ -315,9 +342,7 @@ export const getUltimosProductosPorClave = async (req, res) => {
 }
 
 export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
-
   try {
-    
     const { seccion, almacen } = req.params
     // Suponiendo que 'req.body' contiene los datos del producto a añadir
     const claveCompuesta = generadorClaveCompuesta(
@@ -376,7 +401,6 @@ export const updateInventarioAlmacenBySeccionAlmacen = async (req, res) => {
 
 // DELETE: Eliminar un inventario de almacén por sección y almacén
 export const deleteInventarioAlmacenBySeccionAlmacen = async (req, res) => {
-
   try {
     const { seccion, almacen } = req.params
     const inventarioEliminado = await InventarioAlmacen.findOneAndDelete({
@@ -398,16 +422,16 @@ export const deleteProductosInventarioPorClaveComp = async (req, res) => {
   const { seccion, almacen, claveComp } = req.params
 
   try {
-
     const formatClave = decodeURIComponent(claveComp)
 
     if (formatClave) {
-      const documentos = await InventarioAlmacen.find({seccion, almacen})
+      const documentos = await InventarioAlmacen.find({ seccion, almacen })
       // Apuntar al campo 'claveComp' dentro de los objetos en el array 'inventario'
       const resultado = await InventarioAlmacen.updateMany(
         { seccion, almacen },
-        { $pull: { inventario: { claveComp: formatClave }}})
-      
+        { $pull: { inventario: { claveComp: formatClave } } }
+      )
+
       if (resultado.nModified === 0) {
         return res.status(404).json({
           message:
@@ -421,7 +445,6 @@ export const deleteProductosInventarioPorClaveComp = async (req, res) => {
         resultado: resultado,
         params: req.params
       })
-
     } else {
       // Si claveComp no está presente en los parámetros
       return res.status(400).json({

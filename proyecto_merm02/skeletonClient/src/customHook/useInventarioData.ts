@@ -14,7 +14,6 @@ import {
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
-import { productoInventarioInicial } from "../models/productoInventarioInicial"
 import { generateRandomColor } from "../utilidades/util"
 import { TipoColor } from "../utilidades/util"
 import { TableStyle } from "../interfaces/TableStyles"
@@ -26,19 +25,17 @@ export const useInventarioData = () => {
   const getAllInvetariosAlmacen = async (
     route: string
   ): Promise<ProductoInventario[] | null> => {
-
     try {
       const inventariosAlmacen = await getAllInventarios(route)
 
       if (inventariosAlmacen) {
         // Combina todos los productos en un solo vector
-        const todosLosProductos = inventariosAlmacen.reduce<ProductoInventario[]>(
-          (acumulador, inventario) => {
-            // Asumiendo que 'inventario.inventario' es el array de productos
-            return acumulador.concat(inventario.inventario)
-          },
-          []
-        )
+        const todosLosProductos = inventariosAlmacen.reduce<
+          ProductoInventario[]
+        >((acumulador, inventario) => {
+          // Asumiendo que 'inventario.inventario' es el array de productos
+          return acumulador.concat(inventario.inventario)
+        }, [])
         return todosLosProductos
       }
 
@@ -47,7 +44,6 @@ export const useInventarioData = () => {
       console.log(error)
       return null
     }
-
   }
 
   const getInventarioSelected = async (
@@ -242,7 +238,6 @@ export const useInventarioData = () => {
   const generarMatrizStyle = (
     productosInventario: ProductoInventario[]
   ): TableStyle[] => {
-    
     // Crear un mapa para almacenar colores para cada claveCompuesta
     const colorMap = new Map<string, string>()
     const color1 = "bg-white dark:bg-gray-900"
@@ -284,15 +279,20 @@ export const useInventarioData = () => {
         columnasTemplate,
         producto
       )
-
+      
       return filaColumnDescriptors.map((descriptor) => {
         // Crear una copia del descriptor para evitar modificar el original
         const descriptorCopia = { ...descriptor }
 
         if (
-          ["Editar", "Borrar", "entradas", "salidas"].includes(
-            descriptorCopia.idInput
-          )
+          [
+            "Editar",
+            "Borrar",
+            "entradas",
+            "salidas",
+            "entradasListado",
+            "salidasListado"
+          ].includes(descriptorCopia.idInput)
         ) {
           // La visibilidad de Editar y Borrar depende de si es la última entrada o salida
           descriptorCopia.visible = producto.ultimoRegistro
@@ -388,7 +388,6 @@ export const useInventarioData = () => {
     generarMatrizStyle,
     deleteByClaveComp,
     getAllInvetariosAlmacen,
-    currentInventario,
-    productoInventarioInicial
+    currentInventario
   }
 }

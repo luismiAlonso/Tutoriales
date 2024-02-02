@@ -80,7 +80,7 @@ function EntradasInventarioPage() {
             />
           </div>
 
-          {<FilterComponent filters={plantillaFiltersInventario} />}
+          <FilterComponent filters={plantillaFiltersInventario} />
 
           <div className="mb-10 mt-4">
             <InfiniteScroll

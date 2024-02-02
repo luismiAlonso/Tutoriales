@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { obtenerFechaActual, obtenerHoraActual } from "../utilidades/dateUtil"
+import { useInventarioListadoManager } from "../customHook/useInventarioListadoManager"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
-import { useInventarioManager } from "../customHook/useInventarioManager"
 import FilterComponent from "../components/filtersComponent/filtersComponent"
 import { HeaderProductoInventario } from "../models/HeaderProductoInventario"
 import { PlantillaProductoInventario } from "../models/PlantillaProductoInventario"
@@ -24,6 +24,7 @@ function ListadoInventario() {
     handleDeleteProducto,
     handleBackEditMod,
     actualizaAllinventarios,
+    datosModificacion,
     mappedStyleTable,
     mappeddProductosInventario,
     plantillaFiltersInventario,
@@ -35,12 +36,12 @@ function ListadoInventario() {
     currentPage,
     itemsPerPage,
     loadedData
-  } = useInventarioManager()
+  } = useInventarioListadoManager()
 
   useEffect(() => {
     
     actualizaAllinventarios()
-      console.log(plantillaProductoInventarioListado.length,loadedData)
+    //console.log(plantillaProductoInventarioListado.length,loadedData)
   }, [])
 
   return (
@@ -61,15 +62,20 @@ function ListadoInventario() {
         </div>
       </div>
       <div>
-        {/*<div className="mt-3">
-            <ListInputsCard
-              columns={datosEntrada}
-              rowIndex={0}
-              onInputChange={handleInputChange}
-              onButtonClick={handleButtonClick}
-            />
-          </div>*/}
-        {<FilterComponent filters={plantillaFiltersInventario} />}
+      {
+      editMode ? (
+        <div className="mt-3">
+        <ListInputsCard
+          columns={datosModificacion}
+          rowIndex={0}
+          onInputChange={handleInputChange}
+          onButtonClick={handleButtonClick}
+        />
+    </div>
+
+      ):(
+        <>
+        <FilterComponent filters={plantillaFiltersInventario} />
         <div className="mb-10 mt-4">
           <InfiniteScroll
             dataLength={currentPage * itemsPerPage} //This is important field to render the next data
@@ -99,8 +105,12 @@ function ListadoInventario() {
                 onButtonClick={handleButtonClick}
               />
             )}
+
           </InfiniteScroll>
         </div>
+        </>
+      )
+      }
       </div>
 
       {

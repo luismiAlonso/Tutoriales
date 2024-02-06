@@ -2,7 +2,7 @@ import React from "react"
 import { Modal } from "flowbite-react"
 import { ImodalProp } from "./ImodalProp"
 
-const ModalComponent: React.FC<ImodalProp> = ({ title, body, footer, isOpen, openModal ,closeModal}) => {
+const ModalComponent: React.FC<ImodalProp> = ({ title, body, footer, isOpen ,closeModal}) => {
   
   return (
     <div>

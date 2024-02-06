@@ -3,8 +3,8 @@ import useFilterData from "../components/filters/useFilterData"
 import { useOrdenProduccionData } from "./useOrdenProduccionData"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import { ProductoModificacion } from "../models/ProductoModificacion"
-import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
-import useCustomDatepicker from "../customHook/useCustomDatePicker"
+import { Producto } from "../interfaces/OrdenProduccion"
+import useCustomDatepicker from "../customHook/useCustomDatepicker"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useInfiniteLoader from "../components/InfiniteLoaderComponent/useInfiniteLoaderParteProducion"
 import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
@@ -18,7 +18,7 @@ const useListadosPartesManager = () => {
   const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
   const [fullData, setFullData] = useState<Producto[]>([])
 
-  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
+  const [listadoTitulosPropiedades] = useState<
     string[]
   >([
     "idParte",
@@ -39,7 +39,6 @@ const useListadosPartesManager = () => {
   const {
     mapColumnDescriptorsToProducto,
     mapearProductoAColumnas,
-    updateProductInOrden,
     updateColumnProduct,
     updateOrdenProduccion,
     getAllProductAndAllOrder,
@@ -49,7 +48,6 @@ const useListadosPartesManager = () => {
   const {
     listaTotalProduccion,
     setListaTotalProduccion,
-    listaProductosOrdenReciente,
     setListaProductosOrdenReciente
   } = useOrdenProductionStore()
 
@@ -312,6 +310,7 @@ const useListadosPartesManager = () => {
       typeFill: "search",
       style:
         "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+      readonly:true,
       onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado
       onClick: handleInputTextClick,
       onFilter: handleFilterChange
@@ -353,13 +352,14 @@ const useListadosPartesManager = () => {
       idInput: "Orden",
       type: "toggle",
       activeLabel: true,
-      valueProp: ordenData || true,
+      valueProp:  true,
       trueText: "asc",
       falseText: "desc",
       onChange: handleToggleChange
     } as ItoggleProps
     // Puedes agregar más filtros según necesites
   ]
+  
 
   return {
     listadoTitulosPropiedades,

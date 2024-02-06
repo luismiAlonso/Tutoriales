@@ -1,12 +1,8 @@
-import React, { useEffect } from "react"
-import { obtenerFechaActual, obtenerHoraActual } from "../utilidades/dateUtil"
+import { useEffect } from "react"
 import { useInventarioListadoManager } from "../customHook/useInventarioListadoManager"
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import FilterComponent from "../components/filtersComponent/filtersComponent"
-import { HeaderProductoInventario } from "../models/HeaderProductoInventario"
-import { PlantillaProductoInventario } from "../models/PlantillaProductoInventario"
 import ListInputsCard from "../components/ListInputComponent/ListInputsCard"
-import CustomTable from "../components/ListadosTablas/CustomTable"
 import CustomFlexibleTable from "../components/ListadosTablas/CustomFlexibleTable"
 import ModalComponent from "../components/modal/ModalComponent"
 import InfiniteScroll from "react-infinite-scroll-component"
@@ -72,7 +68,6 @@ function ListadoInventario() {
           onButtonClick={handleButtonClick}
         />
     </div>
-
       ):(
         <>
         <FilterComponent filters={plantillaFiltersInventario} />
@@ -112,7 +107,6 @@ function ListadoInventario() {
       )
       }
       </div>
-
       {
         <ModalComponent
           title="¿DESEA ELIMINAR?"

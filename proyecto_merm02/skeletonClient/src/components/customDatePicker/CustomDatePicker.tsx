@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Datepicker } from "flowbite-react"
 import { DateFilterProps } from "./DateFilterProps"
 import { obtenerFechaActual } from "../../utilidades/dateUtil"

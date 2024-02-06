@@ -5,7 +5,7 @@ import { Producto } from "../../interfaces/OrdenProduccion"
 
 const useInfiniteLoaderParteProducion = (itemsPerPage = 100) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const { listaTotalProduccion, setListaTotalProduccion } =
+  const { listaTotalProduccion } =
     useOrdenProductionStore()
   const [loadedData, setLoadedData] = useState<Producto[]>([])
 

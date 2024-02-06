@@ -1,4 +1,3 @@
-import React from "react"
 import CustomButton from "../components/button/ButtonComponent"
 import { useNavigate } from "react-router-dom" // Importa useNavigate
 import BackButton from "../components/backButtonComponent/BackButtonComponent" 

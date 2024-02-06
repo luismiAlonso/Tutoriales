@@ -33,9 +33,10 @@ const RenderColumnContent: React.FC<IrenderColumnContentProps> = ({
             <IconComponent
               onClick={(e) => {
                 e.preventDefault()
-                if (onButtonClick) {
+               if (onButtonClick) {
                   onButtonClick(e, idInput, rowIndex)
                 }
+              
               }} // Asegúrate de que `props.value` sea el valor correcto
               iconType="svg"
               className="w-12"
@@ -73,7 +74,7 @@ const ListadoDataResponsive: React.FC<IdataListComponentProps> = ({
 }) => {
   // Definición de handleClick
   const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     idInput: string,
     rowIndex: number
   ) => {
@@ -114,7 +115,7 @@ const ListadoDataResponsive: React.FC<IdataListComponentProps> = ({
             </div>
             <div className="flex justify-start mt-4">
               {/* Renderizar solo elementos SVG */}
-              {columns.map((column, columnIndex) => {
+              {columns.map((column) => {
                 if (column.type !== "svg") return null
                 const value = item[column.idInput]
                 return (

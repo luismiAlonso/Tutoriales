@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { ColumnDescriptor } from "../../interfaces/ColumnDescriptor"
 import SelectComponent from "../selectComponent/SelectComponent"
 import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
@@ -7,7 +7,6 @@ import InputTextComponent from "../inputTextComponent/InputTextComponent"
 import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
 import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
-import { getPropertyValue } from "../../utilidades/util.ts"
 import { TableStyle } from "../../interfaces/TableStyles.ts"
 
 interface TableProps<T> {
@@ -42,7 +41,6 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   column,
   rowIndex,
   dataColumn,
-  tableStyle,
   onInputChange,
   onButtonClick
 }) => {
@@ -51,8 +49,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   }
 
   const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    columnId: string,
+    e: React.MouseEvent<HTMLElement>,
     rowIndex: number
   ) => {
     e.preventDefault()
@@ -151,7 +148,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
               onClick={(e) => {
                 // Llama a handleClick solo si dataColumn.value está definido
                 if (dataColumn.value !== undefined) {
-                  handleClick(e, dataColumn.idInput, rowIndex)
+                  handleClick(e, rowIndex)
                 }
               }}
             />
@@ -166,7 +163,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
               <IconComponent
                 onClick={(e) => {
                   if (dataColumn.value != undefined) {
-                    handleClick(e, dataColumn.idInput, rowIndex)
+                    handleClick(e, rowIndex)
                   }
                 }} // Asegúrate de que `props.value` sea el valor correcto
                 iconType="svg"
@@ -183,7 +180,7 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
                 <IconComponent
                   onClick={(e) => {
                     if (dataColumn.value != undefined) {
-                      handleClick(e, dataColumn.idInput, rowIndex)
+                      handleClick(e,rowIndex)
                     }
                   }}
                   iconType="svg"
@@ -236,15 +233,16 @@ const CustomFlexibleTable: React.FC<TableProps<any>> = ({
           </thead>
           <tbody>
             {data.map((rowData, rowIndex) => (
-              /*<tr
+              /*
+              <tr
                 key={rowIndex}
                 className={`${
                   rowIndex % 2 === 0
                     ? "bg-white dark:bg-gray-900"
                     : "bg-gray-50 dark:bg-gray-800"
                 } border-b dark:border-gray-700`}
-              >*/
-
+              >
+              */
               <tr
                 key={rowIndex}
                 className={`${tableStyle[rowIndex].trContent} border-b dark:border-gray-700`}

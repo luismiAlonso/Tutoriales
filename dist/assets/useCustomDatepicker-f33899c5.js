@@ -1,0 +1,1 @@
+import{r as n}from"./index-c9f7c851.js";const r=(a,e)=>{const[c,s]=n.useState(a);return{selectedDate:c,changeSelectedDate:t=>{s(t),e.onSelectedDateChanged&&e.onSelectedDateChanged(t)}}};export{r as u};

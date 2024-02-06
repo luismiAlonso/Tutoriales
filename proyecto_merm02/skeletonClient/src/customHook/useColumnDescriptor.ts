@@ -1,8 +1,8 @@
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 
 const useColumnDescriptor = () => {
-  const [columnDescriptors, setColumnDescriptors] = useState<
+  const [columnDescriptors] = useState<
     ColumnDescriptor[]
   >([])
 

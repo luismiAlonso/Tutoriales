@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { ColumnDescriptor } from "../components/ListadosTablas/Itabla"
+import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 
 type ColumnStore = {
   columns: ColumnDescriptor[]

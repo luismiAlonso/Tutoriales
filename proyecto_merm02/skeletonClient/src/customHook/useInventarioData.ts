@@ -2,20 +2,15 @@ import { useState } from "react"
 import {
   agregarInventarioAlmacen,
   fetchInventarioAlmacenBySeccionAlmacen,
-  deleteInventarioAlmacen,
   fetchUltimosProductosBySeccionAlmacen,
   deleteProductoInventario,
   deleteProductosByClaveComp,
   updateInventario,
   updateProductoInInventario,
-  fetchAllInventarioAlmacen,
-  getAllInventarios,
-  addProductoInventario
+  getAllInventarios
 } from "../api/InventarioApi"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
-import { generateRandomColor } from "../utilidades/util"
-import { TipoColor } from "../utilidades/util"
 import { TableStyle } from "../interfaces/TableStyles"
 
 export const useInventarioData = () => {

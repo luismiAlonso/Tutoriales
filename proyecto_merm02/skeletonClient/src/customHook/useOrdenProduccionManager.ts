@@ -5,12 +5,10 @@ import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import useColumDescriptor from "../customHook/useColumnDescriptor"
 import { ParteLaminacion } from "../models/ParteLaminacion"
 import { ProductoModificacion } from "../models/ProductoModificacion"
-import { HeadersProducto } from "../models/HeadersProducto"
 import { ResumenProducto } from "../models/ResumenProducto"
 import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import useFilterData from "../components/filters/useFilterData"
 import useInfiniteLoaderParteProducion from "../components/InfiniteLoaderComponent/useInfiniteLoaderParteProducion"
-import { useParams, useNavigate } from "react-router-dom" // Importa useNavigate
 import useModal from "../components/modal/useModal"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { generadorClaveCompuesta } from "../utilidades/util"
@@ -18,35 +16,26 @@ import { ProductoInicial } from "../models/ProductoInicial"
 import { ItextInputFilter } from "../components/inputTextFilterComponent/ItextInputFilter"
 import { IcustomSelectProp } from "../components/selectComponent/IcustomSelectProp"
 import { ItoggleProps } from "../components/toggle/ItoggleProps"
-import { number } from "zod"
 
 const useOrdenProduccionManager = () => {
   const {
-    mapColumnDescriptors,
     incrementarIndiceProductos,
-    updateOrdenProduccion,
-    checkOrdenIdOnTemp,
-    getTempCurrenOrderProduccion,
     mapColumnDescriptorsToProducto,
     agregarNuevoProductoOP,
     crearNuevaOrdenProduccion,
-    recuperarDatosTemporales,
     updateColumnProduct,
-    getAllOrdenProduction,
     mapearProductoAColumnas,
     getCurrentOrderProduccion,
-    guardarDatosTemporales,
     checkIfClaveCompExist,
     updateProductInOrden,
-    deleteOrdenProducion,
-    getValueAttributeOfColumnDescriptor
+    deleteOrdenProducion
   } = useOrdenProduccionData()
 
   //const params = useParams()
 
   const [datosColumna, setDatosColumna] = useState<ColumnDescriptor[]>([])
   const [datosLineaMod, setDatosLineaMod] = useState<ColumnDescriptor[]>([])
-  const [resumeProduct, setResumeDataProduct] = useState<Producto>(null)
+  const [resumeProduct, setResumeDataProduct] = useState<Producto | null>(null)
   const [ordenProduccion, setOrdenProduccion] = useState<
     OrdenProduccion | null | undefined
   >()
@@ -77,9 +66,7 @@ const useOrdenProduccionManager = () => {
     getValueOfAttributeFromColumnDescriptor
   } = useColumDescriptor()
 
-  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
-    string[]
-  >([
+  const [listadoTitulosPropiedades] = useState<string[]>([
     "idParte",
     "fecha",
     "indiceProducto",
@@ -101,7 +88,6 @@ const useOrdenProduccionManager = () => {
 
   // Aquí puedes agregar cualquier lógica o funciones que manipulen estos estados
   // Por ejemplo, una función para actualizar 'datosColumna'
-
 
   const mapearYConfigurarProducto = (
     dataColum: ColumnDescriptor[],
@@ -220,7 +206,6 @@ const useOrdenProduccionManager = () => {
   }
 
   const actualizarDatos = async () => {
-
     const ordenProduccionActual = await getCurrentOrderProduccion()
     const tempProduct = getDatosLocalStorage("datosTemporales")
     const preOrden = getDatosLocalStorage("preOrden") as OrdenProduccion
@@ -338,10 +323,9 @@ const useOrdenProduccionManager = () => {
 
       if (dataUpdated) {
         setDatosLineaMod(dataUpdated)
-        setDatosLocalStorage("datosTemporales",dataUpdated)
+        setDatosLocalStorage("datosTemporales", dataUpdated)
       }
     } else {
-
       const currentData = getDatosLocalStorage("datosTemporales") //recuperarDatosTemporales()
 
       if (currentData) {
@@ -352,13 +336,11 @@ const useOrdenProduccionManager = () => {
           ProductoInicial
         )
 
-       
         if (dataUpdated) {
           console.log("actualizamos")
           setDatosLocalStorage("datosTemporales", dataUpdated)
           setDatosColumna(dataUpdated)
         }
-
       } else {
         const dataUpdated = updateColumnProduct(
           ParteLaminacion,
@@ -381,8 +363,7 @@ const useOrdenProduccionManager = () => {
     idInput: string | number,
     rowIndex: number
   ) => {
-
-    const id = typeof idInput === "number" ? idInput.toString() : idInput    
+    const id = typeof idInput === "number" ? idInput.toString() : idInput
     if (id.toLowerCase() === "agregar") {
       agregarEntrada()
     } else if (id.toLowerCase() === "editar") {
@@ -520,8 +501,11 @@ const useOrdenProduccionManager = () => {
 
   const handleDeleteProducto = (
     e: React.MouseEvent<HTMLButtonElement>,
-    idInput: string | number | undefined
+    idInput?: string | number,
+    rowIndex?: number
   ) => {
+    e.preventDefault()
+    console.log(rowIndex)
     if (idInput === "btDelete") {
       if (ordenProduccion && resumeProduct) {
         deleteOrdenProducion(
@@ -632,7 +616,7 @@ const useOrdenProduccionManager = () => {
       idInput: "byWords",
       activeButton: false,
       activeSearchIcon: true,
-      readonly:false,
+      readonly: false,
       placeHolder: "write to search...",
       activeLabel: true,
       typeFill: "search",

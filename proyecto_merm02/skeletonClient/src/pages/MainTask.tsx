@@ -1,6 +1,4 @@
-import React from "react"
 import CardTask from "../components/CardTask"
-import BackButton from "../components/backButtonComponent/BackButtonComponent"
 
 function MainTask() {
   const listTaskCards = [

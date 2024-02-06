@@ -1,0 +1,1 @@
+import{r as t}from"./index-c9f7c851.js";const r=()=>{const[s,e]=t.useState(!1),[o,a]=t.useState({title:"",body:""}),n=t.useCallback(()=>{e(!0)},[]),l=t.useCallback(()=>{e(!1)},[]);return{isOpen:s,content:o,setIsOpen:e,openModal:n,closeModal:l,setContent:a}};export{r as u};

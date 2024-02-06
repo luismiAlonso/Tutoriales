@@ -33,13 +33,11 @@ import {
 
 export const useInventarioListadoManager = () => {
   const [resumeProduct, setResumeDataProduct] =
-    useState<ProductoInventario>(null)
+    useState<ProductoInventario | null>(null)
   const navigate = useNavigate() // Obtén la función navigate
   const { totalProductosInventario, setListaTotalProductosInventario } =
     useOrdenProductionStore()
-  const [lastProductInventario, setLastProductInventario] =
-    useState<ProductoInventario[]>()
-  const [url, setUrl] = useState<string>()
+  const [, setUrl] = useState<string>("")
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const [editMode, setEditMode] = useState<boolean>(false)
   const [tipoEdicion, setTipoEdicion] = useState<string>("")
@@ -47,15 +45,12 @@ export const useInventarioListadoManager = () => {
   const { filterByWords, filterData, filterDateRange } = useFilterData()
   const [fullData, setFullData] = useState<ProductoInventario[]>([])
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
-  const [mostrarData, setMostrarData] = useState<boolean>(false)
   const [registroSeleccionado, setRegistroSeleccionado] =
     useState<ProductoInventario>()
   const [mappeddProductosInventario, setMappedProductosInventario] =
     useState<ColumnDescriptor[][]>()
   const [mappedStyleTable, setmappedStyleTable] = useState<TableStyle[]>()
-  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
-    string[]
-  >([
+  const [listadoTitulosPropiedades] = useState<string[]>([
     "fechaEntrada",
     "fechaSalida",
     "dibujo",
@@ -101,7 +96,7 @@ export const useInventarioListadoManager = () => {
     loadMoreData
   } = useInfiniteLoaderInventario(20)
 
-  const [datosEntrada, setEntrada] = useState<ColumnDescriptor[]>(
+  const [datosEntrada] = useState<ColumnDescriptor[]>(
     ProductoInventarioListadoModificacion
   )
 
@@ -279,7 +274,7 @@ export const useInventarioListadoManager = () => {
         dbInventario
       ).then((response) => {
         if (response) {
-            actualizaAllinventarios()
+          actualizaAllinventarios()
         }
       })
     }
@@ -340,7 +335,6 @@ export const useInventarioListadoManager = () => {
         dbInventario
       ).then((response) => {
         if (response) {
-         
           actualizaAllinventarios()
         }
       })
@@ -418,59 +412,44 @@ export const useInventarioListadoManager = () => {
   }
 
   const handleDeleteProducto = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    idInput: string | number | undefined
+    e: React.MouseEvent<HTMLButtonElement>, // Primer argumento: evento de clic
+    idInput?: string | number, // Segundo argumento: idInput (opcional)
+    rowIndex?: number
   ) => {
+    e.preventDefault() 
+    console.log(rowIndex)
     if (idInput === "btDelete") {
       const dataPrepareInventario = getDatosLocalStorage(
         "futureInventario"
       ) as PrepareDataInventario
 
       if (dataPrepareInventario) {
+        if (resumeProduct) {
+          //formateamos la cadena para que no hyan problemas con caracteres estraños
+          const formatClaveComp = encodeURIComponent(resumeProduct.claveComp)
 
-        /*
-        deleteLineaInventario(
-          dataPrepareInventario.url,
-          resumeProduct.idProducto
-        ).then((response) => {
-          if (response) {
-            console.log(
-              "el producto se ha eliminadocon exito ",
-              dataPrepareInventario.url
-            )
-            // navigate(dataPrepareInventario.url)
-            actualizaInvinterario()
-            closeModal()
-          }
-        })
-        */
-
-        //formateamos la cadena para que no hyan problemas con caracteres estraños
-        const formatClaveComp = encodeURIComponent(resumeProduct.claveComp)
-
-        deleteByClaveComp(
-          `${dataPrepareInventario.url}/completo`,
-          formatClaveComp
-        ).then((response) => {
-          if (response) {
-            console.log(
-              "el producto se ha eliminadocon exito ",
-              dataPrepareInventario.url
-            )
-            actualizaAllinventarios()
-            closeModal()
-          }
-        })
+          deleteByClaveComp(
+            `${dataPrepareInventario.url}/completo`,
+            formatClaveComp
+          ).then((response) => {
+            if (response) {
+              console.log(
+                "el producto se ha eliminadocon exito ",
+                dataPrepareInventario.url
+              )
+              actualizaAllinventarios()
+              closeModal()
+            }
+          })
+        }
       }
     }
   }
 
   const actualizaAllinventarios = async () => {
-
     const allInventarios = await getAllInvetariosAlmacen("ListadoInventario")
     if (allInventarios) {
-
-     // console.log(allInventarios.length)
+      // console.log(allInventarios.length)
       setDatosLocalStorage("allinventariosAlmacen", allInventarios)
       setListaTotalProductosInventario(allInventarios)
       setFullData(allInventarios)
@@ -484,7 +463,6 @@ export const useInventarioListadoManager = () => {
 
       const mappedStyle = generarMatrizStyle(allInventarios)
       setmappedStyleTable(mappedStyle)
-
     } else {
       console.log("no tengo nada")
     }
@@ -549,7 +527,6 @@ export const useInventarioListadoManager = () => {
           selectPropiedades,
           "asc"
         ).then((result) => {
-         
           console.log("entro :", result)
           setListaTotalProductosInventario(result)
         })
@@ -565,7 +542,6 @@ export const useInventarioListadoManager = () => {
       sortDirection: "asc" | "desc"
     }
   ) => {
-
     if (idToggle === "Orden") {
       setOrdenData(toggleState.sortDirection)
       // if (listadoTitulosPropiedades) {
@@ -580,36 +556,34 @@ export const useInventarioListadoManager = () => {
       //}
       // Puedes realizar acciones adicionales basadas en el estado del toggle
     } else if (idToggle === "Mostrar") {
-
       const url = `EntradasInventarioPage`
 
       //almaceno en cookies el valor
       setDatosLocalStorage("mostrarDatos", toggleState.value)
-        try {
-          if (toggleState.value) {
-            getLastProductGroupInventario(url).then(
-              (result) => {
-                if (result) {
-                  const mappedData = generarMatrizColumnDescriptors(
-                    plantillaProductoInventarioListado,
-                    result
-                  )
-                  setMappedProductosInventario(mappedData)
-                  const mappedStyle = generarMatrizStyle(result)
-                  setmappedStyleTable(mappedStyle)
-                  setListaTotalProductosInventario(result)
-                  setFullData(result)
-                }
-              }
-            )
-          } else {
-            //console.log("Aqui devolveriamos todos los productos")
-            actualizaAllinventarios()
-          }
-        } catch (error) {
-          console.error("Error al obtener los productos:", error)
+
+      try {
+        if (toggleState.value) {
+          getLastProductGroupInventario(url).then((result) => {
+            if (result) {
+              const mappedData = generarMatrizColumnDescriptors(
+                plantillaProductoInventarioListado,
+                result
+              )
+              setMappedProductosInventario(mappedData)
+              const mappedStyle = generarMatrizStyle(result)
+              setmappedStyleTable(mappedStyle)
+              setListaTotalProductosInventario(result)
+              setFullData(result)
+            }
+          })
+        } else {
+          //console.log("Aqui devolveriamos todos los productos")
+          actualizaAllinventarios()
         }
-    
+      } catch (error) {
+        console.error("Error al obtener los productos:", error)
+      }
+
       //console.log("ver solo ultima entrada del producto", mostrarData)
     }
   }
@@ -630,6 +604,26 @@ export const useInventarioListadoManager = () => {
     })
   }
 
+  /*
+export interface ItextInputFilter {
+    type: string,
+    idInput: string, // Asegúrate de que el nombre de la propiedad sea consistente con lo que usas en el componente
+    activeButton: boolean,
+    activeSearchIcon: boolean,
+    placeHolder: string,
+    activeLabel: boolean,
+    readonly:boolean,
+    style: string,
+    typeFill: "search" | "text" | "number",
+    // Actualiza las funciones para recibir el 'id' y el 'value'
+    onChange: (id: string, value: string) => void,
+    onClick: (id: string, value: string) => void,
+    onFilter?: (id: string, filterValue: string) => void // Hace que onFilter también acepte el 'id'
+  }
+  
+
+*/
+
   const plantillaFiltersInventario = [
     {
       type: "text",
@@ -641,6 +635,7 @@ export const useInventarioListadoManager = () => {
       typeFill: "search",
       style:
         "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+      readonly: false,
       onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado
       onClick: handleInputTextClick,
       onFilter: handleFilterChange

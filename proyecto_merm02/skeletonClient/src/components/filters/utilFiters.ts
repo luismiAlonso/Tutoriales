@@ -1,7 +1,6 @@
-import { parse } from "date-fns"
+
 import {
   convertStringDateToDate,
-  convertDateToFormatString,
   compararFechasAscendente,
   compararFechasDescendente,
   getIntervalDate
@@ -285,6 +284,8 @@ function ordenarFechas(
     return data
   }
 }
+
+
 
 /*
 Posible Opcion para ordenar fechas con formato especial
@@ -587,6 +588,7 @@ const filterDateRange = (value: Date, from: Date, to: Date): boolean => {
   return value >= from && value <= to
 }
 
+/*
 const isDateInRange = (date: Date, from: Date, to: Date) => {
   console.log(
     convertDateToFormatString(date, "dd/MM/yyyy"),
@@ -598,3 +600,4 @@ const isDateInRange = (date: Date, from: Date, to: Date) => {
     compararFechasDescendente(date, to) >= 0
   )
 }
+*/

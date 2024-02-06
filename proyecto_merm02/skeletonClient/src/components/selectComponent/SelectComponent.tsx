@@ -5,8 +5,6 @@ import { IcustomSelectProp } from "./IcustomSelectProp"
 const SelectComponent: React.FC<IcustomSelectProp> = ({
   activeLabel,
   optionsSelect,
-  selectClassName,
-  value,
   defaultValue,
   idSelected,
   onChange,

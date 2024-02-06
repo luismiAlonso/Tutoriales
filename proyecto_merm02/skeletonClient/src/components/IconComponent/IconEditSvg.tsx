@@ -1,4 +1,3 @@
-import React from "react"
 
 const IconEditSvg = () => (
   <div className="cursor-pointer">

@@ -33,13 +33,12 @@ import {
 
 export const useInventarioManager = () => {
   const [resumeProduct, setResumeDataProduct] =
-    useState<ProductoInventario>(null)
+    useState<ProductoInventario | null>(null)
   const navigate = useNavigate() // Obtén la función navigate
   const { totalProductosInventario, setListaTotalProductosInventario } =
     useOrdenProductionStore()
-  const [lastProductInventario, setLastProductInventario] =
-    useState<ProductoInventario[]>()
-  const [url, setUrl] = useState<string>()
+  const [, setLastProductInventario] = useState<ProductoInventario[]>()
+  const [, setUrl] = useState<string>()
   const { isOpen, setIsOpen, openModal, closeModal } = useModal()
   const [editMode, setEditMode] = useState<boolean>(false)
   const [tipoEdicion, setTipoEdicion] = useState<string>("")
@@ -47,14 +46,11 @@ export const useInventarioManager = () => {
   const { filterByWords, filterData, filterDateRange } = useFilterData()
   const [fullData, setFullData] = useState<ProductoInventario[]>([])
   const [ordenData, setOrdenData] = useState<"asc" | "desc">("desc")
-  const [mostrarData, setMostrarData] = useState<boolean>(false)
 
   const [mappeddProductosInventario, setMappedProductosInventario] =
     useState<ColumnDescriptor[][]>()
   const [mappedStyleTable, setmappedStyleTable] = useState<TableStyle[]>()
-  const [listadoTitulosPropiedades, setListadoTitulosPropiedades] = useState<
-    string[]
-  >([
+  const [listadoTitulosPropiedades] = useState<string[]>([
     "fechaEntrada",
     "fechaSalida",
     "dibujo",
@@ -207,7 +203,6 @@ export const useInventarioManager = () => {
         setEditMode(true)
       }
     } else if (idInput === "salidas") {
-
       if (loadedData) {
         setTipoEdicion("salidas")
         const productoEditar = mapearProductoInventarioAColumnas(
@@ -217,7 +212,7 @@ export const useInventarioManager = () => {
         setDatosModificacion(productoEditar)
         setEditMode(true)
       }
-   /* }
+      /* }
     else if (idInput === "entradasListado") {
 
       if (loadedData) {
@@ -241,8 +236,7 @@ export const useInventarioManager = () => {
         setDatosModificacion(productoEditar)
         setEditMode(true)
       }*/
-    }
-    else if (idInput === "guardar") {
+    } else if (idInput === "guardar") {
       //GUARDAR PRODUCTO EDITADO
       // console.log(tipoEdicion)
       const dataPrepareInventario = getDatosLocalStorage(
@@ -273,7 +267,6 @@ export const useInventarioManager = () => {
     dataPrepareInventario: PrepareDataInventario,
     mapDatosSalida: ProductoInventario
   ) => {
-
     const dbInventario = (await getInventarioSelected(
       dataPrepareInventario.url
     )) as InventarioAlmacen
@@ -308,7 +301,7 @@ export const useInventarioManager = () => {
 
         mapDatosSalida.stock =
           lastProductExist.producto.stock - mapDatosSalida.cantidadSalida
-          mapDatosSalida.ultimoRegistro = true
+        mapDatosSalida.ultimoRegistro = true
         lastProductExist.producto.ultimoRegistro = false
         //console.log("stock cantidad existente", mapDatosEntrada.stock)
         dbInventario.inventario.splice(
@@ -347,7 +340,6 @@ export const useInventarioManager = () => {
     dataPrepareInventario: PrepareDataInventario,
     mapDatosEntrada: ProductoInventario
   ) => {
-
     const dbInventario = (await getInventarioSelected(
       dataPrepareInventario.url
     )) as InventarioAlmacen
@@ -405,7 +397,6 @@ export const useInventarioManager = () => {
         `${dataPrepareInventario.url}/${mapDatosEntrada.idProducto}`,
         dbInventario
       ).then((response) => {
-
         if (response) {
           dataPrepareInventario.inventarioAlmacen = dbInventario
           //console.log("antes", dataPrepareInventario)
@@ -421,7 +412,6 @@ export const useInventarioManager = () => {
           const mappedStyle = generarMatrizStyle(dbInventario.inventario)
           setmappedStyleTable(mappedStyle)
         }
-        
       })
     } else {
       // const muestraDatos = getDatosLocalStorage("mostrarDatos")
@@ -453,7 +443,6 @@ export const useInventarioManager = () => {
       )
 
       if (creacionExitosa) {
-
         dataPrepareInventario.inventarioAlmacen = nuevoInventario
         setDatosLocalStorage("futureInventario", dataPrepareInventario)
         setListaTotalProductosInventario(nuevoInventario.inventario)
@@ -504,62 +493,49 @@ export const useInventarioManager = () => {
 
   const handleDeleteProducto = (
     e: React.MouseEvent<HTMLButtonElement>,
-    idInput: string | number | undefined
+    idInput?: string | number,
+    rowIndex?: number
   ) => {
+    
+    e.preventDefault()
+    console.log(rowIndex)
+    
     if (idInput === "btDelete") {
       const dataPrepareInventario = getDatosLocalStorage(
         "futureInventario"
       ) as PrepareDataInventario
 
       if (dataPrepareInventario) {
+        if (resumeProduct) {
+          //formateamos la cadena para que no hyan problemas con caracteres estraños
+          const formatClaveComp = encodeURIComponent(resumeProduct.claveComp)
 
-        /*
-        deleteLineaInventario(
-          dataPrepareInventario.url,
-          resumeProduct.idProducto
-        ).then((response) => {
-          if (response) {
-            console.log(
-              "el producto se ha eliminadocon exito ",
-              dataPrepareInventario.url
-            )
-            // navigate(dataPrepareInventario.url)
-            actualizaInvinterario()
-            closeModal()
-          }
-        })
-        */
-
-        //formateamos la cadena para que no hyan problemas con caracteres estraños
-        const formatClaveComp = encodeURIComponent(resumeProduct.claveComp)
-
-        deleteByClaveComp(
-          `${dataPrepareInventario.url}/completo`,
-          formatClaveComp
-        ).then((response) => {
-          if (response) {
-            console.log(
-              "el producto se ha eliminadocon exito ",
-              dataPrepareInventario.url
-            )
-            actualizaInvinterario()
-            closeModal()
-          }
-        })
+          deleteByClaveComp(
+            `${dataPrepareInventario.url}/completo`,
+            formatClaveComp
+          ).then((response) => {
+            if (response) {
+              console.log(
+                "el producto se ha eliminadocon exito ",
+                dataPrepareInventario.url
+              )
+              actualizaInvinterario()
+              closeModal()
+            }
+          })
+        }
       }
     }
   }
 
   const actualizaAllinventarios = async () => {
-
     const allInventarios = await getAllInvetariosAlmacen("ListadoInventario")
 
     if (allInventarios) {
-
       //console.log(allInventarios)
-      
+
       //Configuramos para comprimir listado en productos iguales
-     /* const responseUltimosProductos = await getLastProductGroupInventario(
+      /* const responseUltimosProductos = await getLastProductGroupInventario(
         datosTemporales.url
       )
 
@@ -568,7 +544,7 @@ export const useInventarioManager = () => {
       if (responseUltimosProductos) {
         setLastProductInventario(responseUltimosProductos)
       }*/
-    
+
       setDatosLocalStorage("allinventariosAlmacen", allInventarios)
       setListaTotalProductosInventario(allInventarios)
       setFullData(allInventarios)
@@ -582,7 +558,6 @@ export const useInventarioManager = () => {
 
       const mappedStyle = generarMatrizStyle(allInventarios)
       setmappedStyleTable(mappedStyle)
-
     } else {
       console.log("no tengo nada")
     }
@@ -594,7 +569,6 @@ export const useInventarioManager = () => {
     ) as PrepareDataInventario
 
     try {
-
       const responseInventario = await getInventarioSelected(
         datosTemporales.url
       )
@@ -747,9 +721,7 @@ export const useInventarioManager = () => {
       setDatosLocalStorage("mostrarDatos", toggleState.value)
 
       if (dataPrepareInventario) {
-
         try {
-          
           if (toggleState.value) {
             getLastProductGroupInventario(dataPrepareInventario.url).then(
               (result) => {
@@ -824,6 +796,7 @@ export const useInventarioManager = () => {
       placeHolder: "write to search...",
       activeLabel: true,
       typeFill: "search",
+      readonly: true,
       style:
         "block w-32 p-1 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
       onChange: handleInputTextChange, // Asegúrate de definir esta función en el contexto adecuado

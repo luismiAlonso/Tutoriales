@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { ColumnDescriptor } from "../../interfaces/ColumnDescriptor"
 import SelectComponent from "../selectComponent/SelectComponent"
 import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
@@ -7,7 +7,6 @@ import InputTextComponent from "../inputTextComponent/InputTextComponent"
 import IconComponent from "../IconComponent/IconComponent"
 import IconEditSvg from "../IconComponent/IconEditSvg.tsx"
 import IconDeleteSvg from "../IconComponent/IconDeleteSvg.tsx"
-import { getPropertyValue } from "../../utilidades/util.ts"
 
 interface TableProps<T> {
   columns: ColumnDescriptor[]
@@ -47,13 +46,13 @@ const TableCellComponent: React.FC<CustomTableProps<any>> = ({
   }
 
   const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     columnId: string,
     rowIndex: number
   ) => {
     e.preventDefault()
 
-    console.log(column.idInput, rowIndex)
+    console.log(columnId)
     onButtonClick(column.idInput, rowIndex)
   }
 

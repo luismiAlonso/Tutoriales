@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { OrdenProduccion, Producto } from "../interfaces/OrdenProduccion"
-import { useOrdenProductionStore } from "../contextStore/useOrdenProductionStore"
 import { setDatosLocalStorage, getDatosLocalStorage } from "../utilidades/util"
 import { ColumnDescriptor } from "../interfaces/ColumnDescriptor"
 import {
@@ -10,7 +9,6 @@ import {
   updateProductInOrdenProduccionDB,
   deleteProductFromOrdenProduccionDB
 } from "../api/ordenProduccionApi"
-import { ProductoInventario } from "../interfaces/Inventario"
 
 export const useOrdenProduccionData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -222,35 +220,6 @@ export const useOrdenProduccionData = () => {
     fieldsToExclude: string[] = []
   ): ColumnDescriptor[] => {
     return template.map((templateColumn) => {
-      // Encontrar la columna correspondiente en data
-      const dataColumn = data.find((dc) => dc.title === templateColumn.title)
-      // Si existe una columna correspondiente y no está en la lista de exclusión
-      if (dataColumn) {
-        return Object.keys(templateColumn).reduce((newColumn, key) => {
-          // Si la clave no está en la lista de exclusión, usar el valor de dataColumn
-          if (!fieldsToExclude.includes(key)) {
-            newColumn[key as keyof ColumnDescriptor] =
-              templateColumn[key as keyof ColumnDescriptor]
-          }
-          // Si la clave está en la lista de exclusión, usar el valor de templateColumn
-          else {
-            newColumn[key as keyof ColumnDescriptor] =
-              dataColumn[key as keyof ColumnDescriptor]
-          }
-          return newColumn
-        }, {} as ColumnDescriptor)
-      }
-      // Si no hay una columna correspondiente, devolver la columna del template
-      return templateColumn
-    })
-  }*/
-
-  const mapColumnDescriptors = (
-    template: ColumnDescriptor[],
-    data: ColumnDescriptor[],
-    fieldsToExclude: string[] = []
-  ): ColumnDescriptor[] => {
-    return template.map((templateColumn) => {
       const dataColumn = data.find((dc) => dc.title === templateColumn.title)
 
       if (dataColumn) {
@@ -269,6 +238,34 @@ export const useOrdenProduccionData = () => {
         )
       }
       return templateColumn
+    })
+  }*/
+
+  const mapColumnDescriptors = (
+    template: ColumnDescriptor[],
+    data: ColumnDescriptor[],
+    fieldsToExclude: string[] = []
+  ): ColumnDescriptor[] => {
+    return template.map((templateColumn) => {
+      // Encontrar la columna correspondiente en `data`
+      const dataColumn = data.find((dc) => dc.title === templateColumn.title)
+
+      // Crear una copia superficial de templateColumn como base
+      const resultColumn: Partial<ColumnDescriptor> = { ...templateColumn }
+
+      if (dataColumn) {
+        // Iterar sobre cada propiedad que se podría querer copiar o excluir
+        Object.keys(resultColumn).forEach((key) => {
+          // Si la propiedad no debe excluirse y existe en dataColumn, copiarla
+          if (!fieldsToExclude.includes(key) && key in dataColumn) {
+            (resultColumn as any)[key] = (dataColumn as any)[key]
+          }
+        })
+      }
+
+      // Asegurar que resultColumn se ajuste al tipo ColumnDescriptor antes de devolverlo
+      // Esto requiere que todas las propiedades necesarias estén presentes y correctamente tipadas
+      return resultColumn as ColumnDescriptor
     })
   }
 
@@ -391,19 +388,22 @@ export const useOrdenProduccionData = () => {
 
   const deleteOrdenProducion = (idParte: number, idProducto: number) => {
     //console.log(producto)
-    return deleteProductFromOrdenProduccionDB(idParte, idProducto) 
+    return deleteProductFromOrdenProduccionDB(idParte, idProducto)
   }
 
   const updateOrdenProduccion = (ordenProduccion: OrdenProduccion) => {
     return updateOrdenByIdDB(ordenProduccion.idParte, ordenProduccion)
   }
 
-  const updateProductInOrden = (producto: Producto )=> {
-    return updateProductInOrdenProduccionDB(producto.idParte, producto.indiceProducto, producto)
+  const updateProductInOrden = (producto: Producto) => {
+    return updateProductInOrdenProduccionDB(
+      producto.idParte,
+      producto.indiceProducto,
+      producto
+    )
   }
 
   const getAllProductAndAllOrder = async () => {
-
     try {
       // Esperar a que se resuelva la promesa para obtener las órdenes de producción
       const ordenesProduccion = await fetchOrdenesProduccionDB()
@@ -482,7 +482,6 @@ export const useOrdenProduccionData = () => {
     valor: string | number,
     plantilla: ColumnDescriptor[]
   ) => {
-    
     if (datosActuales !== null) {
       // Si los datos existen, busca el descriptor de columna específico por idInput
       const index = datosActuales.findIndex((columna) => columna.idInput === id)

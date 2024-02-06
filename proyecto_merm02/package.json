@@ -1,14 +1,12 @@
 {
-  "name": "proyecto_merm02",
+  "name": "app_plaginsa",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +20,10 @@
     "mongoose": "^7.4.1",
     "morgan": "^1.10.0",
     "react-modal": "^3.16.1",
+    "vite": "^5.0.12",
     "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
   }
 }

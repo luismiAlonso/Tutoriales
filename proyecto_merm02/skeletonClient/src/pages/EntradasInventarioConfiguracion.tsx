@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useInventarioManager } from "../customHook/useInventarioManager"
 import SelectComponent from "../components/selectComponent/SelectComponent"
 import HybridSelect from "../components/hybridSelectComponent/hybridSelectComponent"
@@ -37,7 +37,6 @@ function EntradasInventarioConfiguracion() {
 
   const handleSelectNave = () => {}
 
-
   return (
     <form className="text-white">
       <div className="bg-zinc-700 p-4 rounded mb-6 flex justify-between items-center">
@@ -53,7 +52,9 @@ function EntradasInventarioConfiguracion() {
           <label>Seccion</label>
           <HybridSelect
             idInput="seccion"
+            editable={true}
             activeLabel={false}
+            additionalStyles=""
             type="hybrid"
             options={listadoSecciones}
             defaultValue={seccion}

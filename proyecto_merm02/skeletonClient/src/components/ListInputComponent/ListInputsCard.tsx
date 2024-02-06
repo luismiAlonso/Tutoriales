@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import SelectComponent from "../selectComponent/SelectComponent"
 import HybridSelect from "../hybridSelectComponent/hybridSelectComponent"
 import CustomButton from "../button/ButtonComponent"
@@ -116,7 +116,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
             onClick={(e) => {
               e.preventDefault()
               if (props.value && (props.rowIndex || props.rowIndex == 0)) {
-                handleClick(e, props.idInput, props.rowIndex)
+                handleClick(e as React.MouseEvent<HTMLButtonElement>, props.idInput, props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto
             iconType="svg"
@@ -128,7 +128,7 @@ const InputComponent: React.FC<InputProps> = (props) => {
           <IconComponent
             onClick={(e) => {
               if (props.value && (props.rowIndex || props.rowIndex == 0)) {
-                handleClick(e, props.idInput, props.rowIndex)
+                handleClick(e as React.MouseEvent<HTMLButtonElement>, props.idInput, props.rowIndex)
               }
             }} // Asegúrate de que `props.value` sea el valor correcto
             iconType="svg"
@@ -144,7 +144,6 @@ const InputComponent: React.FC<InputProps> = (props) => {
 
 const CustomCard: React.FC<CustomCardProps> = ({
   columns,
-  rowIndex,
   onInputChange,
   onButtonClick
 }) => {

@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef, ChangeEvent, FC } from "react"
+import  { useState, useEffect, useRef, ChangeEvent, FC } from "react"
 import { HybridSelectProps } from "./HybridSelectProps"
 
 const HybridSelect: FC<HybridSelectProps> = ({
-  type,
   idInput,
   editable,
   activeLabel,

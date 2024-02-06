@@ -1,30 +1,30 @@
-import { useState } from 'react'
-import { sortDataByInputFill } from './utilFiters'
-import useGlobalStore from '../../contextStore/GlobalStore'
+import { useState } from "react"
+import { sortDataByInputFill } from "./utilFiters"
+import useNotificationStore from "../../contextStore/useNotificationStore"
 
 function useFilterInputText() {
   const [isFiltered, setFiltered] = useState(false) // Define el estado isFiltered
-  const { setCurrentDataStore, addNotification } = useGlobalStore()
+  // const { setCurrentDataStore } = useGlobalStore()
+  const { addNotification } = useNotificationStore()
 
   const filterByWords = async (
     newData: string[],
     searchWord: string,
     newProperty: string,
-    newOrder: 'desc' | 'asc'
+    newOrder: "desc" | "asc"
   ) => {
-    
+
     return new Promise((resolve, reject) => {
       try {
-
         setFiltered(false)
 
         if (!newData || newData.length === 0 || !newProperty || !newOrder) {
-          reject('Invalid input') // Rechaza la promesa con un mensaje de error
+          reject("Invalid input") // Rechaza la promesa con un mensaje de error
           return
         }
 
-        if(searchWord==""){
-          setCurrentDataStore(newData)
+        if (searchWord == "") {
+          //setCurrentDataStore(newData)
           reject("void search")
           return
         }
@@ -37,15 +37,13 @@ function useFilterInputText() {
         )
 
         setFiltered(true)
-    
-        setCurrentDataStore(filteredData)
+       // setCurrentDataStore(filteredData)
         resolve(filteredData) // Resuelve la promesa con los datos filtrados
-        
       } catch (error) {
         setFiltered(false)
         addNotification({
           message: `Error en filterData by Words: ${error}`,
-          type: 'error'
+          type: "error"
         })
         reject(error) // Rechaza la promesa con el error
       }

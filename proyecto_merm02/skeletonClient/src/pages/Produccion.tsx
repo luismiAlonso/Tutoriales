@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import SelectComponent from "../components/selectComponent/SelectComponent"
 import { useOrdenProduccionData } from "../customHook/useOrdenProduccionData"
 import { obtenerFechaActual } from "../utilidades/dateUtil"
-import { useNavigate, useParams } from "react-router-dom" // Importa useNavigate
-import { createTaskRequest, updateTaskRequest } from "../api/tasks"
+import { useNavigate } from "react-router-dom" // Importa useNavigate
 import BackButton from "../components/backButtonComponent/BackButtonComponent"
 import { OrdenProduccion } from "../interfaces/OrdenProduccion"
 import { setDatosLocalStorage } from "../utilidades/util"
+import CustomButton from "../components/button/ButtonComponent"
 
 function Produccion() {
   const opcionesProduccion = ["EVA", "GOMA"]
@@ -39,14 +39,14 @@ function Produccion() {
   const handleFilter = (filterValue: string, idSelected: string) => {
     // Acciones a realizar para filtrar basado en el valor seleccionado
     //console.log("Filtro:", filterValue)
-    //console.log("idSelect:", idSelected)
+    console.log("idSelect:", idSelected)
 
     if (filterValue) {
       setGoma(filterValue)
     }
   }
 
-  const crearOrdenProducion = (e: React.FormEvent<HTMLFormElement>) => {
+  const crearOrdenProducion = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
 
     const fecha = obtenerFechaActual()
@@ -60,16 +60,13 @@ function Produccion() {
     } as OrdenProduccion
 
     cargarDatosOrdenProduccion(nuevaOrdeProducion).then((response) => {
-
       if (response) {
         const idParte = response.idParte
         nuevaOrdeProducion.idParte = response.idParte
-        setDatosLocalStorage("preOrden",nuevaOrdeProducion)
+        setDatosLocalStorage("preOrden", nuevaOrdeProducion)
         navigate(`/ordenProduccion/${idParte}`)
       }
-      
     })
-
   }
 
   const consultarOrdenesProducion = () => {
@@ -90,27 +87,38 @@ function Produccion() {
       <div className="flex flex-col h-screen items-center">
         <div className="flex-screem justify-center items-start">
           <div className="flex items-center space-x-4 p-3">
-            <button
+            {/*<button
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
               onClick={crearOrdenProducion}
-            >
-              CREAR ORDEN DE PRODUCCION
-            </button>
+              ></button>*/}
+            <CustomButton
+              buttonText="CREAR ORDEN DE PRODUCCION"
+              onClick={(e) => {
+                // Llama a handleClick solo si dataColumn.value está definido
+                crearOrdenProducion(e)
+              }}
+            />
             <SelectComponent
+              idInput="filtroGoma"
+              type=""
+              activeLabel={false}
+              selectClassName = {""}
               optionsSelect={opcionesProduccion}
               value={"GOMA"}
-              selectClassName=""
               defaultValue={"GOMA"}
               idSelected={"filtroGoma"}
               onSeleccion={() => {
                 handleSeleccion
               }}
               onFilter={handleFilter} // Prop opcional
-            />{" "}
+            />
             <SelectComponent
+              idInput="filtroBamburi"
+              type=""
+              activeLabel={false}
+              selectClassName = {""}
               optionsSelect={opcionesBamburi}
               value={"C-165"}
-              selectClassName=""
               defaultValue={"C-165"}
               idSelected={"filtroBamburi"}
               onSeleccion={handleSeleccion}

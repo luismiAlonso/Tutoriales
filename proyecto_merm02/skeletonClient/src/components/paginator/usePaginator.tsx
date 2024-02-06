@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import useGlobalStore from '../../globaStore/GlobalStore'
+import {useGlobalStore} from '../../contextStore/useGlobalStore'
 
 const usePaginator = (data: string[], itemsPerPage: number) => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -9,7 +9,7 @@ const usePaginator = (data: string[], itemsPerPage: number) => {
     Math.ceil(data.length / itemsPerPage)
   )
   const [amountData, setAmountData] = useState(data)
-  const {dataGlobalStore,setCurrentDataStore} = useGlobalStore()
+  const {dataGlobalStore,setDataGlobalStore} = useGlobalStore()
 
   const getPageData = () => {
      //nuevo
@@ -74,9 +74,9 @@ const usePaginator = (data: string[], itemsPerPage: number) => {
   useEffect(()=>{
     const pageData = getPageData() 
     if(pageData && pageData.length>0){
-      setCurrentDataStore(pageData)
+      setDataGlobalStore(pageData)
     }
-  },[currentDataPage,setCurrentDataStore])
+  },[currentDataPage,setDataGlobalStore])
 
   
   return {

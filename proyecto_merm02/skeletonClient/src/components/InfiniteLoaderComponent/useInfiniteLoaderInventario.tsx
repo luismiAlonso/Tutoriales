@@ -5,7 +5,7 @@ import { ProductoInventario } from "../../interfaces/Inventario"
 
 const useInfiniteLoaderInventario = (itemsPerPage = 100) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const { totalProductosInventario, setListaTotalProductosInventario } =
+  const { totalProductosInventario } =
     useOrdenProductionStore()
   const [loadedData, setLoadedData] = useState<ProductoInventario[]>([])
 

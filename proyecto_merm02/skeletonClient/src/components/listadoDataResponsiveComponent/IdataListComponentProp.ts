@@ -12,5 +12,5 @@ export interface IrenderColumnContentProps {
   type: string
   idInput: string
   rowIndex: number
-  onButtonClick?: (e: React.MouseEvent<HTMLButtonElement>, idInput: string, rowIndex: number) => void
+  onButtonClick?: (e: React.MouseEvent<HTMLElement>, idInput: string, rowIndex: number) => void
 }

@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: '../../compilePlaginsa', // Especifica aquí el nombre de la carpeta de salida
+    outDir: '../../dist', // Especifica aquí el nombre de la carpeta de salida
   },
 })

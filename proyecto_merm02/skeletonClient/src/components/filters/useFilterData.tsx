@@ -5,7 +5,7 @@ import {
   sortDateRange
 } from "../filters/utilFiters"
 import useNotification from "../../contextStore/useNotificationStore"
-import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
+//import { useOrdenProductionStore } from "../../contextStore/useOrdenProductionStore"
 
 function useFilterData() {
 
@@ -21,8 +21,11 @@ function useFilterData() {
     newProperty: string,
     newOrder: "desc" | "asc"
   ): Promise<any[]> => {
+
     return new Promise((resolve, reject) => {
+
       try {
+
         setFiltered(false)
         if (!newData || newData.length === 0 || !newProperty || !newOrder) {
           addNotification({

@@ -5,8 +5,8 @@ export  interface InputProps {
     content:string,
     titulo:string,
     editable: boolean
-    defaultValue?: string | number
-    value?:string | number,
+    defaultValue?: string | number | boolean,
+    value?:string | number | boolean,
     visible: boolean,
     rowIndex?: number,
     options: string[]

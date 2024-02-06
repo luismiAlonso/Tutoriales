@@ -1,8 +1,7 @@
 // authStore.ts
-import {create} from "zustand"
+import { create } from "zustand"
 import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth"
-import {User} from "../interfaces/User"
-import {Token} from "../interfaces/Token"
+import { User } from "../interfaces/User"
 import { AuthError } from "../interfaces/AuthError"
 import Cookies from "js-cookie"
 
@@ -31,7 +30,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true
       })
     } catch (error) {
-      set({ errors: error.response.data })
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        error.response
+      ) {
+        const data = (error as { response: { data: AuthError[] } }).response
+          .data
+        set({ errors: data })
+      }
     }
   },
   signIn: async (user) => {
@@ -42,8 +50,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true
       })
     } catch (error) {
-      console.log(error)
-      set({ errors: error.response.data })
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        error.response
+      ) {
+        const data = (error as { response: { data: AuthError[] } }).response
+          .data
+        set({ errors: data })
+      }
     }
   },
   logout: () => {
@@ -54,9 +70,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     })
   },
   checkLogin: async () => {
-    const token = Cookies.get("token")
+
+    const tokenString = Cookies.get("token")
     
-    if (!token) {
+    if (!tokenString) {
       set({
         user: null,
         isAuthenticated: false,
@@ -65,13 +82,17 @@ export const useAuthStore = create<AuthState>((set) => ({
       return
     }
 
-    try { 
-      const response = await verifyTokenRequest(token as Token)
+    try {
+
+     // const token: Token = { token: tokenString }
+      const response = await verifyTokenRequest()
+
       set({
         user: response.data,
         isAuthenticated: true,
         loading: false
       })
+
     } catch (error) {
       set({
         user: null,

@@ -1,24 +1,23 @@
 import { useState } from "react"
-import { sortData, sortDataByInputFill } from "./utilFilters"
-import useGlobalStore from "../../globalStore/GlobalStore"
+import { sortData } from "./utilFiters"
+import useNotificationStore from "../../contextStore/useNotificationStore"
 
 // Define un tipo básico que será extendido por T
-type BasicObject = Record<string, string | number | Date>
 
-function useFilterFill<T extends BasicObject>() {
-  const [sortedDataProperties, setSortedDataProperties] = useState<T[]>([])
-  const [property, setProperty] = useState<keyof T | null>(null)
+function useFilterFill() {
+  const [sortedDataProperties, setSortedDataProperties] = useState<any[]>([])
+  const [setProperty] = useState<any | null>(null)
   const [ordenProperties, setOrdenProperties] = useState<"desc" | "asc">("desc")
   const [isFiltered, setFiltered] = useState(false)
 
-  const { setCurrentDataStore, addNotification } = useGlobalStore()
+  const { addNotification } = useNotificationStore()
 
   const filterData = async (
-    newData: T[],
-    newProperty: keyof T,
+    newData: any[],
+    newProperty: string,
     newOrder: "desc" | "asc"
   ) => {
-    return new Promise<T[]>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
         setFiltered(false)
         if (!newData || newData.length === 0 || !newProperty || !newOrder) {
@@ -33,10 +32,13 @@ function useFilterFill<T extends BasicObject>() {
         setProperty(newProperty)
         setOrdenProperties(newOrder)
         const newSortedProperties = sortData(newData, newProperty, newOrder)
+
         setSortedDataProperties(newSortedProperties)
+
         setFiltered(true)
-        setCurrentDataStore(newSortedProperties) // Asegúrate de que setCurrentDataStore pueda manejar T[]
+        //setCurrentDataStore(newSortedProperties) // Asegúrate de que setCurrentDataStore pueda manejar T[]
         resolve(newSortedProperties) // Indica que los datos están ordenados y listos
+
       } catch (error) {
         setFiltered(false)
         console.error("Error en filterData:", error)

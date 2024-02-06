@@ -1,4 +1,3 @@
-import { Route } from "react-router-dom"
 import { InventarioAlmacen, ProductoInventario } from "../interfaces/Inventario"
 import axios from "./axios"
 
